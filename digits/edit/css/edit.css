@@ -1,0 +1,90 @@
+#edit_wrapper {
+  display:none;
+  background: #fff;
+  width: 300px;  
+  top: 60px;
+  right:265px;
+  border:2px solid #666;
+}
+
+.edittip {
+  position: absolute;
+  background: #fff;
+  border: 2px solid #666;
+  border-radius: 8px;
+  z-index: -1
+}
+/*
+.edittip:after, .edittip:before {
+  bottom: 100%;
+  left: 50%;
+  border: solid transparent;
+  content: " ";
+  height: 0;
+  width: 0;
+  position: absolute;
+  pointer-events: none;
+  z-index: -1
+}
+
+.edittip:after {
+  border-color: rgba(255, 255, 255, 0);
+  border-bottom-color: #fff;
+  border-width: 25px;
+  margin-left: -25px;
+  z-index: -1
+}
+
+.edittip:before {
+  border-color: rgba(102, 102, 102, 0);
+  border-bottom-color: #666;
+  border-width: 28px;
+  margin-left: -28px;
+  z-index: -1
+}
+*/
+.edit-tip {
+  float: right;
+  width: 90px;
+  height: 55px;
+  background-image: url("../images/icons/Arrow.png");
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
+#edit-tooltip-text {
+  margin-left: 35px;
+  float:  left;
+  margin-bottom: 15px;
+}
+#edit-hr-wrapper {
+  height:100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+#edit-hr {
+   border: none;
+    border-bottom:1px solid #666;
+    border-top:1px solid #666;
+    *border-top:0px;
+    clear:both;
+    height:0;
+    width: 100%;
+}
+
+#edit-title {
+    font-size: 18px;
+    margin: 20px 20px 10px;
+  }
+  #edit-subtitle {
+    margin: 10px 30px 10px;
+  }
+
+#edit {
+  margin-bottom: 10px;
+  *padding-bottom: 6px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}

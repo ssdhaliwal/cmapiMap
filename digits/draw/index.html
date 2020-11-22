@@ -1,0 +1,117 @@
+<div class="dijitTitlePane" id="titlePaneDraw" widgetId="titlePaneDraw">
+    <div class="dijitTitlePaneTitle dijitTitlePaneTitleOpen dijitOpen" id="titlePaneDraw_titleBarNode">
+        <div class="dijitTitlePaneTitleFocus">
+            <span data-dojo-attach-point="arrowNode" class="dijitInline dijitArrowNode" role="presentation"></span>
+            <span data-dojo-attach-point="arrowNodeInner" class="dijitArrowNodeInner">-</span>
+            <span data-dojo-attach-point="titleNode" class="dijitTitlePaneTextNode" style="user-select: none;">User
+                Graphics</span>
+        </div>
+    </div>
+</div>
+
+<p>
+    <div id="LayerSelectDiv" style="padding-left:23px; font-size:10pt;">
+        <input id="graphicSelect">
+    </div>
+</p>
+<div id="draw-tooltip">
+    <table>
+        <tr id="tooltipRow">
+            <td id="tooltipData" style="display:none; font-weight: bold; ">
+                Enter/Select Graphics Layer Name
+            </td>
+        </tr>
+        <tr id="unsavedChangesRow" style="display:none; color:red; font-weight: bold; ">
+            <td>
+                <img src="./digits/draw/images/warning.png" /> Unsaved changes detected.
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div id="header" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'top'">
+                    <table>
+                        <tr>
+                            <td>
+                                <div style="display: flex;"><span title="Point" id="pointCircleButton"
+                                        class="circlep-icon"></span>
+                                    <span title="PointDiamond" id="pointDiamondButton" class="diamond-icon"></span>
+                                    <span title="PointCross" id="pointCrossButton" class="cross-icon"></span>
+                                    <span title="PointSquare" id="pointSquareButton" class="square-icon"></span>
+                                    <span title="PointX" id="pointXButton" class="x-icon"></span></div>
+                            </td>
+                        </tr>
+                        <tr title="Lines">
+                            <td>
+                                <div style="display: flex;"><span title="Line" id="lineButton"
+                                        class="line-icon"></span>
+                                    <span title="Polyline" id="polylineButton" class="polyline-icon"></span>
+                                    <span title="Polygon" id="polygonButton" class="polygon-icon"></span>
+                                    <span title="Freehand Polyline" id="freePolylineButton"
+                                        class="freehand-polyline-icon"></span></div>
+                            </td>
+                        </tr>
+                        <tr title="Polygons">
+                            <td>
+                                <div style="display: flex;"><span title="Freehand Polygon" id="freePolygonButton"
+                                        class="freehand-polygon-icon"></span>
+                                    <span title="Triangle" id="triangleButton" class="triangle-icon"></span>
+                                    <span title="Circle" id="circleButton" class="circle-icon"></span>
+                                    <span title="Ellipse" id="ellipseButton" class="ellipse-icon"></span></div>
+                            </td>
+                        </tr>
+                    </table>
+                    <input type="hidden" id="overlayId" value=" ">
+                    <input type="hidden" id="featureId" value=" ">
+                    <input type="hidden" id="name" value=" ">
+                    <input type="hidden" id="type" value=" ">
+                    <div title="editDiv" id="editDiv"></div>
+                </div>
+            </td>
+        </tr>
+        <tr id="linePaletteRow" style="display:none;">
+            <td>
+                <label>Line Color</label><br />
+                <span id="linePalette">
+                </span>
+            </td>
+        </tr>
+        <tr id="borderPaletteRow" style="display:none;">
+            <td>
+                <label id="borderPalleteToggle" class="drawPallete">Border Color</label>&nbsp;&nbsp;||&nbsp;&nbsp;
+                <label id="fillPalleteToggle" class="drawPallete drawHighlight">Polygon Color</label><br />
+                <div id="borderPalleteWrapper" style="display:none;">
+                    <span id="borderPalette">
+                    </span>
+                </div>
+                <div id="fillPalleteWrapper">
+                    <span id="fillPalette">
+                    </span>
+                </div>
+            </td>
+        </tr>
+        <tr id="markerPaletteRow" style="display:none;margin:7px;">
+            <td>
+                <label>Point Color</label><br />
+                <span id="markerPalette">
+                </span>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <table style="margin:7px;width:90%;">
+                    <tr>
+                        <td class="drawButtonTD"><button id="clearGraphicsButton" class="drawClear" rel="tooltip"
+                                title="Clear Graphics"></button></td>
+                        <td class="drawButtonTD"><button id="doneDrawButton" class="drawDone" rel="tooltip"
+                                title="Save Graphics"></button></td>
+                        <td class="drawButtonTD"><button id="cancelDrawButton" class="drawCancel" rel="tooltip"
+                                title="Cancel Changes"></button></td>
+                        <td class="drawButtonTD"><button id="zoomButton" class="drawZoom" rel="tooltip"
+                                title="Zoom to.."></button></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</div>

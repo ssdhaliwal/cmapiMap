@@ -1,0 +1,11 @@
+	
+	{
+		"esriJsPath": "/esri_jsapi-3.33/init.js",
+		"jqueryPath": "vendor/js/jquery-1.12.4.min.js",
+		"bootstrapPath": "vendor/js/bootstrap.min.js",
+		"treeJqueryPath": "vendor/js/tree.jquery.js",
+		"datatablesPath": "vendor/js/datatables.min.js",
+		"datatablesRowGroupPath": "vendor/js/dataTables.rowGroup.min.js",
+		"inputmaskPath": "vendor/js/jquery.inputmask.min.js",
+		"milSymbolPath": "vendor/js/milsymbol.js"
+	}

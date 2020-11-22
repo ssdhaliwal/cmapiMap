@@ -1,0 +1,49 @@
+.esri_info_div {
+    height: 100%;
+    width: 0px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    float: left;
+}
+
+#legend_wrapper {
+    height:100%;
+    width:0;
+    margin:0;
+    padding:0;
+    border:0;
+    position: absolute;
+    left: 0px;
+    background-color: #FFF;
+    overflow:auto;
+    overflow-x: hidden;
+}
+
+.esriLegendLayer tbody tr {
+    height: 34px;
+}
+
+#legend_data {
+    /*height: 100%;*/
+    width:0;
+    padding: 10px;
+    margin: 0px;
+}
+
+.legend_divider {
+    height: 100%;
+    width: 0px;
+    margin: 0;
+    padding: 0;
+    border:0;
+    position:absolute;
+    left: 0px;
+    cursor: col-resize;
+    background-color: #000;
+}
+
+#legend_title {
+    font-size: 18px;
+    margin: 20px 10px 0px;
+}
