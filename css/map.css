@@ -43,6 +43,31 @@ body {
     float: left;
 }
 
+#legend_wrapper {
+    height:100%;
+    width:0;
+    margin:0;
+    padding:0;
+    border:0;
+    position: absolute;
+    left: 0px;
+    background-color: #FFF;
+    overflow:auto;
+    overflow-x: hidden;
+}
+
+#legend_data {
+    /*height: 100%;*/
+    width:0;
+    padding: 10px;
+    margin: 0px;
+}
+
+#legend_title {
+    font-size: 18px;
+    margin: 20px 10px 0px;
+}
+
 #kml_overlaps_wrapper {
     height:100%;
     width:0;
