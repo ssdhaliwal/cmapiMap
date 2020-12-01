@@ -29,13 +29,10 @@ require([
   "esri/symbols/SimpleFillSymbol",
   "esri/Color",
   "esri/dijit/Scalebar",
-  "esri/dijit/Measurement",
-  "esri/dijit/Bookmarks",
   "esri/geometry/Extent",
   "dojo/parser",
   "dojo/dom-class",
   "dojo/dom-construct",
-  "esri/units",
   "esri/geometry/projection",
   "notify/notify.min",
   "dojo/domReady!"
@@ -45,13 +42,10 @@ require([
   SimpleFillSymbol,
   Color,
   Scalebar,
-  Measurement,
-  Bookmarks,
   Extent,
   parser,
   ddomClass,
   domConstruct,
-  Units,
   projection
 ) {
   var fill = new SimpleFillSymbol("solid", null, new Color("#A4CE67"));
@@ -108,22 +102,6 @@ require([
     attachTo: "bottom-left",
     scalebarUnit: "dual"
   });
-
-  var measurement = new Measurement({
-    map: map,
-    defaultAreaUnit: Units.SQUARE_MILES,
-    defaultLengthUnit: Units.MILES
-  },
-    "measurementDiv"
-  );
-
-  var bookmarks = new Bookmarks({
-    map: map,
-    bookmarks: [],
-    editable: true
-  },
-    "bookmarkDiv"
-  );
 
   var toggleBasemapGallery = function () {
     $(
@@ -265,10 +243,6 @@ require([
   // esriConfig.defaults.io.alwaysUseProxy = false;
   // esri.config.defaults.io.proxyUrl = "https://localhost:8443/Java/proxy.jsp";
 
-  // moved all startups here for preferences to work correctly
-  measurement.startup();
-  bookmarks.startup();
-
   // add projection load for global use
   const projectionPromise = projection.load();
 
@@ -286,8 +260,6 @@ require([
   $("[rel=tooltip]").tooltip({
     placement: "bottom"
   });
-  $("#measure").on("click", toggleMeasure);
-  $("#bookmark").on("click", toggleBookmark);
   $("#controls").on("click", toggleSidenav);
   $("#control-slider").on("click", toggleControls);
   
