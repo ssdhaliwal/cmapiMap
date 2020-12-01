@@ -23,18 +23,6 @@ if (!window.isOffline) {
     }
 }
 
-if (!window.isDebug) {
-    /**
-     * Determine if webapp is running in <b>debug</b> mode.
-     * @global
-     */
-    window.isDebug = function () {
-        // Test if "debug=true" was passed in URL
-        return /.*debug\s*=\s*true.*/i.test(
-            decodeURIComponent(window.location.search));
-    }
-}
-
 if (!window.contextPath) {
     /**
      * Specifies absolute path to root of this webapp. Only works if the
@@ -58,24 +46,6 @@ if (!window.contextPath) {
 
         // Remove filename if present
         path = path.replace(/\/[^\/]+$/, "/");
-
-        return path;
-    })();
-}
-
-if (!window.owfJsPath) {
-    /**
-     * Specifies path to OWF widget JavaScript API. Prefers files from OWF
-     * server it available.
-     * @global
-     */
-    window.owfJsPath = (function () {
-        var path = window.contextPath + "../vendor/js/";
-
-        if (document.referrer &&
-            /\/owf\/$/i.test(decodeURIComponent(document.referrer))) {
-            path = decodeURIComponent(document.referrer) + "js-min/";
-        }
 
         return path;
     })();
@@ -125,8 +95,8 @@ if (!window.esriWorldGeocoderService) {
  * value of isOffline().
  * @global
  */
-window.esriDeployVer = "1.5.188";
-window.esriDeployDate = "20200820";
+window.esriDeployVer = "1.0.0";
+window.esriDeployDate = "20201201";
 var dojoConfig = dojoConfig || {};
 
 /* 20191029 - depreciated due to no license key
@@ -182,16 +152,7 @@ dojoConfig.packages = [
         location: window.esriJsPath + "dojo",
         name: "dojo"
     },
-    {
-        location: window.esriJsPath + "put-selector",
-        main: "put",
-        name: "put-selector"
-    },
     // Additional packages for this webapp
-    {
-        location: window.contextPath + "digits",
-        name: "digits"
-    },
     {
         location: window.contextPath + "js",
         name: "app"
@@ -199,5 +160,9 @@ dojoConfig.packages = [
     {
         location: window.contextPath + "vendor/js",
         name: "notify"
+    },
+    {
+        location: window.contextPath + "extensions",
+        name: "extensions"
     }
 ];

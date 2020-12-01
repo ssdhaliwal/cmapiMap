@@ -1,0 +1,52 @@
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+.box {
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+}
+
+.box .row {
+  border: 1px dotted grey;
+}
+
+.box .row.header {
+  flex: 0 1 auto;
+  /* The above is shorthand for:
+  flex-grow: 0,
+  flex-shrink: 1,
+  flex-basis: auto
+  */
+}
+
+.box .row.content {
+  flex: 0 1 auto;
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+}
+
+.box .row.content.toc {
+  flex: 0 1 auto;
+  position: absolute;
+  overflow: hidden;
+  height: 100%;
+  width: 24.5%;
+}
+
+.box .row.content.data {
+  flex: 0 1 auto;
+  float: right;
+  overflow: hidden;
+  height: 100%;
+  width: 75%;
+}
+
+.box .row.footer {
+  flex: 0 1 40px;
+}
+

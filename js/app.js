@@ -22,7 +22,6 @@
 // NOTE: Modules that are not compatible with asynchronous module loading
 // (AMD) are included in the webapp's HTML file to prevent issues.
 
-// Add imports for mySearch configuration and functions
 require([
   "esri/map",
   "esri/dijit/Popup",
@@ -34,6 +33,9 @@ require([
   "dojo/dom-class",
   "dojo/dom-construct",
   "esri/geometry/projection",
+  "extensions/ViewControls",
+  "extensions/home/Home",
+  "extensions/search/Search",
   "notify/notify.min",
   "dojo/domReady!"
 ], function (
@@ -46,17 +48,24 @@ require([
   parser,
   ddomClass,
   domConstruct,
-  projection
+  projection,
+  ViewControls,
+  extHome,
+  extSearch
 ) {
-  var fill = new SimpleFillSymbol("solid", null, new Color("#A4CE67"));
-  var popup = new Popup({
-    fillSymbol: fill,
+  var global = {};
+  global.extensions = {};
+  global.extensions.data = {};
+
+  global.popupFill = new SimpleFillSymbol("solid", null, new Color("#A4CE67"));
+  global.popup = new Popup({
+    fillSymbol: global.popupFill,
     titleInBody: false
   },
     domConstruct.create("div")
   );
 
-  var map = new Map("map", {
+  global.map = new Map("map", {
     basemap: "streets",
     extent: new Extent({
       "xmin": -16045622,
@@ -68,140 +77,42 @@ require([
       }
     }),
     showLabels: true,
-    infoWindow: popup
+    infoWindow: global.popup
   });
-  map.infoWindow.resize(350, 240);
+  global.map.infoWindow.resize(350, 240);
 
   // add to allow double-click without zoom
-  map.disableDoubleClickZoom();
+  global.map.disableDoubleClickZoom();
 
-  map.on("extent-change", function (evt) {
-    redrawGraphics();
+  global.map.on("extent-change", function (evt) {
+    global.redrawGraphics();
   });
 
-  map.on("resize", function (evt) {
-    redrawGraphics();
+  global.map.on("resize", function (evt) {
+    global.redrawGraphics();
   });
 
-  map.on("load", function (evt) {
-    redrawGraphics();
+  global.map.on("load", function (evt) {
+    global.initialize();
+    global.redrawGraphics();
   });
 
-  redrawGraphics = function () {
-    graphics = map.graphicsLayerIds;
-    for (i = 0; i < graphics.length; i++) {
-      graphicLayer = map.getLayer(graphics[i]);
+  global.redrawGraphics = function () {
+    let graphics = global.map.graphicsLayerIds;
+    let graphicLayer = null;
+    for (let i = 0; i < graphics.length; i++) {
+      graphicLayer = global.map.getLayer(graphics[i]);
       graphicLayer.redraw();
     }
   };
 
   parser.parse();
 
-  new Scalebar({
-    map: map,
+  global.scalebar = new Scalebar({
+    map: global.map,
     attachTo: "bottom-left",
     scalebarUnit: "dual"
   });
-
-  var toggleBasemapGallery = function () {
-    $(
-      "#overlay_wrapper, #about_wrapper, #batchselect_wrapper, #legend_wrapper, , #draw_wrapper, #edit_wrapper, #bookmark_wrapper, #measure_wrapper, #quickIcon_wrapper"
-    ).hide();
-    $(
-      "#overlay, #about, #batchselect, #legend, #draw, #bookmark, #measure, #edit, #quickIcon"
-    ).removeClass("selected");
-
-    $("#basemaps").toggleClass("selected");
-    $("#basemaps_wrapper").toggle();
-
-    closeKMLOverlappingWrapper();
-  };
-
-  var toggleDraw = function () {
-    $(
-      "#overlay_wrapper, #about_wrapper, #batchselect_wrapper, #legend_wrapper, , #basemaps_wrapper, #edit_wrapper, #bookmark_wrapper, #measure_wrapper, #quickIcon_wrapper"
-    ).hide();
-    $(
-      "#basemaps, #overlay, #about, #batchselect, #legend, #bookmark, #measure, #edit, #quickIcon"
-    ).removeClass("selected");
-
-    $("#draw").toggleClass("selected");
-    $("#draw_wrapper").toggle();
-
-    closeKMLOverlappingWrapper();
-  };
-
-  var toggleMeasure = function () {
-    $(
-      "#overlay_wrapper, #about_wrapper, #batchselect_wrapper, #legend_wrapper, , #basemaps_wrapper, #draw_wrapper, #edit_wrapper, #bookmark_wrapper, #quickIcon_wrapper"
-    ).hide();
-    $(
-      "#basemaps, #overlay, #about, #batchselect, #legend, #draw, #bookmark, #edit, #quickIcon"
-    ).removeClass("selected");
-
-    $("#measure").toggleClass("selected");
-    $("#measure_wrapper").toggle();
-
-    closeKMLOverlappingWrapper();
-  };
-
-  var toggleBookmark = function () {
-    $(
-      "#overlay_wrapper, #about_wrapper, #batchselect_wrapper, #legend_wrapper, , #basemaps_wrapper, #draw_wrapper, #edit_wrapper, #measure_wrapper, #quickIcon_wrapper"
-    ).hide();
-    $(
-      "#basemaps, #overlay, #about, #batchselect, #legend, #draw, #measure, #edit, #quickIcon"
-    ).removeClass("selected");
-
-    $("#bookmark").toggleClass("selected");
-    $("#bookmark_wrapper").toggle();
-
-    closeKMLOverlappingWrapper();
-  };
-
-  var toggleQuickIcon = function () {
-    $(
-      "#overlay_wrapper, #about_wrapper, #batchselect_wrapper, #legend_wrapper, , #basemaps_wrapper, #edit_wrapper, #bookmark_wrapper, #measure_wrapper, #draw_wrapper"
-    ).hide();
-    $(
-      "#basemaps, #overlay, #about, #batchselect, #legend, #bookmark, #measure, #edit, #draw"
-    ).removeClass("selected");
-
-    $("#quickIcon").toggleClass("selected");
-    $("#quickIcon_wrapper").toggle();
-
-    closeKMLOverlappingWrapper();
-  };
-
-  var toggleControls = function () {
-    $(
-      "#overlay_wrapper, #about_wrapper, #batchselect_wrapper, #legend_wrapper, #basemaps_wrapper, #edit_wrapper, #bookmark_wrapper, #measure_wrapper, #draw_wrapper, #quickIcon_wrapper"
-    ).hide();
-    $(
-      "#basemaps, #overlay, #about, #batchselect, #legend, #bookmark, #measure, #edit, #draw, #quickIcon"
-    ).removeClass("selected");
-
-    $("#map-controls1, #map-controls2").toggle();
-    $("#control-slider").toggleClass("selected");
-
-    closeKMLOverlappingWrapper();
-  };
-
-  var toggleSidenav = function () {
-    if (document.getElementById("sidenav").style.width === "250px") {
-      document.getElementById("sidenav").style.width = "0";
-    } else {
-      document.getElementById("sidenav").style.width = "250px";
-    }
-  };
-
-  $('#kml_overlaps_close').on("click", function () {
-    closeKMLOverlappingWrapper();
-  });
-  var closeKMLOverlappingWrapper = function () {
-    // close the kml layer overlapping
-    $('#kml_overlaps_wrapper').css("display", "none");
-  };
 
   $.notify.addStyle("esri", {
     // modeled after bootstrap style
@@ -217,7 +128,8 @@ require([
     globalPosition: "bottom right"
   });
 
-  var errorNotifier = function (msg) {
+  global.extensions.notify = {};
+  global.extensions.notify.errorNotifier = function (msg) {
     $.notify(msg, {
       className: "error",
       // autoHide: true,
@@ -226,7 +138,7 @@ require([
     });
   };
 
-  var infoNotifier = function (msg) {
+  global.extensions.notify.infoNotifier = function (msg) {
     $.notify(msg, {
       className: "info",
       autoHide: true,
@@ -246,22 +158,19 @@ require([
   // add projection load for global use
   const projectionPromise = projection.load();
 
-  // var edit = new Edit({ map: map, basemapGallery: basemapGallery }, errorNotifier, infoNotifier);
-  $("#map").on("mouseup", function () {
-    $(
-      "#about_wrapper, #batchselect_wrapper, #basemaps_wrapper"
-    ).hide();
-    $(
-      "#basemaps, #about, #batchselect, #legend_button"
-    ).removeClass("selected");
-    // $('#data_div_button').removeClass('selected');
-  });
-
   $("[rel=tooltip]").tooltip({
     placement: "bottom"
   });
-  $("#controls").on("click", toggleSidenav);
-  $("#control-slider").on("click", toggleControls);
-  
-  toggleControls();
+
+  global.initialize = function() {
+    global.extensions.viewControls = new ViewControls(global);
+    global.extensions.viewControls.init();
+
+    global.extensions.home = new extHome(global);
+    global.extensions.home.init();
+    $("#home").on("click", global.extensions.home.handleClick);
+
+    global.extensions.search = new extSearch(global);
+    global.extensions.search.init();
+  }
 });
