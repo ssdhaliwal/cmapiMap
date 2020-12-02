@@ -1,5 +1,5 @@
 define(["esri/geometry/Extent", "extensions/ViewUtilities"],
-    function (Extent, ViewUtilties) {
+    function (esriExtent, ViewUtilties) {
 
         let extHome = function(global) {
             let self = this;
@@ -30,7 +30,7 @@ define(["esri/geometry/Extent", "extensions/ViewUtilities"],
 
             self.handleClick = function() {
                 let data = global.extensions.data.home;
-                let extent = new Extent(data.bounds.southWest.lon,
+                let extent = new esriExtent(data.bounds.southWest.lon,
                     data.bounds.southWest.lat,
                     data.bounds.northEast.lon,
                     data.bounds.northEast.lat,

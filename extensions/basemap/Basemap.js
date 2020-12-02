@@ -1,5 +1,5 @@
 define(["esri/dijit/BasemapGallery", "esri/dijit/BasemapLayer", "esri/dijit/Basemap", "extensions/ViewUtilities"],
-    function (BasemapGallery, BasemapLayer, Basemap, ViewUtilties) {
+    function (esriBasemapGallery, esriBasemapLayer, esriBasemap, ViewUtilties) {
 
         let extBasemap = function (global) {
             let self = this;
@@ -7,7 +7,7 @@ define(["esri/dijit/BasemapGallery", "esri/dijit/BasemapLayer", "esri/dijit/Base
             let basemapGallery = null;
 
             self.init = function () {
-                basemapGallery = new BasemapGallery({
+                basemapGallery = new esriBasemapGallery({
                     showArcGISBasemaps: true,
                     /* 20191029 - depreciated due to no license key
                     bingMapsKey: dojoConfig.siteKeys.BingMapsToken,
@@ -19,8 +19,8 @@ define(["esri/dijit/BasemapGallery", "esri/dijit/BasemapLayer", "esri/dijit/Base
 
                 // added usgs basemaps for backup
                 basemapGallery.add(
-                    new Basemap({
-                        "layers": [new BasemapLayer({
+                    new esriBasemap({
+                        "layers": [new esriBasemapLayer({
                             "url": "https://basemap.nationalmap.gov/arcgis/rest/services/USGSHydroCached/MapServer"
                         })],
                         "title": "USGS Hydro Cached",
@@ -28,8 +28,8 @@ define(["esri/dijit/BasemapGallery", "esri/dijit/BasemapLayer", "esri/dijit/Base
                         "thumbnailUrl": "https://basemap.nationalmap.gov/arcgis/rest/services/USGSHydroCached/MapServer/info/thumbnail"
                     }));
                 basemapGallery.add(
-                    new Basemap({
-                        "layers": [new BasemapLayer({
+                    new esriBasemap({
+                        "layers": [new esriBasemapLayer({
                             "url": "https://basemap.nationalmap.gov/arcgis/rest/services/USGSShadedReliefOnly/MapServer"
                         })],
                         "title": "USGS Shaded Relief",
@@ -37,8 +37,8 @@ define(["esri/dijit/BasemapGallery", "esri/dijit/BasemapLayer", "esri/dijit/Base
                         "thumbnailUrl": "https://basemap.nationalmap.gov/arcgis/rest/services/USGSShadedReliefOnly/MapServer/info/thumbnail"
                     }));
                 basemapGallery.add(
-                    new Basemap({
-                        "layers": [new BasemapLayer({
+                    new esriBasemap({
+                        "layers": [new esriBasemapLayer({
                             "url": "https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryOnly/MapServer"
                         })],
                         "title": "USGS ImageryOnly",
@@ -46,8 +46,8 @@ define(["esri/dijit/BasemapGallery", "esri/dijit/BasemapLayer", "esri/dijit/Base
                         "thumbnailUrl": "https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryOnly/MapServer/info/thumbnail"
                     }));
                 basemapGallery.add(
-                    new Basemap({
-                        "layers": [new BasemapLayer({
+                    new esriBasemap({
+                        "layers": [new esriBasemapLayer({
                             "url": "https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryTopo/MapServer"
                         })],
                         "title": "USGS Imagery Topo",
@@ -55,8 +55,8 @@ define(["esri/dijit/BasemapGallery", "esri/dijit/BasemapLayer", "esri/dijit/Base
                         "thumbnailUrl": "https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryTopo/MapServer/info/thumbnail"
                     }));
                 basemapGallery.add(
-                    new Basemap({
-                        "layers": [new BasemapLayer({
+                    new esriBasemap({
+                        "layers": [new esriBasemapLayer({
                             "url": "https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer"
                         })],
                         "title": "USGS Topo",
@@ -64,8 +64,8 @@ define(["esri/dijit/BasemapGallery", "esri/dijit/BasemapLayer", "esri/dijit/Base
                         "thumbnailUrl": "https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/info/thumbnail"
                     }));
                 basemapGallery.add(
-                    new Basemap({
-                        "layers": [new BasemapLayer({
+                    new esriBasemap({
+                        "layers": [new esriBasemapLayer({
                             "url": "https://10.50.193.71:6443/arcgis/rest/services/InternalBaseMap/MapServer"
                         })],
                         "title": "USCG FailSafe",
@@ -76,24 +76,24 @@ define(["esri/dijit/BasemapGallery", "esri/dijit/BasemapLayer", "esri/dijit/Base
                 // added bing base maps
                 /* 20191029 - depreciated due to no license key
                 basemapGallery.add(
-                  new Basemap({
-                    "layers": [new BasemapLayer({ type: "BingMapsRoad" })],
+                  new esriBasemap({
+                    "layers": [new esriBasemapLayer({ type: "BingMapsRoad" })],
                     "title": "Bing Road",
                     "itemId": "USCG006",
                     "id": "bmRoad",
                     "thumbnailUrl":"images/bing_streets.png"
                   }));
                   basemapGallery.add(
-                    new Basemap({
-                      "layers": [new BasemapLayer({ type: "BingMapsAerial" })],
+                    new esriBasemap({
+                      "layers": [new esriBasemapLayer({ type: "BingMapsAerial" })],
                       "title": "Bing Aerial",
                       "itemId": "USCG007",
                       "id": "bmAerial",
                       "thumbnailUrl":"images/bing_aerial.png"
                     }));
                     basemapGallery.add(
-                      new Basemap({
-                        "layers": [new BasemapLayer({ type: "BingMapsHybrid" })],
+                      new esriBasemap({
+                        "layers": [new esriBasemapLayer({ type: "BingMapsHybrid" })],
                         "title": "Bing Aerial with labels",
                         "itemId": "USCG008",
                         "id": "bmHybrid",

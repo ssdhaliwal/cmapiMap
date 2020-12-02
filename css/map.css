@@ -63,6 +63,66 @@ img {
     float: right;
 }
 
+.esriAttribution {
+    opacity: 0.35;
+}
+
+.esriSimpleSliderIncrementButton {
+    background-image: url("../images/icons/Zoom_In_Default.png");
+    background-position: center center;
+    background-repeat: no-repeat;
+    border: 1.5px solid #928F8F;
+}
+
+.esriSimpleSliderDecrementButton {
+    background-image: url("../images/icons/Zoom_Out_Default.png");
+    background-position: center center;
+    background-repeat: no-repeat;
+    border: 1.5px solid #928F8F;
+}
+
+.esriSimpleSliderDecrementButton:hover {
+    background-color: transparent;
+    background-image: url("../images/icons/Zoom_Out_Hover.png");
+    background-position: center center;
+    background-color: transparent;
+}
+
+.esriSimpleSliderIncrementButton:hover {
+    background-color: transparent;
+    background-image: url("../images/icons/Zoom_In_Hover.png");
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+
+.esriSimpleSliderDecrementButton:active {
+    background-color: transparent;
+    background-image: url("../images/icons/Zoom_Out_Selected.png");
+    background-position: center center;
+    background-color: transparent;
+}
+
+.esriSimpleSliderIncrementButton:active {
+    background-color: transparent;
+    background-image: url("../images/icons/Zoom_In_Selected.png");
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+
+.esriSimpleSlider {
+    border: none;
+    background-color: transparent;
+}
+
+.esriSimpleSlider div {
+    font-size: 0px;
+    height: 28px;
+}
+
+.esriSimpleSliderVertical .esriSimpleSliderIncrementButton {
+    border-bottom: none;
+}
+
 .latlonpos {
     background-color: rgba(153, 153, 153, 0.7);
     position: absolute;
