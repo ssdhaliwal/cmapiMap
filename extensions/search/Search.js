@@ -1,5 +1,5 @@
-define(["esri/dijit/Search", "esri/layers/FeatureLayer", "esri/InfoTemplate"],
-    function (esriSearch, FeatureLayer, InfoTemplate) {
+define(["esri/dijit/Search", "esri/layers/FeatureLayer", "esri/InfoTemplate", "esri/tasks/locator", "dojo/_base/declare"],
+    function (esriSearch, FeatureLayer, InfoTemplate, Locator, declare) {
 
         let extSearch = function (global) {
             let self = this;
@@ -7,8 +7,17 @@ define(["esri/dijit/Search", "esri/layers/FeatureLayer", "esri/InfoTemplate"],
             let search = null;
             let sources = null;
 
+            let mySearch = declare(esriSearch, {
+                search: function() {
+                    let self = this;
+                    self.set('value', self.get('value').trim());
+
+                    console.log(".... searching ....", self.activeSourceIndex, self.activeSourceIndex, self.get("sources")[self.activeSourceIndex], self.get('value'));
+                }
+            });
+
             self.init = function () {
-                search = new esriSearch({
+                search = new mySearch({
                     enableButtonMode: true, //this enables the search widget to display as a single button
                     enableLabel: false,
                     enableInfoWindow: true,
@@ -19,54 +28,71 @@ define(["esri/dijit/Search", "esri/layers/FeatureLayer", "esri/InfoTemplate"],
                 sources = search.get("sources");
 
                 //Push the sources used to search, by default the ArcGIS Online World geocoder is included. In addition there is a feature layer of US congressional districts. The districts search is set up to find the "DISTRICTID". Also, a feature layer of senator information is set up to find based on the senator name. 
-
                 sources.push({
-                    featureLayer: new FeatureLayer("https://services.arcgis.com/V6ZHFr6zdgNZuVG0/arcgis/rest/services/CongressionalDistricts/FeatureServer/0"),
-                    searchFields: ["DISTRICTID"],
-                    displayField: "DISTRICTID",
-                    exactMatch: false,
-                    outFields: ["DISTRICTID", "NAME", "PARTY"],
-                    name: "Congressional Districts",
-                    placeholder: "3708",
-                    maxResults: 6,
-                    maxSuggestions: 6,
-
-                    //Create an InfoTemplate and include three fields
-                    infoTemplate: new InfoTemplate("Congressional District",
-                        "District ID: ${DISTRICTID}</br>Name: ${NAME}</br>Party Affiliation: ${PARTY}"
+                    locator: new Locator(
+                        "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/"
                     ),
-                    enableSuggestions: true,
-                    minCharacters: 0
+                    // highlightSymbol: {url: "https://js.arcgis.com/3.26/esri/dijit/Search/images/search-pointer.png", width: 36, height: 36, xoffset: 9, yoffset: 18},
+                    singleLineFieldName: "SingleLine",
+                    localSearchOptions: {
+                        minScale: 300000,
+                        distance: 50000
+                    },
+                    outFields: ["Addr_type", "Match_addr", "StAddr", "City"],
+                    name: "Lat/Long D.D",
+                    placeholder: "(+/-)DD.D(N/S), (+/-)DDD.D(E/W)",
+                    enableSuggestions: false
                 });
 
                 sources.push({
-                    featureLayer: new FeatureLayer("https://services.arcgis.com/V6ZHFr6zdgNZuVG0/arcgis/rest/services/US_Senators/FeatureServer/0"),
-                    searchFields: ["Name"],
-                    displayField: "Name",
-                    exactMatch: false,
-                    name: "Senator",
-                    outFields: ["*"],
-                    placeholder: "Senator name",
-                    maxResults: 6,
-                    maxSuggestions: 6,
-
-                    //Create an InfoTemplate
-
-                    infoTemplate: new InfoTemplate("Senator information",
-                        "Name: ${Name}</br>State: ${State}</br>Party Affiliation: ${Party}</br>Phone No: ${Phone_Number}<br><a href=${Web_Page} target=_blank ;'>Website</a>"
+                    locator: new Locator(
+                        "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/"
                     ),
+                    singleLineFieldName: "SingleLine",
+                    localSearchOptions: {
+                        minScale: 300000,
+                        distance: 50000
+                    },
+                    outFields: ["Addr_type", "Match_addr", "StAddr", "City"],
+                    name: "Lat/Long D/M.m",
+                    placeholder: "(+/-)DD MM.M(N/S), (+/-)DDD MM.M(E/W)",
+                    enableSuggestions: false
+                });
 
-                    enableSuggestions: true,
-                    minCharacters: 0
+                sources.push({
+                    locator: new Locator(
+                        "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/"
+                    ),
+                    singleLineFieldName: "SingleLine",
+                    localSearchOptions: {
+                        minScale: 300000,
+                        distance: 50000
+                    },
+                    outFields: ["Addr_type", "Match_addr", "StAddr", "City"],
+                    name: "Lat/Long D/M/S.s",
+                    placeholder: "(+/-)DD MM SS.S(N/S), (+/-)DDD MM SS.S(E/W)",
+                    enableSuggestions: false
+                });
+
+                sources.push({
+                    locator: new Locator(
+                        "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates"
+                    ),
+                    singleLineFieldName: "SingleLine",
+                    localSearchOptions: {
+                        minScale: 300000,
+                        distance: 50000
+                    },
+                    outFields: ["Addr_type", "Match_addr", "StAddr", "City"],
+                    name: "MGRS / USNG",
+                    placeholder: "NO SPACES",
+                    enableSuggestions: false
                 });
 
                 //Set the sources above to the search widget
                 search.set("sources", sources);
 
                 search.startup();
-            };
-
-            self.handleClick = function () {
             };
         };
 

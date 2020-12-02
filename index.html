@@ -13,9 +13,6 @@
 	<!-- Load non-AMD libs before dojo to avoid timing problems -->
 	<link href="vendor/css/dragAndDrop.css?deployVer=1.1.29" rel="stylesheet" />
 	<link href="vendor/css/bootstrap.min.css?deployVer=1.1.29" rel="stylesheet" />
-	<link href="vendor/css/jqtree.css?deployVer=1.1.29" rel="stylesheet" />
-	<link href="vendor/css/datatables.min.css?deployVer=1.4.33" rel="stylesheet" />
-	<link href="vendor/css/DataTables-1.10.20/rowGroup.dataTables.min.css?deployVer=1.4.33" rel="stylesheet" />
 </head>
 
 <body class="claro">
@@ -93,13 +90,9 @@
 
 		// Add ESRI JS API, which starts dojo AMD loader
 		addScript(config.jqueryPath);
-		addScript(config.datatablesPath);
-		addScript(config.datatablesRowGroupPath);
-		addScript(config.inputmaskPath);
 
 		addScript(config.esriJsPath);
 		addScript(config.bootstrapPath);
-		addScript(config.treeJqueryPath);
 		addScript(config.milSymbolPath);
 
 		// function to prevent session timeouts from idle

@@ -6,186 +6,6 @@ body {
     padding: 0;
 }
 
-.esriAddBookmark {
-    cursor: pointer;
-    text-align: center;
-    font-size: smaller;
-    font-weight: bold;
-}
-
-.esriAttribution {
-    visibility: hidden;
-}
-
-.esriSimpleSliderIncrementButton {
-    background-image: url("../images/icons/Zoom_In_Default.png");
-    background-position: center center;
-    background-repeat: no-repeat;
-    border: 1.5px solid #928F8F;
-}
-
-.esriSimpleSliderDecrementButton {
-    background-image: url("../images/icons/Zoom_Out_Default.png");
-    background-position: center center;
-    background-repeat: no-repeat;
-    border: 1.5px solid #928F8F;
-}
-
-.esriSimpleSliderDecrementButton:hover {
-    background-color: transparent;
-    background-image: url("../images/icons/Zoom_Out_Hover.png");
-    background-position: center center;
-    background-color: transparent;
-}
-
-.esriSimpleSliderIncrementButton:hover {
-    background-color: transparent;
-    background-image: url("../images/icons/Zoom_In_Hover.png");
-    background-position: center center;
-    background-repeat: no-repeat;
-}
-
-.esriSimpleSliderDecrementButton:active {
-    background-color: transparent;
-    background-image: url("../images/icons/Zoom_Out_Selected.png");
-    background-position: center center;
-    background-color: transparent;
-}
-
-.esriSimpleSliderIncrementButton:active {
-    background-color: transparent;
-    background-image: url("../images/icons/Zoom_In_Selected.png");
-    background-position: center center;
-    background-repeat: no-repeat;
-}
-
-.esriSimpleSlider {
-    border: none;
-    background-color: transparent;
-}
-
-.esriSimpleSlider div {
-    font-size: 0px;
-    height: 28px;
-}
-
-.esriSimpleSliderVertical .esriSimpleSliderIncrementButton {
-    border-bottom: none;
-}
-
-.esriViewPopup .header {
-    font-size: 12px;
-    font-weight: 400;
-    text-decoration: underline;
-}
-
-.esriPopup .contentPane {
-    padding-top: 5px;
-    padding-right: 20px;
-    width: 100%;
-}
-
-.esriViewPopup .hzLine {
-    border-top: none;
-}
-
-.esriPopup {
-    border-radius: 6px;
-}
-
-.esriPopup .sizer {
-    /*width: 700px;*/
-    /*Make dynamic & wrap long urls*/
-    width: 100%;
-    overflow: auto;
-}
-
-.esriPopup .sizer .contentPane {
-    /* Ensure minimum size to provide visible space for non styled feature data. */
-    min-width: 350px;
-    min-height: 240px;
-}
-
-.esriPopup a {
-    text-decoration: none;
-}
-
-.esriPopup a:hover {
-    text-decoration: underline;
-}
-
-.esriPopup .pointer,
-.esriPopup .outerPointer {
-    position: absolute;
-    background: url("../images/icons/Esri_Detail_Triangles.png") no-repeat;
-}
-
-.esriPopup .pointer.topLeft {
-    background-position: -75px -525px;
-}
-
-.esriPopup .pointer.topRight {
-    background-position: -75px -706px;
-}
-
-.esriPopup .pointer.top {
-    background-position: -73px -618px;
-}
-
-.esriScalebarMetricLine {
-    background-color: #E0E0E0;
-}
-
-.esriScalebarEnglishLine {
-    background-color: #E0E0E0;
-}
-
-.esriScalebarLabel {
-    color: #333333;
-    text-shadow: -1px 0 #E0E0E0, 0 1px #E0E0E0, 1px 0 #E0E0E0, 0 -1px #E0E0E0;
-    font-size: 12px;
-    font-weight: bold;
-    padding-top: 5px;
-    padding-bottom: 11px;
-}
-
-.esriControlsBR {
-    visibility: hidden;
-}
-
-.esriTimeSlider {
-    height: 10px !important;
-}
-
-/* override for basemap gallery grid */
-.esriBasemapGalleryNode {
-	height: 75px !important;
-	width: 50px !important;
-	float: left;
-	padding: 0px;
-	margin: 0px;
-	margin-left: 20px;
-    margin-top: 20px;
-    line-height: 1 !important;
-    font-size: smaller !important;
-}
-
-.esriBasemapGalleryThumbnail {
-	height: 45px !important;
-	width: 65px !important;
-	border: 1px solid #fff;
-	margin: 1px;
-	box-shadow: 0px 0px 7px #000;
-}
-
-.tooltip>.tooltip-inner {
-    background-color: #666666;
-}
-
-.tooltip.bottom .tooltip-arrow {
-    border-bottom-color: #666666;
-}
-
 #meta {
     position: absolute;
     left: 20px;
@@ -217,6 +37,14 @@ td {
     max-width: 300px;
 }
 
+.esri_info_div {
+    height: 100%;
+    width: 0px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    float: left;
+}
 /*table {
     width: 100%;
     table-layout:fixed;
@@ -225,6 +53,34 @@ td {
 img {
     margin-bottom: 5px;
     margin-left: 5px;
+}
+
+#map {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    float: right;
+}
+
+.latlonpos {
+    background-color: rgba(153, 153, 153, 0.7);
+    position: absolute;
+    padding-left: 5px;
+    padding-right: 5px;
+    left: 20px;
+    bottom: 5px;
+    font-weight: 600;
+    color: black;
+    z-index: 50;
+    font-size: smaller;
+    cursor: pointer;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
 }
 
 .notifyjs-esri-base {
@@ -264,32 +120,12 @@ img {
     float: right;
 }
 
-#map {
-    height: 100%;
-    width: 100%;
-    margin: 0;
-    padding: 0;
-    float: right;
+.tooltip>.tooltip-inner {
+    background-color: #666666;
 }
 
-.latlonpos {
-    background-color: rgba(153, 153, 153, 0.7);
-    position: absolute;
-    padding-left: 5px;
-    padding-right: 5px;
-    left: 20px;
-    bottom: 5px;
-    font-weight: 600;
-    color: black;
-    z-index: 50;
-    font-size: smaller;
-    cursor: pointer;
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    -o-user-select: none;
-    user-select: none;
+.tooltip.bottom .tooltip-arrow {
+    border-bottom-color: #666666;
 }
 
 #home {
@@ -319,15 +155,13 @@ img {
 }
 
 #search {
-    margin-left: 50px;
-    height: 30px;
     position: absolute;
-    z-index: 3;
     top: 80px;
+    left: 55px;
 }
 
 .arcgisSearch .searchClear {
-    background-color: #E5E5E5;
+    height: 25px;
 }
 
 .arcgisSearch .esri-icon-search {
@@ -341,11 +175,12 @@ img {
 
 .arcgisSearch .searchGroup .searchInput,
 .arcgisSearch .searchBtn,
-.arcgisSearch .noResultsMenu,
-.arcgisSearch .suggestionsMenu
-    {
-    border: 1px solid #003300;
-    background-color: #E5E5E5;
+.arcgisSearch .noResultsMenu {
+    height: 18px;
+    border: 1px;
+}
+.arcgisSearch .suggestionsMenu {
+    border: 1px;
 }
 
 .arcgisSearch .noValueText {
