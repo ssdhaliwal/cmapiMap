@@ -36,6 +36,7 @@ require([
   "extensions/ViewControls",
   "extensions/home/Home",
   "extensions/search/Search",
+  "extensions/basemap/Basemap",
   "notify/notify.min",
   "dojo/domReady!"
 ], function (
@@ -51,7 +52,8 @@ require([
   projection,
   ViewControls,
   extHome,
-  extSearch
+  extSearch,
+  extBasemap
 ) {
   var global = {};
   global.extensions = {};
@@ -172,5 +174,9 @@ require([
 
     global.extensions.search = new extSearch(global);
     global.extensions.search.init();
+
+    global.extensions.basemap = new extBasemap(global);
+    global.extensions.basemap.init();
+    $("#basemaps").on("click", global.extensions.basemap.handleClick);
   }
 });

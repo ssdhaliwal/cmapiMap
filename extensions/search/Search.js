@@ -18,10 +18,11 @@ define(["esri/dijit/Search", "esri/layers/FeatureLayer", "esri/InfoTemplate", "e
 
             self.init = function () {
                 search = new mySearch({
-                    enableButtonMode: true, //this enables the search widget to display as a single button
-                    enableLabel: false,
+                    enableButtonMode: false,
+                    enableLabel: true,
                     enableInfoWindow: true,
                     showInfoWindowOnSelect: false,
+                    minCharacters: 3,
                     map: map
                 }, "search");
 
