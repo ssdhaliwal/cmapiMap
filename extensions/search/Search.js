@@ -5,9 +5,10 @@ define(["esri/dijit/Search", "esri/layers/FeatureLayer", "esri/InfoTemplate", "e
 
         let extSearch = function (global) {
             let self = this;
-            let map = global.map;
-            let search = null;
-            let sources = null;
+            let map = global.extensions.extMap.map;
+            let notify = global.extensions.extNotify;
+            self.search = null;
+            self.sources = null;
 
             /** Regular Expression templatitudees for search sources */
             /** Templatitudee for common Decimal Degrees inputs */
@@ -90,12 +91,7 @@ define(["esri/dijit/Search", "esri/layers/FeatureLayer", "esri/InfoTemplate", "e
 
                             return retVal;
                         } else {
-                            $.notify("Search templatitudee error</br>EXAMPLE: 43.45N, 22.12W", {
-                                className: "error",
-                                // autoHide: true,
-                                // autoHideDelay: 10000
-                                clickToHide: true
-                            });
+                            notify.errorNotifier("Search templatitudee error</br>EXAMPLE: 43.45N, 22.12W");
                         }
                     } else if (geocoderName === "latitude/longitude D/M.m") {
                         if (checkDM != null && self.get('value') == checkDM[0]) {
@@ -159,12 +155,7 @@ define(["esri/dijit/Search", "esri/layers/FeatureLayer", "esri/InfoTemplate", "e
 
                             return retVal;
                         } else {
-                            $.notify("Search templatitudee error</br>EXAMPLE: 22 12.432'S, 156 12.3238'E", {
-                                className: "error",
-                                // autoHide: true,
-                                // autoHideDelay: 10000
-                                clickToHide: true
-                            });
+                            notify.errorNotifier("Search templatitudee error</br>EXAMPLE: 22 12.432'S, 156 12.3238'E");
                         }
                     } else if (geocoderName === "latitude/longitude D/M/S.s") {
                         if (checkDMS != null && self.get('value') == checkDMS[0]) {
@@ -245,24 +236,14 @@ define(["esri/dijit/Search", "esri/layers/FeatureLayer", "esri/InfoTemplate", "e
 
                             return retVal;
                         } else {
-                            $.notify("Search templatitudee error</br>EXAMPLE:13 12' 12.324N, 23 12' 55.324E", {
-                                className: "error",
-                                // autoHide: true,
-                                // autoHideDelay: 10000
-                                clickToHide: true
-                            });
+                            notify.errorNotifier("Search templatitudee error</br>EXAMPLE:13 12' 12.324N, 23 12' 55.324E");
                         }
                     } else if (geocoderName === "MGRS / USNG") {
                         if (checkMGRS != null && self.get('value') == checkMGRS[0]) {
                             var retVal = self.inherited(arguments);
                             return retVal;
                         } else {
-                            $.notify("Search templatitudee error</br>NO SPACES. EXAMPLE: 18SUH6789043210", {
-                                className: "error",
-                                // autoHide: true,
-                                // autoHideDelay: 10000
-                                clickToHide: true
-                            });
+                            notify.errorNotifier("Search templatitudee error</br>NO SPACES. EXAMPLE: 18SUH6789043210");
                         }
                     } else {
                         let retVal = self.inherited(arguments);

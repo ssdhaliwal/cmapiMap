@@ -340,6 +340,31 @@ img {
     background-repeat: no-repeat;
 }
 
+#bookmark {
+    margin-right: 5px;
+    width: 30px;
+    height: 30px;
+    background-image: url("../images/icons/bookmark_Default.png");
+    background-position: center center;
+    background-repeat: no-repeat;
+    border-radius: 5px;
+    border: 1.5px solid #928F8F;
+    float: right;
+    z-index: 3;
+}
+
+#bookmark:hover {
+    background-image: url("../images/icons/bookmark_Hover.png");
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+
+#bookmark.selected {
+    background-image: url("../images/icons/bookmark_Selected.png");
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+
 #control-slider {
     position: absolute;
     top: 20px;

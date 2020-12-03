@@ -23,134 +23,40 @@
 // (AMD) are included in the webapp's HTML file to prevent issues.
 
 require([
-  "esri/map",
-  "esri/dijit/Popup",
-  "esri/symbols/SimpleFillSymbol",
-  "esri/Color",
-  "esri/dijit/Scalebar",
-  "esri/geometry/Extent",
   "dojo/parser",
-  "dojo/dom-class",
-  "dojo/dom-construct",
   "esri/geometry/projection",
   "esri/layers/FeatureLayer",
-  "extensions/ViewControls",
+  "extensions/notify/Notify",
+  "extensions/toolbar/Toolbar",
+  "extensions/popup/Popup",
+  "extensions/map/Map",
+  "extensions/scalebar/Scalebar",
   "extensions/home/Home",
   "extensions/search/Search",
   "extensions/basemap/Basemap",
   "extensions/legend/Legend",
-  "notify/notify.min",
+  "extensions/bookmarks/Bookmarks",
   "dojo/domReady!"
 ], function (
-  Map,
-  Popup,
-  SimpleFillSymbol,
-  Color,
-  Scalebar,
-  Extent,
   parser,
-  ddomClass,
-  domConstruct,
   projection,
   FeatureLayer,
-  ViewControls,
+  extNotify,
+  extToolbar,
+  extPopup,
+  extMap,
+  extScalebar,
   extHome,
   extSearch,
   extBasemap,
-  extLegend
+  extLegend,
+  extBookmarks
 ) {
   var global = {};
   global.extensions = {};
   global.extensions.data = {};
 
-  global.popupFill = new SimpleFillSymbol("solid", null, new Color("#A4CE67"));
-  global.popup = new Popup({
-    fillSymbol: global.popupFill,
-    titleInBody: false
-  },
-    domConstruct.create("div")
-  );
-
-  global.map = new Map("map", {
-    basemap: "streets",
-    extent: new Extent({
-      "xmin": -16045622,
-      "ymin": -811556,
-      "xmax": 7297718,
-      "ymax": 11142818,
-      "spatialReference": {
-        "wkid": 102100
-      }
-    }),
-    showLabels: true,
-    infoWindow: global.popup
-  });
-  global.map.infoWindow.resize(350, 240);
-
-  // add to allow double-click without zoom
-  global.map.disableDoubleClickZoom();
-
-  global.map.on("extent-change", function (evt) {
-    global.redrawGraphics();
-  });
-
-  global.map.on("resize", function (evt) {
-    global.redrawGraphics();
-  });
-
-  global.map.on("load", function (evt) {
-    global.initialize();
-    global.redrawGraphics();
-  });
-
-  global.redrawGraphics = function () {
-    let graphics = global.map.graphicsLayerIds;
-    let graphicLayer = null;
-    for (let i = 0; i < graphics.length; i++) {
-      graphicLayer = global.map.getLayer(graphics[i]);
-      graphicLayer.redraw();
-    }
-  };
-
   parser.parse();
-
-  global.scalebar = new Scalebar({
-    map: global.map,
-    attachTo: "bottom-left",
-    scalebarUnit: "dual"
-  });
-
-  $.notify.addStyle("esri", {
-    // modeled after bootstrap style
-    html: "<div>\n" +
-      "<div class='title' data-notify-html='title'/>\n" +
-      "<span data-notify-text/>\n</div>"
-  });
-
-  $.notify.defaults({
-    autoHide: false,
-    clickToHide: true,
-    style: "esri",
-    globalPosition: "bottom right"
-  });
-
-  global.extensions.notify = {};
-  global.extensions.notify.errorNotifier = function (msg) {
-    $.notify(msg, {
-      className: "error",
-      // autoHide: true,
-      // autoHideDelay: 10000
-      clickToHide: true
-    });
-  };
-
-  global.extensions.notify.infoNotifier = function (msg) {
-    $.notify(msg, {
-      className: "info",
-      autoHide: true,
-      autoHideDelay: 5000
-    });
-  };
 
   // see https://developers.arcgis.com/en/javascript/jshelp/ags_proxy.html for options
   //  applicable to your deployment environment
@@ -168,24 +74,41 @@ require([
     placement: "bottom"
   });
 
-  global.initialize = function() {
-    global.extensions.viewControls = new ViewControls(global);
-    global.extensions.viewControls.init();
+  global.extensions.extMap = { map: {} };
+  global.extensions.extNotify = new extNotify(global);
+  global.extensions.extNotify.init();
 
-    global.extensions.home = new extHome(global);
-    global.extensions.home.init();
-    $("#home").on("click", global.extensions.home.handleClick);
+  global.extensions.extToolbar = new extToolbar(global);
+  global.extensions.extToolbar.init();
 
-    global.extensions.search = new extSearch(global);
-    global.extensions.search.init();
+  global.extensions.extPopup = new extPopup(global);
+  global.extensions.extPopup.init();
 
-    global.extensions.basemap = new extBasemap(global);
-    global.extensions.basemap.init();
-    $("#basemaps").on("click", global.extensions.basemap.handleClick);
+  global.extensions.extMap = new extMap(global);
+  global.extensions.extMap.init();
 
-    global.extensions.legend = new extLegend(global);
-    global.extensions.legend.init();
-    $("#legend").on("click", global.extensions.legend.handleClick);
+  global.initialize = function () {
+    global.extensions.extScalebar = new extScalebar(global);
+    global.extensions.extScalebar.init();
+
+    global.extensions.extHome = new extHome(global);
+    global.extensions.extHome.init();
+    $("#home").on("click", global.extensions.extHome.handleClick);
+
+    global.extensions.extSearch = new extSearch(global);
+    global.extensions.extSearch.init();
+
+    global.extensions.extBasemap = new extBasemap(global);
+    global.extensions.extBasemap.init();
+    $("#basemaps").on("click", global.extensions.extBasemap.handleClick);
+
+    global.extensions.extLegend = new extLegend(global);
+    global.extensions.extLegend.init();
+    $("#legend").on("click", global.extensions.extLegend.handleClick);
+
+    global.extensions.extBookmarks = new extBookmarks(global);
+    global.extensions.extBookmarks.init();
+    $("#bookmark").on("click", global.extensions.extBookmarks.handleClick);
 
     window.setTimeout(() => {
       let rivers = new FeatureLayer("https://sampleserver3.arcgisonline.com/ArcGIS/rest/services/Hydrography/Watershed173811/MapServer/1", {
@@ -197,7 +120,7 @@ require([
         outFields: ["*"]
       });
 
-      global.map.addLayers([waterbodies, rivers]);
+      global.extensions.extMap.map.addLayers([waterbodies, rivers]);
     }, 1000);
   }
 });

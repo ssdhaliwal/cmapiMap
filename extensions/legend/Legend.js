@@ -3,20 +3,37 @@ define(["esri/dijit/Legend"],
 
         let extLegend = function (global) {
             let self = this;
-            let map = global.map;
-            let layers = [];
-            let legend = null;
+            let map = global.extensions.extMap.map;
+            self.layers = [];
+            self.legend = null;
 
             self.init = function () {
-                legend = new esriLegend({
+                self.legend = new esriLegend({
                     autoUpdate: true,
                     map: map,
                     respectCurrentMapScale: true,
-                    layerInfos: layers
+                    layerInfos: self.layers
                 }, "legendDiv");
 
-                legend.startup();
+                self.legend.startup();
+                self.registerEvents();
+            };
 
+            self.handleClick = function () {
+                global.extensions.extToolbar.toggleOptions("#legend");
+
+                if (!$("#legend").hasClass("selected")) {
+                    $("#infoPanel_wrapper").css("display", "none");
+                } else {
+                    global.extensions.extToolbar.toggleOptions();
+                    $("#infoPanel_wrapper").css("display", "block");
+                }
+
+                let container = dijit.byId("infoPanel_container");
+                container.selectChild("legendPane", true);
+            };
+
+            self.registerEvents = function() {
                 // wireup map events
                 map.on("layer-add-result", function (evt) {
                     if(evt.layer.declaredClass === "esri.layers.ArcGISTiledMapServiceLayer") {
@@ -24,10 +41,10 @@ define(["esri/dijit/Legend"],
                     } else if(evt.layer.declaredClass !== "esri.layers.KMLLayer"){
                         evt.layer._titleForLegend = evt.layer.id;
                         let layerInfo = {layer:evt.layer, name:evt.layer.id};
-                        layers.push(layerInfo);
+                        self.layers.push(layerInfo);
         
-                        if (layers.length > 0) {
-                            legend.refresh(layers);
+                        if (self.layers.length > 0) {
+                            self.legend.refresh(self.layers);
                         }
                     } else {
                         //kml layer....
@@ -37,10 +54,10 @@ define(["esri/dijit/Legend"],
         
                 //clean up the legend when layers are removed from the map.
                 map.on('layer-remove', function(layer) {
-                    for(var i = 0; i < layers.length; i++) {
-                        if(layers[i].name === layer.layer.id) {
-                            layers.splice(i, 1);
-                            legend.refresh(layers);
+                    for(var i = 0; i < self.layers.length; i++) {
+                        if(self.layers[i].name === layer.layer.id) {
+                            self.layers.splice(i, 1);
+                            self.legend.refresh(self.layers);
                             return;
                         }
                     }
@@ -48,28 +65,15 @@ define(["esri/dijit/Legend"],
         
                 //update the name of layers in the legend when the layer is updated or moved in the overlay manager
                 map.on('layerUpdated', function(data) {
-                    for(var i = 0; i < layers.length; i++) {
-                        if(layers[i].name === data.old_id) {
-                            layers[i] = {name: data.layer.id, layer: data.layer}
-                            legend.refresh(layers);
+                    for(var i = 0; i < self.layers.length; i++) {
+                        if(self.layers[i].name === data.old_id) {
+                            self.layers[i] = {name: data.layer.id, layer: data.layer}
+                            self.legend.refresh(self.layers);
                             return;
                         }
                     }
                 });        
-            };
-
-            self.handleClick = function () {
-                $("#legend").toggleClass("selected");
-
-                if ($("#infoPanel_wrapper").css("display") === "block") {
-                    $("#infoPanel_wrapper").css("display", "none");
-                } else {
-                    $("#infoPanel_wrapper").css("display", "block");
-                }
-
-                let container = dijit.byId("infoPanel_container");
-                container.selectChild("legendPane", true);
-            };
+            }
         };
 
         return extLegend;

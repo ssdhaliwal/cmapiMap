@@ -3,7 +3,7 @@ define(["esri/geometry/Extent", "extensions/ViewUtilities"],
 
         let extHome = function(global) {
             let self = this;
-            let map = global.map;
+            let map = global.extensions.extMap.map;
 
             self.init = function() {
                 let bounds = {
