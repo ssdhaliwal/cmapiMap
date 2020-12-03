@@ -6,23 +6,32 @@ define([],
             let map = null; // global.extensions.extMap.map;
 
             self.init = function () {
-                $("#control-slider").on("click", self.toggleControls);
+                $("#control-slider").on("click", self.handleClick);
             };
 
-            self.toggleControls = function () {
+            self.handleClick = function () {
                 $("#map-controls1, #map-controls2").toggle();
                 $("#control-slider").toggleClass("selected");
+
+                if (!$("#control-slider").hasClass("selected")) {
+                    self.toggleOptions();
+                }
             };
 
             self.toggleOptions = function (elementId) {
-                let isSelected = $(elementId).hasClass("selected");
-
-                $("#bookmark, #legend").removeClass("selected");
+                let isSelected = false;
+                if (elementId !== undefined) {
+                    isSelected = $(elementId).hasClass("selected");
+                }
                 
-                if (isSelected) {
+                $("#infoPanel_wrapper").css("display", "none");
+                $("#basemaps_wrapper").hide();
+
+                $("#basemaps, #bookmark, #legend").removeClass("selected");
+                
+                if (elementId && !isSelected) {
                     $(elementId).addClass("selected");
                 }
-                $(elementId).toggleClass("selected");
             }
         };
 

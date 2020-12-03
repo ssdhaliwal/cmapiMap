@@ -13,14 +13,14 @@ define(["esri/dijit/Bookmarks"],
                     bookmarks: self.sources,
                     editable: true
                 }, "bookmarkDiv");
+
+                $("#bookmark").on("click", self.handleClick);
             };
 
             self.handleClick = function () {
                 global.extensions.extToolbar.toggleOptions("#bookmark");
 
-                if (!$("#bookmark").hasClass("selected")) {
-                    $("#infoPanel_wrapper").css("display", "none");
-                } else {
+                if ($("#bookmark").hasClass("selected")) {
                     $("#infoPanel_wrapper").css("display", "block");
                 }
 

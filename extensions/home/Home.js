@@ -26,6 +26,7 @@ define(["esri/geometry/Extent", "extensions/ViewUtilities"],
                 let zoom = map.getZoom();    
                 
                 global.extensions.data.home = {bounds: bounds, center: center, range: range, zoom: zoom};
+                $("#home").on("click", self.handleClick);
             };
 
             self.handleClick = function() {

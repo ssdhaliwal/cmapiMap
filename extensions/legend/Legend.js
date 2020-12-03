@@ -17,15 +17,14 @@ define(["esri/dijit/Legend"],
 
                 self.legend.startup();
                 self.registerEvents();
+
+                $("#legend").on("click", self.handleClick);
             };
 
             self.handleClick = function () {
                 global.extensions.extToolbar.toggleOptions("#legend");
 
-                if (!$("#legend").hasClass("selected")) {
-                    $("#infoPanel_wrapper").css("display", "none");
-                } else {
-                    global.extensions.extToolbar.toggleOptions();
+                if ($("#legend").hasClass("selected")) {
                     $("#infoPanel_wrapper").css("display", "block");
                 }
 

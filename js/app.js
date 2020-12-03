@@ -77,38 +77,26 @@ require([
   global.extensions.extMap = { map: {} };
   global.extensions.extNotify = new extNotify(global);
   global.extensions.extNotify.init();
-
   global.extensions.extToolbar = new extToolbar(global);
   global.extensions.extToolbar.init();
-
   global.extensions.extPopup = new extPopup(global);
   global.extensions.extPopup.init();
-
   global.extensions.extMap = new extMap(global);
   global.extensions.extMap.init();
 
   global.initialize = function () {
     global.extensions.extScalebar = new extScalebar(global);
     global.extensions.extScalebar.init();
-
     global.extensions.extHome = new extHome(global);
     global.extensions.extHome.init();
-    $("#home").on("click", global.extensions.extHome.handleClick);
-
     global.extensions.extSearch = new extSearch(global);
     global.extensions.extSearch.init();
-
     global.extensions.extBasemap = new extBasemap(global);
     global.extensions.extBasemap.init();
-    $("#basemaps").on("click", global.extensions.extBasemap.handleClick);
-
     global.extensions.extLegend = new extLegend(global);
     global.extensions.extLegend.init();
-    $("#legend").on("click", global.extensions.extLegend.handleClick);
-
     global.extensions.extBookmarks = new extBookmarks(global);
     global.extensions.extBookmarks.init();
-    $("#bookmark").on("click", global.extensions.extBookmarks.handleClick);
 
     window.setTimeout(() => {
       let rivers = new FeatureLayer("https://sampleserver3.arcgisonline.com/ArcGIS/rest/services/Hydrography/Watershed173811/MapServer/1", {

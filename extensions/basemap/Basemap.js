@@ -124,11 +124,15 @@ define(["esri/dijit/BasemapGallery", "esri/dijit/BasemapLayer", "esri/dijit/Base
                 });
 
                 self.basemapGallery.startup();
+                $("#basemaps").on("click", self.handleClick);
             };
 
             self.handleClick = function () {
-                $("#basemaps").toggleClass("selected");
-                $("#basemaps_wrapper").toggle();
+                global.extensions.extToolbar.toggleOptions("#basemaps");
+
+                if ($("#basemaps").hasClass("selected")) {
+                    $("#basemaps_wrapper").css("display", "block");
+                }
             }
         };
 
