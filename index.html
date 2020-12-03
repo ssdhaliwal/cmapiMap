@@ -31,6 +31,19 @@
 		<div id="basemaps_wrapper" class="basemaptip" style="display:none;">
 			<div id="basemapGallery"></div>
 		</div>
+		<div id="legend" rel="tooltip" title="Legend"></div>
+	</div>
+
+	<div id="infoPanel_wrapper" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'right'">
+		<div data-dojo-type="dijit/layout/AccordionContainer" id="infoPanel_container">
+			<div data-dojo-type="dijit/layout/ContentPane" id="legendPane"
+				data-dojo-props="title:'Legend'">
+				<div id="legendDiv"></div>
+			</div>
+			<div data-dojo-type="dijit/layout/ContentPane" id="settingsPane" data-dojo-props="title:'Settings'">
+				This pane could contain tools or additional content
+			</div>
+		</div>
 	</div>
 
 	<div id="waitingImage" class="waitingImage" style="display: none;">

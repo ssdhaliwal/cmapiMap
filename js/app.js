@@ -33,10 +33,12 @@ require([
   "dojo/dom-class",
   "dojo/dom-construct",
   "esri/geometry/projection",
+  "esri/layers/FeatureLayer",
   "extensions/ViewControls",
   "extensions/home/Home",
   "extensions/search/Search",
   "extensions/basemap/Basemap",
+  "extensions/legend/Legend",
   "notify/notify.min",
   "dojo/domReady!"
 ], function (
@@ -50,10 +52,12 @@ require([
   ddomClass,
   domConstruct,
   projection,
+  FeatureLayer,
   ViewControls,
   extHome,
   extSearch,
-  extBasemap
+  extBasemap,
+  extLegend
 ) {
   var global = {};
   global.extensions = {};
@@ -178,5 +182,22 @@ require([
     global.extensions.basemap = new extBasemap(global);
     global.extensions.basemap.init();
     $("#basemaps").on("click", global.extensions.basemap.handleClick);
+
+    global.extensions.legend = new extLegend(global);
+    global.extensions.legend.init();
+    $("#legend").on("click", global.extensions.legend.handleClick);
+
+    window.setTimeout(() => {
+      let rivers = new FeatureLayer("https://sampleserver3.arcgisonline.com/ArcGIS/rest/services/Hydrography/Watershed173811/MapServer/1", {
+        mode: FeatureLayer.MODE_ONDEMAND,
+        outFields: ["*"]
+      });
+      let waterbodies = new FeatureLayer("https://sampleserver3.arcgisonline.com/ArcGIS/rest/services/Hydrography/Watershed173811/MapServer/0", {
+        mode: FeatureLayer.MODE_ONDEMAND,
+        outFields: ["*"]
+      });
+
+      global.map.addLayers([waterbodies, rivers]);
+    }, 1000);
   }
 });

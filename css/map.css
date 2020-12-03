@@ -305,6 +305,41 @@ img {
     overflow: visible;
 }
 
+#infoPanel_wrapper {
+    position: absolute;
+    right: 0;
+    width: 30%;
+    height: calc(100vh - 10%);
+    bottom: 0;
+    opacity: 0.85;
+    display: none;
+}
+
+#legend {
+    margin-right: 5px;
+    width: 30px;
+    height: 30px;
+    background-image: url("../images/icons/legend_Default.png");
+    background-position: center center;
+    background-repeat: no-repeat;
+    border-radius: 5px;
+    border: 1.5px solid #928F8F;
+    float: right;
+    z-index: 3;
+}
+
+#legend:hover {
+    background-image: url("../images/icons/legend_Hover.png");
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+
+#legend.selected {
+    background-image: url("../images/icons/legend_Selected.png");
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+
 #control-slider {
     position: absolute;
     top: 20px;
