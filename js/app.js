@@ -28,6 +28,7 @@ require([
   "esri/layers/FeatureLayer",
   "extensions/notify/Notify",
   "extensions/toolbar/Toolbar",
+  "extensions/config/Config",
   "extensions/popup/Popup",
   "extensions/map/Map",
   "extensions/scalebar/Scalebar",
@@ -43,6 +44,7 @@ require([
   FeatureLayer,
   extNotify,
   extToolbar,
+  extConfig,
   extPopup,
   extMap,
   extScalebar,
@@ -54,7 +56,7 @@ require([
 ) {
   var global = {};
   global.extensions = {};
-  global.extensions.data = {};
+  global.data = {};
 
   parser.parse();
 
@@ -79,6 +81,8 @@ require([
   global.extensions.extNotify.init();
   global.extensions.extToolbar = new extToolbar(global);
   global.extensions.extToolbar.init();
+  global.extensions.extConfig = new extConfig(global);
+  global.extensions.extConfig.init();
   global.extensions.extPopup = new extPopup(global);
   global.extensions.extPopup.init();
   global.extensions.extMap = new extMap(global);

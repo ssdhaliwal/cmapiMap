@@ -25,12 +25,12 @@ define(["esri/geometry/Extent", "extensions/ViewUtilities"],
                 let range = ViewUtilties.scaleToZoomAltitude(map);
                 let zoom = map.getZoom();    
                 
-                global.extensions.data.home = {bounds: bounds, center: center, range: range, zoom: zoom};
+                global.data.home = {bounds: bounds, center: center, range: range, zoom: zoom};
                 $("#home").on("click", self.handleClick);
             };
 
             self.handleClick = function() {
-                let data = global.extensions.data.home;
+                let data = global.data.home;
                 let extent = new esriExtent(data.bounds.southWest.lon,
                     data.bounds.southWest.lat,
                     data.bounds.northEast.lon,
