@@ -27,7 +27,7 @@ define([],
                 $("#infoPanel_wrapper").css("display", "none");
                 $("#basemaps_wrapper").hide();
 
-                $("#basemaps, #bookmark, #legend").removeClass("selected");
+                $("#basemaps, #bookmark, #legend, #config").removeClass("selected");
                 
                 if (elementId && !isSelected) {
                     $(elementId).addClass("selected");

@@ -6,6 +6,7 @@ define([],
             let map = global.extensions.extMap.map;
 
             self.init = function () {
+                $("#config").on("click", self.handleClick);
             };
 
             self.handleClick = function () {
