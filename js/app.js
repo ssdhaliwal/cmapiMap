@@ -77,7 +77,6 @@ require([
   $("[rel=tooltip]").tooltip({
     placement: "bottom"
   });
-
   global.extensions.extMap = { map: {} };
   global.extensions.extNotify = new extNotify(global);
   global.extensions.extNotify.init();

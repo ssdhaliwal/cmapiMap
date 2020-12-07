@@ -158,8 +158,8 @@ dojoConfig.packages = [
         name: "app"
     },
     {
-        location: window.contextPath + "vendor/js",
-        name: "notify"
+        location: window.contextPath + "vendor",
+        name: "vendor"
     },
     {
         location: window.contextPath + "extensions",

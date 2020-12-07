@@ -38,21 +38,25 @@
 		<div id="basemapGalleryDiv"></div>
 	</div>
 	<div id="infoPanel_wrapper" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'right'">
-		<div data-dojo-type="dijit/layout/AccordionContainer" id="infoPanel_container">
-			<div data-dojo-type="dijit/layout/ContentPane" id="legendPane" data-dojo-props="title:'Legend'">
-				<div id="legendDiv"></div>
-			</div>
-			<div data-dojo-type="dijit/layout/ContentPane" id="bookmarkPane" data-dojo-props="title:'Bookmarks'">
-				<div id="bookmarkDiv"></div>
-			</div>
-			<div data-dojo-type="dijit/layout/ContentPane" id="configPane" data-dojo-props="title:'Config'">
-				<div id="configDiv">
+		<div id="infoPanelDiv">
+			<div data-dojo-type="dijit/layout/AccordionContainer" id="infoPanel_container">
+				<div data-dojo-type="dijit/layout/ContentPane" id="legendPane" data-dojo-props="title:'Legend'">
+					<div id="legendDiv"></div>
+				</div>
+				<div data-dojo-type="dijit/layout/ContentPane" id="bookmarkPane" data-dojo-props="title:'Bookmarks'">
+					<div id="bookmarkDiv"></div>
+				</div>
+				<div data-dojo-type="dijit/layout/ContentPane" id="configPane" data-dojo-props="title:'Config'">
+					<div id="configDiv">
+					</div>
 				</div>
 			</div>
 		</div>
 	</div>
 	<div id="layerlist_wrapper" class="basemaptip" style="display:none;">
-		<div id="layerlistDiv"></div>
+		<div id="layerlistDiv">
+			<span id="layerlistSpan"></span>
+		</div>
 	</div>
 
 	<div id="waitingImage" class="waitingImage" style="display: none;">
@@ -109,6 +113,7 @@
 		}
 
 		initConfig();
+		addCss("vendor/js/jstree/themes/default/style.min.css");
 		addCss(window.esriJsPath + "esri/themes/calcite/dijit/calcite.css");
 		addCss(window.esriJsPath + "dijit/themes/claro/claro.css");
 		addCss(window.esriJsPath + "esri/css/esri.css");

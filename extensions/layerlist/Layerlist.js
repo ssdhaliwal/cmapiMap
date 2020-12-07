@@ -1,5 +1,5 @@
-define(["esri/dijit/LayerList"],
-    function (LayerList) {
+define(["vendor/js/jstree/jstree"],
+    function (JSTree) {
 
         let extLayerlist = function (global) {
             let self = this;
@@ -8,16 +8,90 @@ define(["esri/dijit/LayerList"],
             self.layers = [];
 
             self.init = function () {
-                self.layerlist = new LayerList({
-                    map: map,
-                    removeUnderscores: true,
-                    showSubLayers: true,
-                    showOpacitySlider: true,
-                    layers: self.layers
-                 },"layerlistDiv");
+                $('#layerlistDiv').jstree({
+                    "plugins": ["wholerow", "checkbox"],
+                    "checkbox": {
+                        "keep_selected_style": false
+                    },
+                    'core': {
+                        'data': [
+                            'Simple root node',
+                            {
+                                'text': 'Root node 2',
+                                'state': {
+                                    'opened': true,
+                                    'selected': false
+                                },
+                                'children': [
+                                    { 'text': 'Child 1' },
+                                    'Child 2',
+                                    { 'text': 'Child 1' },
+                                    'Child 2',
+                                    { 'text': 'Child 1' },
+                                    'Child 2',
+                                    { 'text': 'Child 1' },
+                                    'Child 2',
+                                    {
+                                        'text': 'Child 11',
+                                        'state': {
+                                            'opened': true,
+                                            'selected': true
+                                        },
+                                        'children': [
+                                            { 'text': 'Child 1' },
+                                            'Child 2',
+                                            { 'text': 'Child 1' },
+                                            'Child 2',
+                                            { 'text': 'Child 1' },
+                                            'Child 2',
+                                            { 'text': 'Child 1' },
+                                            'Child 2',
+                                            { 'text': 'Child 1' },
+                                            'Child 2',
+                                            { 'text': 'Child 1' },
+                                            'Child 2',
+                                            { 'text': 'Child 1' },
+                                            'Child 2',
+                                            { 'text': 'Child 1' },
+                                            'Child 2'
+                                        ]
+                                    },
+                                    'Child 2',
+                                    { 'text': 'Child 1' },
+                                    'Child 2',
+                                    { 'text': 'Child 22',
+                                    'state': {
+                                        'opened': false,
+                                        'selected': true
+                                    },
+                                    'children': [
+                                        { 'text': 'Child 1' },
+                                        'Child 2',
+                                        { 'text': 'Child 1' },
+                                        'Child 2',
+                                        { 'text': 'Child 1' },
+                                        'Child 2',
+                                        { 'text': 'Child 1' },
+                                        'Child 2',
+                                        { 'text': 'Child 1' },
+                                        'Child 2',
+                                        { 'text': 'Child 1' },
+                                        'Child 2',
+                                        { 'text': 'Child 1' },
+                                        'Child 2',
+                                        { 'text': 'Child 1' },
+                                        'Child 2'
+                                    ]},
+                                    'Child 2',
+                                    { 'text': 'Child 1' },
+                                    'Child 2'
+                                ]
+                            }
+                        ]
+                    }
+                });
 
-                 self.layerlist.startup();
-                 self.registerEvents();
+                self.registerEvents();
             };
 
             self.handleClick = function () {
@@ -32,14 +106,13 @@ define(["esri/dijit/LayerList"],
                 $("#layerlist").on("click", self.handleClick);
             };
 
-            self.addLayers = function(layers) {
+            self.addLayers = function (layers) {
                 layers.forEach(element => {
                     console.log(element);
-                    self.layers.push(element); 
+                    self.layers.push(element);
                 });
 
                 console.log(layers, self.layers);
-                self.layerlist.refresh();
             }
         };
 

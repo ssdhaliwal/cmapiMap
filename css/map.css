@@ -278,10 +278,15 @@ img {
     right: 0;
     width: 30%;
     height: calc(100vh - 15%);
-    bottom: 0;
+    bottom: 25px;
     opacity: 0.85;
     display: none;
     overflow-y: scroll;
+}
+
+#basemapGalleryDiv {
+    background: white;
+    width: 100%;
 }
 
 .esriBasemapGallery {
@@ -312,9 +317,13 @@ img {
     position: absolute;
     right: 0;
     width: 30%;
-    bottom: 0;
+    height: calc(100vh - 15%);
+    bottom: 25px;
     opacity: 0.85;
     display: none;
+    overflow-y: auto;
+
+    background: white;
 }
 
 #layerlist {
@@ -347,14 +356,16 @@ img {
     right: 0;
     width: 30%;
     height: calc(100vh - 15%);
-    bottom: 0;
+    bottom: 25px;
     opacity: 0.85;
     display: none;
+    overflow-y: scroll;
 }
 
 #layerlistDiv {
+    background: white;
+    padding: 10px;
     width: 100%;
-    overflow-y: scroll;
 }
 
 #legend {

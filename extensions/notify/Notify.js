@@ -1,4 +1,4 @@
-define(["notify/notify.min"],
+define(["vendor/js/notify.min"],
     function () {
 
         let extNotify = function (global) {
