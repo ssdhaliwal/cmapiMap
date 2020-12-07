@@ -1,12 +1,15 @@
-define([],
-    function () {
+define(["dojo/html", "dojo/dom", "dojo/on"],
+    function (html, dom, on) {
 
         let extConfig = function (global) {
             let self = this;
             let map = global.extensions.extMap.map;
+            self.fontColor = global.data.fontColor || null;
+            self.fontColorName = global.data.fontColorName || "YellowGreen;#9ACD32";
 
             self.init = function () {
-                $("#configDiv").append("<span id='configFontStyle' style='position:absolute;right:35px;'>Select font style: \
+                html.set(dom.byId("configDiv"),
+                    "<span id='configFontStyle'>Select font style: \
                     <select id='configFontSelect'> \
                         <option style='color: black;background-color:#F0F8FF;' value='AliceBlue;#F0F8FF'>AliceBlue</option> \
                         <option style='color: black;background-color:#FAEBD7;' value='AntiqueWhite;#FAEBD7'>AntiqueWhite</option> \
@@ -156,7 +159,10 @@ define([],
                         <option style='color: black;background-color:#F5F5F5;' value='WhiteSmoke;#F5F5F5'>WhiteSmoke</option> \
                         <option style='color: black;background-color:#FFFF00;' value='Yellow;#FFFF00'>Yellow</option> \
                         <option style='color: black;background-color:#9ACD32;' value='YellowGreen;#9ACD32'>YellowGreen</option> \
-                    </select></span>")
+                    </select> \
+                </span>", {
+                    parseContent: true
+                });
 
                 self.registerEvents();
             };
@@ -175,20 +181,12 @@ define([],
             self.registerEvents = function () {
                 $("#config").on("click", self.handleClick);
 
-                /*
-                    if (!map.hasOwnProperty("basemapFontColor")) {
-                        map.basemapFontColor = "#000000";
-                    }
-                    // set the font color for basemaps
-                    if (map.hasOwnProperty("basemapFontColorRAW")) {
-                        $("#basemapFontStyle option[value='"+ map.basemapFontColorRAW + "']").attr("selected", "selected");
-                    }
-                */
+                $("#configFontSelect option[value='" + self.fontColorName + "']").attr("selected", "selected");
+                $("#configFontSelect").on("change", function () {
+                    let color = $('#configFontSelect').find(":selected").val();
 
-                $("#configFontStyle option[value='"+ map.basemapFontColorRAW + "']").attr("selected", "selected");
-                $("#configFontStyle").on("change", function() {
-                    let color = $('#configFontStyle').find(":selected").val();
-                    map.basemapFontColor = color.split(";")[1];
+                    self.fontColorName = color.split(";")[0];
+                    self.fontColor = color.split(";")[1];
                 });
             };
         };

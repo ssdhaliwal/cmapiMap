@@ -14,7 +14,7 @@ define(["esri/dijit/Bookmarks"],
                     editable: true
                 }, "bookmarkDiv");
 
-                $("#bookmark").on("click", self.handleClick);
+                self.registerEvents();
             };
 
             self.handleClick = function () {
@@ -27,6 +27,10 @@ define(["esri/dijit/Bookmarks"],
                 let container = dijit.byId("infoPanel_container");
                 container.selectChild("bookmarkPane", true);
             };
+
+            self.registerEvents = function() {
+                $("#bookmark").on("click", self.handleClick);
+            }
         };
 
         return extBookmark;

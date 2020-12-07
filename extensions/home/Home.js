@@ -1,11 +1,11 @@
 define(["esri/geometry/Extent", "extensions/ViewUtilities"],
     function (esriExtent, ViewUtilties) {
 
-        let extHome = function(global) {
+        let extHome = function (global) {
             let self = this;
             let map = global.extensions.extMap.map;
 
-            self.init = function() {
+            self.init = function () {
                 let bounds = {
                     southWest: {
                         lat: map.geographicExtent.ymin,
@@ -16,20 +16,20 @@ define(["esri/geometry/Extent", "extensions/ViewUtilities"],
                         lon: map.geographicExtent.xmax
                     }
                 };
-    
+
                 let center = {
                     lat: map.geographicExtent.getCenter().y,
                     lon: map.geographicExtent.getCenter().x
                 };
-    
+
                 let range = ViewUtilties.scaleToZoomAltitude(map);
-                let zoom = map.getZoom();    
-                
-                global.data.home = {bounds: bounds, center: center, range: range, zoom: zoom};
-                $("#home").on("click", self.handleClick);
+                let zoom = map.getZoom();
+
+                global.data.home = { bounds: bounds, center: center, range: range, zoom: zoom };
+                self.registerEvents();
             };
 
-            self.handleClick = function() {
+            self.handleClick = function () {
                 let data = global.data.home;
                 let extent = new esriExtent(data.bounds.southWest.lon,
                     data.bounds.southWest.lat,
@@ -53,6 +53,10 @@ define(["esri/geometry/Extent", "extensions/ViewUtilities"],
                 else {
                     map.centerAt(extent.getCenter());
                 }
+            };
+
+            self.registerEvents = function () {
+                $("#home").on("click", self.handleClick);
             };
         };
 

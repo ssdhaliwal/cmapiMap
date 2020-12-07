@@ -20,9 +20,14 @@ define(["notify/notify.min"],
                     globalPosition: "bottom right"
                 });
 
+                self.registerEvents();
             };
 
             self.handleClick = function () {
+            };
+
+            self.registerEvents = function() {
+
             };
 
             self.errorNotifier = function (msg) {

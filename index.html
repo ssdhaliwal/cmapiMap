@@ -28,14 +28,15 @@
 	</div>
 	<div id="map-controls1">
 		<div id="basemaps" rel="tooltip" title="Base Maps"></div>
-		<div id="basemaps_wrapper" class="basemaptip" style="display:none;">
-			<div id="basemapGallery"></div>
-		</div>
 		<div id="legend" rel="tooltip" title="Legend"></div>
 		<div id="bookmark" rel="tooltip" title="Bookmark"></div>
 		<div id="config" rel="tooltip" title="Config"></div>
+		<div id="layerlist" rel="tooltip" title="Layerlist"></div>
 	</div>
 
+	<div id="basemaps_wrapper" class="basemaptip" style="display:none;">
+		<div id="basemapGalleryDiv"></div>
+	</div>
 	<div id="infoPanel_wrapper" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'right'">
 		<div data-dojo-type="dijit/layout/AccordionContainer" id="infoPanel_container">
 			<div data-dojo-type="dijit/layout/ContentPane" id="legendPane" data-dojo-props="title:'Legend'">
@@ -49,6 +50,9 @@
 				</div>
 			</div>
 		</div>
+	</div>
+	<div id="layerlist_wrapper" class="basemaptip" style="display:none;">
+		<div id="layerlistDiv"></div>
 	</div>
 
 	<div id="waitingImage" class="waitingImage" style="display: none;">

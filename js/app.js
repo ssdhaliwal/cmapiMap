@@ -37,6 +37,7 @@ require([
   "extensions/basemap/Basemap",
   "extensions/legend/Legend",
   "extensions/bookmarks/Bookmarks",
+  "extensions/layerlist/Layerlist",
   "dojo/domReady!"
 ], function (
   parser,
@@ -52,7 +53,8 @@ require([
   extSearch,
   extBasemap,
   extLegend,
-  extBookmarks
+  extBookmarks,
+  extLayerlist
 ) {
   var global = {};
   global.extensions = {};
@@ -101,8 +103,27 @@ require([
     global.extensions.extLegend.init();
     global.extensions.extBookmarks = new extBookmarks(global);
     global.extensions.extBookmarks.init();
+    global.extensions.extLayerlist = new extLayerlist(global);
+    global.extensions.extLayerlist.init();
 
     window.setTimeout(() => {
+      let layers = [{
+          "url":"http://servicesbeta.esri.com/arcgis/rest/services/US_Counties_Antialiasing/MapServer",
+          "id":"US_Counties_Antialiasing_2423",
+          "visibility":true,
+          "opacity":"0.74",
+          "title":"US_Counties_Antialiasing"
+        },{
+          "url":"http://servicesbeta.esri.com/arcgis/rest/services/US_Counties_Antialiasing/MapServer",
+          "id":"US_Counties_Antialiasing_2423",
+          "visibility":true,
+          "opacity":"0.74",
+          "title":"US_Counties_Antialiasing"
+        }
+      ];
+
+      global.extensions.extLayerlist.addLayers(layers);
+      /*
       let rivers = new FeatureLayer("https://sampleserver3.arcgisonline.com/ArcGIS/rest/services/Hydrography/Watershed173811/MapServer/1", {
         mode: FeatureLayer.MODE_ONDEMAND,
         outFields: ["*"]
@@ -113,6 +134,7 @@ require([
       });
 
       global.extensions.extMap.map.addLayers([waterbodies, rivers]);
+      */
     }, 1000);
   }
 });

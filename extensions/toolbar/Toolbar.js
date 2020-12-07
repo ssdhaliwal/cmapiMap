@@ -6,7 +6,7 @@ define([],
             let map = null; // global.extensions.extMap.map;
 
             self.init = function () {
-                $("#control-slider").on("click", self.handleClick);
+                self.registerEvents();
             };
 
             self.handleClick = function () {
@@ -18,21 +18,26 @@ define([],
                 }
             };
 
+            self.registerEvents = function () {
+                $("#control-slider").on("click", self.handleClick);
+            };
+
             self.toggleOptions = function (elementId) {
                 let isSelected = false;
                 if (elementId !== undefined) {
                     isSelected = $(elementId).hasClass("selected");
                 }
-                
-                $("#infoPanel_wrapper").css("display", "none");
-                $("#basemaps_wrapper").hide();
 
-                $("#basemaps, #bookmark, #legend, #config").removeClass("selected");
-                
+                $("#infoPanel_wrapper").hide();
+                $("#basemaps_wrapper").hide();
+                $("#layerlist_wrapper").hide();
+
+                $("#basemaps, #bookmark, #legend, #config, #layerlist").removeClass("selected");
+
                 if (elementId && !isSelected) {
                     $(elementId).addClass("selected");
                 }
-            }
+            };
         };
 
         return extToolbar;

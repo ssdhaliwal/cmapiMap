@@ -274,10 +274,13 @@ img {
 }
 
 #basemaps_wrapper {
-    display: block;
-    float: right;
-    width: 55%;
-    height: calc(100vh - 50px);
+    position: absolute;
+    right: 0;
+    width: 30%;
+    height: calc(100vh - 15%);
+    bottom: 0;
+    opacity: 0.85;
+    display: none;
     overflow-y: scroll;
 }
 
@@ -309,10 +312,49 @@ img {
     position: absolute;
     right: 0;
     width: 30%;
-    height: calc(100vh - 10%);
     bottom: 0;
     opacity: 0.85;
     display: none;
+}
+
+#layerlist {
+    margin-right: 5px;
+    width: 30px;
+    height: 30px;
+    background-image: url("../images/icons/layerlist_Default.png");
+    background-position: center center;
+    background-repeat: no-repeat;
+    border-radius: 5px;
+    border: 1.5px solid #928F8F;
+    float: right;
+    z-index: 3;
+}
+
+#layerlist:hover {
+    background-image: url("../images/icons/layerlist_Hover.png");
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+
+#layerlist.selected {
+    background-image: url("../images/icons/layerlist_Selected.png");
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+
+#layerlist_wrapper {
+    position: absolute;
+    right: 0;
+    width: 30%;
+    height: calc(100vh - 15%);
+    bottom: 0;
+    opacity: 0.85;
+    display: none;
+}
+
+#layerlistDiv {
+    width: 100%;
+    overflow-y: scroll;
 }
 
 #legend {
@@ -340,6 +382,12 @@ img {
     background-repeat: no-repeat;
 }
 
+#legendDiv {
+    height: calc(100vh - 250px);
+    width: 100%;
+    overflow-y: scroll;
+}
+
 #bookmark {
     margin-right: 5px;
     width: 30px;
@@ -365,6 +413,12 @@ img {
     background-repeat: no-repeat;
 }
 
+#bookmarkDiv {
+    height: calc(100vh - 250px);
+    width: 100%;
+    overflow-y: scroll;
+}
+
 #config {
     margin-right: 5px;
     width: 30px;
@@ -388,6 +442,12 @@ img {
     background-image: url("../images/icons/config_Selected.png");
     background-position: center center;
     background-repeat: no-repeat;
+}
+
+#configDiv {
+    height: calc(100vh - 250px);
+    width: 100%;
+    overflow-y: scroll;
 }
 
 #control-slider {

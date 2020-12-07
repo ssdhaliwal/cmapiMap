@@ -14,7 +14,7 @@ define(["esri/dijit/BasemapGallery", "esri/dijit/BasemapLayer", "esri/dijit/Base
                     */
                     map: map
                 },
-                    "basemapGallery"
+                    "basemapGalleryDiv"
                 );
 
                 // added usgs basemaps for backup
@@ -124,7 +124,7 @@ define(["esri/dijit/BasemapGallery", "esri/dijit/BasemapLayer", "esri/dijit/Base
                 });
 
                 self.basemapGallery.startup();
-                $("#basemaps").on("click", self.handleClick);
+                self.registerEvents();
             };
 
             self.handleClick = function () {
@@ -133,6 +133,10 @@ define(["esri/dijit/BasemapGallery", "esri/dijit/BasemapLayer", "esri/dijit/Base
                 if ($("#basemaps").hasClass("selected")) {
                     $("#basemaps_wrapper").css("display", "block");
                 }
+            };
+
+            self.registerEvents = function() {
+                $("#basemaps").on("click", self.handleClick);
             }
         };
 

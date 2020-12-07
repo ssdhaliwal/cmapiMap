@@ -12,9 +12,14 @@ define(["esri/dijit/Scalebar"],
                     attachTo: "bottom-left",
                     scalebarUnit: "dual"
                 });
+
+                self.registerEvents();
             };
 
-            self.handleClick = function() {
+            self.handleClick = function () {
+            };
+
+            self.registerEvents = function () {
             };
         };
 

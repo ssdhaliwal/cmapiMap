@@ -328,13 +328,20 @@ define(["esri/dijit/Search", "esri/layers/FeatureLayer", "esri/InfoTemplate", "e
 
                 //Set the sources above to the search widget
                 search.set("sources", sources);
+                search.startup();
 
+                self.registerEvents();
+            };
+
+            self.handleClick = function () {
+
+            };
+
+            self.registerEvents = function () {
                 search.on("select-result", function (e) {
                     // console.log('selected result', e);
                 });
-
-                search.startup();
-            };
+            }
         };
 
         return extSearch;
