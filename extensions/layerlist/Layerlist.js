@@ -11,7 +11,7 @@ define(["vendor/js/jstree/jstree"],
                 self.layerlist = $('#layerlistDiv').jstree({
                     "plugins": ["wholerow", "checkbox"],
                     "checkbox": {
-                        "keep_selected_style": false
+                        "keep_selected_style": true
                     },
                     'core': {
                         'check_callback': true,
@@ -45,9 +45,11 @@ define(["vendor/js/jstree/jstree"],
                         console.log("+ checked..." + node.text);
 
                         let original = node.original;
-                        if ((original.layer.query || false) === true) {
-                            node.state.selected = false;
-                            self.discoverLayers(node);
+                        if (original.layer.hasOwnProperty("query")) {
+                            if ((original.layer.query || false) === true) {
+                                node.state.selected = false;
+                                self.discoverLayers(node);
+                            }
                         }
                     }
                 });
@@ -56,11 +58,12 @@ define(["vendor/js/jstree/jstree"],
                 });
             };
 
-            self.discoverLayers = function(node, parent) {
+            self.discoverLayers = function (node, parent) {
                 let original = node.original;
                 let pnode = (parent || node);
 
                 if (!original.layer.hasOwnProperty("subLayers")) {
+                    original.layer.query = false;
                     original.layer.subLayers = [];
 
                     $.ajax({
@@ -75,31 +78,37 @@ define(["vendor/js/jstree/jstree"],
                         try {
                             if (data.hasOwnProperty("subLayers")) {
                                 if (data.subLayers.length > 0) {
-                                    $.each(data.subLayers, function(index, value) {
-                                        console.log(index, value.id, value.name);
-                                        original.layer.subLayers.push({id: value.id, name: value.name});
+                                    $.each(data.subLayers, function (index, value) {
+                                        original.layer.subLayers.push({ id: value.id, name: value.name });
 
                                         let layerCopy = JSON.parse(JSON.stringify(original));
+                                        delete layerCopy.layer.query;
                                         layerCopy.id = original.id + "-" + value.id;
                                         layerCopy.text = value.name;
+                                        layerCopy.icon = "/esri-cmapi/extensions/layerlist/icons/DMS.png";
                                         layerCopy.layer.layers = "" + value.id;
 
-                                        let id = $('#layerlistDiv').jstree('create_node', $("#"+pnode.a_attr.id), layerCopy, 'last', null, true);
+                                        let id = $('#layerlistDiv').jstree('create_node', $("#" + pnode.a_attr.id), layerCopy, 'last', false, true);
+                                        console.log(id);
                                     });
                                 }
                             } else {
                                 if (data.layers.length > 0) {
-                                    $.each(data.layers, function(index, value) {
-                                        console.log(index, value.id, value.name, value.type);
-                                        original.layer.subLayers.push({id: value.id, name: value.name});
+                                    $.each(data.layers, function (index, value) {
+                                        original.layer.subLayers.push({ id: value.id, name: value.name });
 
                                         let layerCopy = JSON.parse(JSON.stringify(original));
+                                        delete layerCopy.layer.query;
                                         layerCopy.id = original.id + "-" + value.id;
                                         layerCopy.text = value.name;
+                                        if (value.type === "Feature Layer") {
+                                            layerCopy.icon = "/esri-cmapi/extensions/layerlist/icons/FS.png";
+                                        }
                                         layerCopy.layer.layers = "" + value.id;
                                         layerCopy.layer.query = false;
 
-                                        let id = $('#layerlistDiv').jstree('create_node', $("#"+pnode.a_attr.id), layerCopy, 'last', null, true);
+                                        let id = $('#layerlistDiv').jstree('create_node', $("#" + pnode.a_attr.id), layerCopy, 'last', false, true);
+                                        console.log(id);
                                     });
                                 }
                             }

@@ -27,7 +27,7 @@
                 "children": [
                     {
                         "id": "WTHR1002-01",
-                        "text": "Surface Weather and Wind Velocity",
+                        "text": "Surface Weather and Ocean Observations",
                         "icon": "/esri-cmapi/extensions/layerlist/icons/DMS.png",
                         "state": {
                             "opened": true,
@@ -57,7 +57,7 @@
                         }
                     },{
                         "id": "WTHR1002-02",
-                        "text": "Short Duration Hazards",
+                        "text": "Short-Duration Hazards",
                         "icon": "/esri-cmapi/extensions/layerlist/icons/DMS.png",
                         "state": {
                             "opened": true,
@@ -88,7 +88,7 @@
                         }
                     },{
                         "id": "WTHR1002-03",
-                        "text": "NEXRAD RIDGE Radar",
+                        "text": "NEXRAD MRMS Weather Radar",
                         "icon": "/esri-cmapi/extensions/layerlist/icons/DMS.png",
                         "state": {
                             "opened": true,
@@ -118,7 +118,7 @@
                         }
                     },{
                         "id": "WTHR1002-04",
-                        "text": "Tropical Cyclone Track and Intensity Forecasts",
+                        "text": "Tropical Cyclone Track and Intensity",
                         "icon": "/esri-cmapi/extensions/layerlist/icons/DMS.png",
                         "state": {
                             "opened": true,
