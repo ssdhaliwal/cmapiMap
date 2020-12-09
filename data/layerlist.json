@@ -42,7 +42,11 @@
                                     "OWF Users"
                                 ],
                                 "dateVerified": "20201208",
-                                "url": "https://nowcoast.noaa.gov/arcgis/rest/services/nowcoast/obs_meteocean_insitu_sfc_time/MapServer/"
+                                "url": "https://nowcoast.noaa.gov/arcgis/rest/services/nowcoast/obs_meteocean_insitu_sfc_time/MapServer/",
+                                "credentials": {
+                                    "required": false,
+                                    "token": ""
+                                }
                             },
                             "params": {
                                 "serviceType": "dynamic",
@@ -58,7 +62,7 @@
                     },{
                         "id": "WTHR1002-02",
                         "text": "Short-Duration Hazards",
-                        "icon": "/esri-cmapi/extensions/layerlist/icons/DMS.png",
+                        "icon": "/esri-cmapi/extensions/layerlist/icons/DMS-Query.png",
                         "state": {
                             "opened": true,
                             "disabled": false,
@@ -73,7 +77,11 @@
                                     "OWF Users"
                                 ],
                                 "dateVerified": "20201208",
-                                "url": "https://nowcoast.noaa.gov/arcgis/rest/services/nowcoast/wwa_meteoceanhydro_shortduration_hazards_warnings_time/MapServer/"
+                                "url": "https://nowcoast.noaa.gov/arcgis/rest/services/nowcoast/wwa_meteoceanhydro_shortduration_hazards_warnings_time/MapServer/",
+                                "credentials": {
+                                    "required": false,
+                                    "token": ""
+                                }
                             },
                             "params": {
                                 "serviceType": "dynamic",
@@ -103,7 +111,11 @@
                                     "OWF Users"
                                 ],
                                 "dateVerified": "20201208",
-                                "url": "https://nowcoast.noaa.gov/arcgis/rest/services/nowcoast/radar_meteo_imagery_nexrad_time/MapServer/"
+                                "url": "https://nowcoast.noaa.gov/arcgis/rest/services/nowcoast/radar_meteo_imagery_nexrad_time/MapServer/",
+                                "credentials": {
+                                    "required": false,
+                                    "token": ""
+                                }
                             },
                             "params": {
                                 "serviceType": "dynamic",
@@ -119,7 +131,7 @@
                     },{
                         "id": "WTHR1002-04",
                         "text": "Tropical Cyclone Track and Intensity",
-                        "icon": "/esri-cmapi/extensions/layerlist/icons/DMS.png",
+                        "icon": "/esri-cmapi/extensions/layerlist/icons/DMS-Query.png",
                         "state": {
                             "opened": true,
                             "disabled": false,
@@ -134,7 +146,11 @@
                                     "OWF Users"
                                 ],
                                 "dateVerified": "20201208",
-                                "url": "https://nowcoast.noaa.gov/arcgis/rest/services/nowcoast/wwa_meteocean_tropicalcyclones_trackintensityfcsts_time/MapServer/0"
+                                "url": "https://nowcoast.noaa.gov/arcgis/rest/services/nowcoast/wwa_meteocean_tropicalcyclones_trackintensityfcsts_time/MapServer/0",
+                                "credentials": {
+                                    "required": false,
+                                    "token": ""
+                                }
                             },
                             "params": {
                                 "serviceType": "dynamic",

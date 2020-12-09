@@ -11,7 +11,9 @@ define(["vendor/js/jstree/jstree"],
                 self.layerlist = $('#layerlistDiv').jstree({
                     "plugins": ["wholerow", "checkbox"],
                     "checkbox": {
-                        "keep_selected_style": true
+                        "keep_selected_style": true,
+                        "tie_selection": false,
+                        "whole_node": false
                     },
                     'core': {
                         'check_callback': true,
@@ -37,6 +39,16 @@ define(["vendor/js/jstree/jstree"],
 
             self.registerEvents = function () {
                 $("#layerlist").on("click", self.handleClick);
+
+                self.layerlist.on('check_node.jstree', function (data) {
+                    let node = data.instance.get_node(data.selected[i]);
+                    console.log("^ checked..." + node.text);
+                });
+
+                self.layerlist.on('uncheck_node.jstree', function (data) {
+                    let node = data.instance.get_node(data.selected[i]);
+                    console.log("^ unchecked..." + node.text);
+                });
 
                 self.layerlist.on('select_node.jstree', function (e, data) {
                     let length = data.selected.length;
@@ -66,12 +78,26 @@ define(["vendor/js/jstree/jstree"],
                     original.layer.query = false;
                     original.layer.subLayers = [];
 
-                    $.ajax({
+                    let request = {
                         "url": original.layer.properties.url + "/Layers/?f=pjson",
+                        xhrFields: {
+                            withCredentials: false
+                        },
                         beforeSend: function (xhr) {
                             // xhr.overrideMimeType("text/plain; charset=x-user-defined");
                         }
-                    }).done(function (data) {
+                    }
+                    if (original.layer.properties.hasOwnProperty("credentials")) {
+                        if (original.layer.properties.credentials.hasOwnProperty("required")) {
+                            if (original.layer.properties.credentials.required === true) {
+                                request.xhrFields.withCredentials = true;
+                            }
+                        } else if (original.layer.properties.credentials.hasOwnProperty("token")) {
+                            request.url += "&token=" + original.layer.properties.credentials.token;
+                        }
+                    }
+
+                    $.ajax(request).done(function (data) {
                         // is multiple layers; check if sub-layers is present
                         // if yes, then add them as dynamic layers
                         // if no, as them as feature layers
@@ -89,7 +115,6 @@ define(["vendor/js/jstree/jstree"],
                                         layerCopy.layer.layers = "" + value.id;
 
                                         let id = $('#layerlistDiv').jstree('create_node', $("#" + pnode.a_attr.id), layerCopy, 'last', false, true);
-                                        console.log(id);
                                     });
                                 }
                             } else {
@@ -108,7 +133,6 @@ define(["vendor/js/jstree/jstree"],
                                         layerCopy.layer.query = false;
 
                                         let id = $('#layerlistDiv').jstree('create_node', $("#" + pnode.a_attr.id), layerCopy, 'last', false, true);
-                                        console.log(id);
                                     });
                                 }
                             }
