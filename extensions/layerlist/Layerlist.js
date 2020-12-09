@@ -8,86 +8,19 @@ define(["vendor/js/jstree/jstree"],
             self.layers = [];
 
             self.init = function () {
-                $('#layerlistDiv').jstree({
+                self.layerlist = $('#layerlistDiv').jstree({
                     "plugins": ["wholerow", "checkbox"],
                     "checkbox": {
                         "keep_selected_style": false
                     },
                     'core': {
-                        'data': [
-                            'Simple root node',
-                            {
-                                'text': 'Root node 2',
-                                'state': {
-                                    'opened': true,
-                                    'selected': false
-                                },
-                                'children': [
-                                    { 'text': 'Child 1' },
-                                    'Child 2',
-                                    { 'text': 'Child 1' },
-                                    'Child 2',
-                                    { 'text': 'Child 1' },
-                                    'Child 2',
-                                    { 'text': 'Child 1' },
-                                    'Child 2',
-                                    {
-                                        'text': 'Child 11',
-                                        'state': {
-                                            'opened': true,
-                                            'selected': true
-                                        },
-                                        'children': [
-                                            { 'text': 'Child 1' },
-                                            'Child 2',
-                                            { 'text': 'Child 1' },
-                                            'Child 2',
-                                            { 'text': 'Child 1' },
-                                            'Child 2',
-                                            { 'text': 'Child 1' },
-                                            'Child 2',
-                                            { 'text': 'Child 1' },
-                                            'Child 2',
-                                            { 'text': 'Child 1' },
-                                            'Child 2',
-                                            { 'text': 'Child 1' },
-                                            'Child 2',
-                                            { 'text': 'Child 1' },
-                                            'Child 2'
-                                        ]
-                                    },
-                                    'Child 2',
-                                    { 'text': 'Child 1' },
-                                    'Child 2',
-                                    { 'text': 'Child 22',
-                                    'state': {
-                                        'opened': false,
-                                        'selected': true
-                                    },
-                                    'children': [
-                                        { 'text': 'Child 1' },
-                                        'Child 2',
-                                        { 'text': 'Child 1' },
-                                        'Child 2',
-                                        { 'text': 'Child 1' },
-                                        'Child 2',
-                                        { 'text': 'Child 1' },
-                                        'Child 2',
-                                        { 'text': 'Child 1' },
-                                        'Child 2',
-                                        { 'text': 'Child 1' },
-                                        'Child 2',
-                                        { 'text': 'Child 1' },
-                                        'Child 2',
-                                        { 'text': 'Child 1' },
-                                        'Child 2'
-                                    ]},
-                                    'Child 2',
-                                    { 'text': 'Child 1' },
-                                    'Child 2'
-                                ]
+                        'check_callback': true,
+                        'data': {
+                            'url': '/esri-cmapi/data/layerlist.json',
+                            'data': function (node) {
+                                return { 'id': node.id };
                             }
-                        ]
+                        }
                     }
                 });
 
@@ -104,6 +37,77 @@ define(["vendor/js/jstree/jstree"],
 
             self.registerEvents = function () {
                 $("#layerlist").on("click", self.handleClick);
+
+                self.layerlist.on('select_node.jstree', function (e, data) {
+                    let length = data.selected.length;
+                    for (i = 0, j = length; i < j; i++) {
+                        let node = data.instance.get_node(data.selected[i]);
+                        console.log("+ checked..." + node.text);
+
+                        let original = node.original;
+                        if ((original.layer.query || false) === true) {
+                            node.state.selected = false;
+                            self.discoverLayers(node);
+                        }
+                    }
+                });
+
+                self.layerlist.on('deselect_node.jstree', function (e, data) {
+                });
+            };
+
+            self.discoverLayers = function(node, parent) {
+                let original = node.original;
+                let pnode = (parent || node);
+
+                if (!original.layer.hasOwnProperty("subLayers")) {
+                    original.layer.subLayers = [];
+
+                    $.ajax({
+                        "url": original.layer.properties.url + "/Layers/?f=pjson",
+                        beforeSend: function (xhr) {
+                            // xhr.overrideMimeType("text/plain; charset=x-user-defined");
+                        }
+                    }).done(function (data) {
+                        // is multiple layers; check if sub-layers is present
+                        // if yes, then add them as dynamic layers
+                        // if no, as them as feature layers
+                        try {
+                            if (data.hasOwnProperty("subLayers")) {
+                                if (data.subLayers.length > 0) {
+                                    $.each(data.subLayers, function(index, value) {
+                                        console.log(index, value.id, value.name);
+                                        original.layer.subLayers.push({id: value.id, name: value.name});
+
+                                        let layerCopy = JSON.parse(JSON.stringify(original));
+                                        layerCopy.id = original.id + "-" + value.id;
+                                        layerCopy.text = value.name;
+                                        layerCopy.layer.layers = "" + value.id;
+
+                                        let id = $('#layerlistDiv').jstree('create_node', $("#"+pnode.a_attr.id), layerCopy, 'last', null, true);
+                                    });
+                                }
+                            } else {
+                                if (data.layers.length > 0) {
+                                    $.each(data.layers, function(index, value) {
+                                        console.log(index, value.id, value.name, value.type);
+                                        original.layer.subLayers.push({id: value.id, name: value.name});
+
+                                        let layerCopy = JSON.parse(JSON.stringify(original));
+                                        layerCopy.id = original.id + "-" + value.id;
+                                        layerCopy.text = value.name;
+                                        layerCopy.layer.layers = "" + value.id;
+                                        layerCopy.layer.query = false;
+
+                                        let id = $('#layerlistDiv').jstree('create_node', $("#"+pnode.a_attr.id), layerCopy, 'last', null, true);
+                                    });
+                                }
+                            }
+                        } catch (exception) {
+                            console.log(exception);
+                        }
+                    });
+                }
             };
 
             self.addLayers = function (layers) {

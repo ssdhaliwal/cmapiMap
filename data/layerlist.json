@@ -1,0 +1,155 @@
+[
+    {
+        "id": "WTHR1001",
+        "text": "Weather (NOAA)",
+        "icon": "",
+        "state": {
+            "opened": true,
+            "disabled": false,
+            "selected": false
+        },
+        "a_attr": {
+            "class": "no_checkbox"
+        },
+        "children": [
+            {
+                "id": "WTHR1002",
+                "text": "Forecasts",
+                "icon": "",
+                "state": {
+                    "opened": true,
+                    "disabled": false,
+                    "selected": false
+                },
+                "a_attr": {
+                    "class": "no_checkbox"
+                },
+                "children": [
+                    {
+                        "id": "WTHR1002-01",
+                        "text": "Surface Weather and Wind Velocity",
+                        "icon": "/esri-cmapi/extensions/layerlist/icons/DMS.png",
+                        "state": {
+                            "opened": true,
+                            "disabled": false,
+                            "selected": false
+                        },
+                        "layer": {
+                            "layers": "0",
+                            "properties": {
+                                "dateCreated": "20180521",
+                                "role": [
+                                    "OWF Users"
+                                ],
+                                "dateVerified": "20201208",
+                                "url": "https://nowcoast.noaa.gov/arcgis/rest/services/nowcoast/obs_meteocean_insitu_sfc_time/MapServer/"
+                            },
+                            "params": {
+                                "serviceType": "dynamic",
+                                "format": "image/png",
+                                "refreshInterval": "10",
+                                "zoom": "false",
+                                "showLabels": "false",
+                                "opacity": "0.50",
+                                "transparent": "true",
+                                "useProxy": "false"
+                            }
+                        }
+                    },{
+                        "id": "WTHR1002-02",
+                        "text": "Short Duration Hazards",
+                        "icon": "/esri-cmapi/extensions/layerlist/icons/DMS.png",
+                        "state": {
+                            "opened": true,
+                            "disabled": false,
+                            "selected": false
+                        },
+                        "layer": {
+                            "layers": "0",
+                            "query": true,
+                            "properties": {
+                                "dateCreated": "20180521",
+                                "role": [
+                                    "OWF Users"
+                                ],
+                                "dateVerified": "20201208",
+                                "url": "https://nowcoast.noaa.gov/arcgis/rest/services/nowcoast/wwa_meteoceanhydro_shortduration_hazards_warnings_time/MapServer/"
+                            },
+                            "params": {
+                                "serviceType": "dynamic",
+                                "format": "image/png",
+                                "refreshInterval": "10",
+                                "zoom": "false",
+                                "showLabels": "false",
+                                "opacity": "0.50",
+                                "transparent": "true",
+                                "useProxy": "false"
+                            }
+                        }
+                    },{
+                        "id": "WTHR1002-03",
+                        "text": "NEXRAD RIDGE Radar",
+                        "icon": "/esri-cmapi/extensions/layerlist/icons/DMS.png",
+                        "state": {
+                            "opened": true,
+                            "disabled": false,
+                            "selected": false
+                        },
+                        "layer": {
+                            "layers": "0",
+                            "properties": {
+                                "dateCreated": "20180521",
+                                "role": [
+                                    "OWF Users"
+                                ],
+                                "dateVerified": "20201208",
+                                "url": "https://nowcoast.noaa.gov/arcgis/rest/services/nowcoast/radar_meteo_imagery_nexrad_time/MapServer/"
+                            },
+                            "params": {
+                                "serviceType": "dynamic",
+                                "format": "image/png",
+                                "refreshInterval": "10",
+                                "zoom": "false",
+                                "showLabels": "false",
+                                "opacity": "0.50",
+                                "transparent": "true",
+                                "useProxy": "false"
+                            }
+                        }
+                    },{
+                        "id": "WTHR1002-04",
+                        "text": "Tropical Cyclone Track and Intensity Forecasts",
+                        "icon": "/esri-cmapi/extensions/layerlist/icons/DMS.png",
+                        "state": {
+                            "opened": true,
+                            "disabled": false,
+                            "selected": false
+                        },
+                        "layer": {
+                            "layers": "0",
+                            "query": true,
+                            "properties": {
+                                "dateCreated": "20180521",
+                                "role": [
+                                    "OWF Users"
+                                ],
+                                "dateVerified": "20201208",
+                                "url": "https://nowcoast.noaa.gov/arcgis/rest/services/nowcoast/wwa_meteocean_tropicalcyclones_trackintensityfcsts_time/MapServer/0"
+                            },
+                            "params": {
+                                "serviceType": "dynamic",
+                                "format": "image/png",
+                                "refreshInterval": "10",
+                                "zoom": "false",
+                                "showLabels": "false",
+                                "opacity": "0.50",
+                                "transparent": "true",
+                                "useProxy": "false"
+                            }
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+]

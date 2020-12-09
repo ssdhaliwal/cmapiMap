@@ -354,7 +354,7 @@ img {
 #layerlist_wrapper {
     position: absolute;
     right: 0;
-    width: 30%;
+    width: 40%;
     height: calc(100vh - 15%);
     bottom: 25px;
     opacity: 0.85;
@@ -366,6 +366,12 @@ img {
     background: white;
     padding: 10px;
     width: 100%;
+    overflow-x: auto;
+}
+
+.no_checkbox>i.jstree-checkbox
+{
+    display:none
 }
 
 #legend {
