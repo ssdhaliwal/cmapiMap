@@ -5,6 +5,7 @@ define(["vendor/js/jstree/jstree"],
             let self = this;
             let map = global.extensions.extMap.map;
             self.layerlist = null;
+            self.instance = null;
             self.layers = [];
 
             self.init = function () {
@@ -25,6 +26,7 @@ define(["vendor/js/jstree/jstree"],
                         }
                     }
                 });
+                self.instance = $('#layerlistDiv').jstree(true);
 
                 self.registerEvents();
             };
@@ -40,21 +42,37 @@ define(["vendor/js/jstree/jstree"],
             self.registerEvents = function () {
                 $("#layerlist").on("click", self.handleClick);
 
-                self.layerlist.on('check_node.jstree', function (data) {
-                    let node = data.instance.get_node(data.selected[i]);
-                    console.log("^ checked..." + node.text);
+                self.layerlist.on('check_node.jstree', function (e, data) {
+                    let length = data.selected.length;
+                    for (i = 0, j = length; i < j; i++) {
+                        let node = data.instance.get_node(data.selected[i]);
+                        console.log("^ checked..." + node.text);
+
+                        if (node.children.length > 0) {
+                            for (c = 0; c < node.children.length; c++) {
+                                let cnode = data.instance.get_node(node.children[c]);
+                                console.log("^ checked..." + cnode.text);
+                            }
+                        }
+                    }
                 });
 
-                self.layerlist.on('uncheck_node.jstree', function (data) {
-                    let node = data.instance.get_node(data.selected[i]);
+                self.layerlist.on('uncheck_node.jstree', function (e, data) {
+                    let length = data.selected.length;
+                    let node = data.instance.get_node(data.node.a_attr.id);
                     console.log("^ unchecked..." + node.text);
+
+                    for (i = 0, j = length; i < j; i++) {
+                        let node = data.instance.get_node(data.selected[i]);
+                        console.log("^ unchecked..." + node.text);
+                    }
                 });
 
                 self.layerlist.on('select_node.jstree', function (e, data) {
                     let length = data.selected.length;
                     for (i = 0, j = length; i < j; i++) {
                         let node = data.instance.get_node(data.selected[i]);
-                        console.log("+ checked..." + node.text);
+                        console.log("+ select..." + node.text);
 
                         let original = node.original;
                         if (original.layer.hasOwnProperty("query")) {
@@ -67,6 +85,11 @@ define(["vendor/js/jstree/jstree"],
                 });
 
                 self.layerlist.on('deselect_node.jstree', function (e, data) {
+                    let length = data.selected.length;
+                    for (i = 0, j = length; i < j; i++) {
+                        let node = data.instance.get_node(data.selected[i]);
+                        console.log("+ deselect..." + node.text);
+                    }
                 });
             };
 
