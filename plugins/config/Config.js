@@ -3,7 +3,7 @@ define(["dojo/html", "dojo/dom", "dojo/on"],
 
         let extConfig = function (global) {
             let self = this;
-            let map = global.extensions.extMap.map;
+            let map = global.plugins.extMap.map;
             self.fontColor = global.data.fontColor || null;
             self.fontColorName = global.data.fontColorName || "YellowGreen;#9ACD32";
 
@@ -168,7 +168,7 @@ define(["dojo/html", "dojo/dom", "dojo/on"],
             };
 
             self.handleClick = function () {
-                global.extensions.extToolbar.toggleOptions("#config");
+                global.plugins.extToolbar.toggleOptions("#config");
 
                 if ($("#config").hasClass("selected")) {
                     $("#infoPanel_wrapper").css("display", "block");
@@ -189,6 +189,8 @@ define(["dojo/html", "dojo/dom", "dojo/on"],
                     self.fontColor = color.split(";")[1];
                 });
             };
+
+            self.init();
         };
 
         return extConfig;

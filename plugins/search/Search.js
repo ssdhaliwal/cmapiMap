@@ -1,12 +1,12 @@
 define(["esri/dijit/Search", "esri/layers/FeatureLayer", "esri/InfoTemplate", "esri/tasks/locator",
-    "extensions/ViewUtilities",
+    "plugins/ViewUtilities",
     "dojo/_base/declare"],
     function (esriSearch, esriFeatureLayer, esriInfoTemplate, esriLocator, ViewUtilities, declare) {
 
         let extSearch = function (global) {
             let self = this;
-            let map = global.extensions.extMap.map;
-            let notify = global.extensions.extNotify;
+            let map = global.plugins.extMap.map;
+            let notify = global.plugins.extNotify;
             self.search = null;
             self.sources = null;
 
@@ -253,7 +253,7 @@ define(["esri/dijit/Search", "esri/layers/FeatureLayer", "esri/InfoTemplate", "e
             });
 
             self.init = function () {
-                search = new mySearch({
+                self.search = new mySearch({
                     enableButtonMode: false,
                     enableLabel: true,
                     enableInfoWindow: true,
@@ -262,10 +262,10 @@ define(["esri/dijit/Search", "esri/layers/FeatureLayer", "esri/InfoTemplate", "e
                     map: map
                 }, "search");
 
-                sources = search.get("sources");
+                self.sources = self.search.get("sources");
 
                 //Push the sources used to search, by default the ArcGIS Online World geocoder is included. In addition there is a feature layer of US congressional districts. The districts search is set up to find the "DISTRICTID". Also, a feature layer of senator information is set up to find based on the senator name. 
-                sources.push({
+                self.sources.push({
                     locator: new esriLocator(
                         "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/"
                     ),
@@ -281,7 +281,7 @@ define(["esri/dijit/Search", "esri/layers/FeatureLayer", "esri/InfoTemplate", "e
                     enableSuggestions: false
                 });
 
-                sources.push({
+                self.sources.push({
                     locator: new esriLocator(
                         "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/"
                     ),
@@ -296,7 +296,7 @@ define(["esri/dijit/Search", "esri/layers/FeatureLayer", "esri/InfoTemplate", "e
                     enableSuggestions: false
                 });
 
-                sources.push({
+                self.sources.push({
                     locator: new esriLocator(
                         "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/"
                     ),
@@ -311,7 +311,7 @@ define(["esri/dijit/Search", "esri/layers/FeatureLayer", "esri/InfoTemplate", "e
                     enableSuggestions: false
                 });
 
-                sources.push({
+                self.sources.push({
                     locator: new esriLocator(
                         "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates"
                     ),
@@ -327,8 +327,8 @@ define(["esri/dijit/Search", "esri/layers/FeatureLayer", "esri/InfoTemplate", "e
                 });
 
                 //Set the sources above to the search widget
-                search.set("sources", sources);
-                search.startup();
+                self.search.set("sources", self.sources);
+                self.search.startup();
 
                 self.registerEvents();
             };
@@ -338,10 +338,34 @@ define(["esri/dijit/Search", "esri/layers/FeatureLayer", "esri/InfoTemplate", "e
             };
 
             self.registerEvents = function () {
-                search.on("select-result", function (e) {
+                self.search.on("select-result", function (e) {
                     // console.log('selected result', e);
                 });
-            }
+            };
+
+            self.addSource = function (source) {
+                let sources = self.search.get("sources");
+                let searchIndex = sources.indexOf(source);
+
+                if (searchIndex === -1) {
+                    self.sources.push(source);
+
+                    self.search.set("sources", self.sources);
+                    self.search.startup();                }
+            };
+
+            self.removeSource = function (source) {
+                let sources = self.search.get("sources");
+                let searchIndex = sources.indexOf(source);
+
+                if (searchIndex !== -1) {
+                    self.sources = self.sources.splice(searchIndex, 1);
+
+                    self.search.set("sources", self.sources);
+                    self.search.startup();                }
+            };
+
+            self.init();
         };
 
         return extSearch;

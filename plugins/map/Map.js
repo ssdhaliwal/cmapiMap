@@ -54,6 +54,7 @@ define(["esri/map", "esri/geometry/Extent"],
                 }
             };
 
+            self.init();
         };
 
         return extMap;

@@ -1,9 +1,9 @@
-define(["esri/geometry/Extent", "extensions/ViewUtilities"],
+define(["esri/geometry/Extent", "plugins/ViewUtilities"],
     function (esriExtent, ViewUtilties) {
 
         let extHome = function (global) {
             let self = this;
-            let map = global.extensions.extMap.map;
+            let map = global.plugins.extMap.map;
 
             self.init = function () {
                 let bounds = {
@@ -58,6 +58,8 @@ define(["esri/geometry/Extent", "extensions/ViewUtilities"],
             self.registerEvents = function () {
                 $("#home").on("click", self.handleClick);
             };
+
+            self.init();
         };
 
         return extHome;

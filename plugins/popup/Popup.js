@@ -3,7 +3,7 @@ define(["esri/dijit/Popup", "esri/symbols/SimpleFillSymbol", "esri/Color", "dojo
 
     let extPopup = function (global) {
       let self = this;
-      let map = null; // global.extensions.extMap.map;
+      let map = null; // global.plugins.extMap.map;
       self.fillSymbol = new SimpleFillSymbol("solid", null, new Color("#A4CE67"));;
       self.popup = null;
 
@@ -23,6 +23,8 @@ define(["esri/dijit/Popup", "esri/symbols/SimpleFillSymbol", "esri/Color", "dojo
 
       self.registerEvents = function () {
       };
+
+      self.init();
     };
 
     return extPopup;

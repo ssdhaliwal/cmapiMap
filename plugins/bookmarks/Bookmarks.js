@@ -3,7 +3,7 @@ define(["esri/dijit/Bookmarks"],
 
         let extBookmark = function (global) {
             let self = this;
-            let map = global.extensions.extMap.map;
+            let map = global.plugins.extMap.map;
             self.bookmarks = null;
             self.sources = [];
 
@@ -18,7 +18,7 @@ define(["esri/dijit/Bookmarks"],
             };
 
             self.handleClick = function () {
-                global.extensions.extToolbar.toggleOptions("#bookmark");
+                global.plugins.extToolbar.toggleOptions("#bookmark");
 
                 if ($("#bookmark").hasClass("selected")) {
                     $("#infoPanel_wrapper").css("display", "block");
@@ -30,7 +30,9 @@ define(["esri/dijit/Bookmarks"],
 
             self.registerEvents = function() {
                 $("#bookmark").on("click", self.handleClick);
-            }
+            };
+
+            self.init();
         };
 
         return extBookmark;

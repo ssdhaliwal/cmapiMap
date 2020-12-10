@@ -3,7 +3,7 @@ define([],
 
         let extToolbar = function (global) {
             let self = this;
-            let map = null; // global.extensions.extMap.map;
+            let map = null; // global.plugins.extMap.map;
 
             self.init = function () {
                 self.registerEvents();
@@ -38,6 +38,8 @@ define([],
                     $(elementId).addClass("selected");
                 }
             };
+
+            self.init();
         };
 
         return extToolbar;

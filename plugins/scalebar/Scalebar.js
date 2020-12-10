@@ -3,7 +3,7 @@ define(["esri/dijit/Scalebar"],
 
         let extScalebar = function (global) {
             let self = this;
-            let map = global.extensions.extMap.map;
+            let map = global.plugins.extMap.map;
             self.scalebar = null;
 
             self.init = function () {
@@ -21,6 +21,8 @@ define(["esri/dijit/Scalebar"],
 
             self.registerEvents = function () {
             };
+
+            self.init();
         };
 
         return extScalebar;

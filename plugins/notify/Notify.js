@@ -3,7 +3,7 @@ define(["vendor/js/notify.min"],
 
         let extNotify = function (global) {
             let self = this;
-            let map = null; // global.extensions.extMap.map;
+            let map = null; // global.plugins.extMap.map;
 
             self.init = function () {
                 $.notify.addStyle("esri", {
@@ -46,6 +46,8 @@ define(["vendor/js/notify.min"],
                     autoHideDelay: 5000
                 });
             };
+
+            self.init();
         };
 
         return extNotify;

@@ -1,9 +1,9 @@
-define(["esri/dijit/BasemapGallery", "esri/dijit/BasemapLayer", "esri/dijit/Basemap", "extensions/ViewUtilities"],
+define(["esri/dijit/BasemapGallery", "esri/dijit/BasemapLayer", "esri/dijit/Basemap", "plugins/ViewUtilities"],
     function (esriBasemapGallery, esriBasemapLayer, esriBasemap, ViewUtilties) {
 
         let extBasemap = function (global) {
             let self = this;
-            let map = global.extensions.extMap.map;
+            let map = global.plugins.extMap.map;
             self.basemapGallery = null;
 
             self.init = function () {
@@ -128,7 +128,7 @@ define(["esri/dijit/BasemapGallery", "esri/dijit/BasemapLayer", "esri/dijit/Base
             };
 
             self.handleClick = function () {
-                global.extensions.extToolbar.toggleOptions("#basemaps");
+                global.plugins.extToolbar.toggleOptions("#basemaps");
 
                 if ($("#basemaps").hasClass("selected")) {
                     $("#basemaps_wrapper").css("display", "block");
@@ -137,7 +137,9 @@ define(["esri/dijit/BasemapGallery", "esri/dijit/BasemapLayer", "esri/dijit/Base
 
             self.registerEvents = function() {
                 $("#basemaps").on("click", self.handleClick);
-            }
+            };
+
+            self.init();
         };
 
         return extBasemap;

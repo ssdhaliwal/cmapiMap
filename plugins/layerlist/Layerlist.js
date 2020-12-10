@@ -1,9 +1,11 @@
-define(["vendor/js/jstree/jstree"],
-    function (JSTree) {
+define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService"],
+    function (JSTree, esriDynamicMapService) {
 
         let extLayerlist = function (global) {
             let self = this;
-            let map = global.extensions.extMap.map;
+            let map = global.plugins.extMap.map;
+            let search = global.plugins.extSearch;
+            let notify = global.plugins.extNotify;
             self.layerlist = null;
             self.instance = null;
             self.layers = [];
@@ -32,7 +34,7 @@ define(["vendor/js/jstree/jstree"],
             };
 
             self.handleClick = function () {
-                global.extensions.extToolbar.toggleOptions("#layerlist");
+                global.plugins.extToolbar.toggleOptions("#layerlist");
 
                 if ($("#layerlist").hasClass("selected")) {
                     $("#layerlist_wrapper").css("display", "block");
@@ -46,25 +48,55 @@ define(["vendor/js/jstree/jstree"],
                     let length = data.selected.length;
                     for (i = 0, j = length; i < j; i++) {
                         let node = data.instance.get_node(data.selected[i]);
-                        console.log("^ checked..." + node.text);
+                        let original = node.original;
+                        if (node.children.length === 0) {
+                            console.log("^ checked..." + node.text, original);
 
-                        if (node.children.length > 0) {
-                            for (c = 0; c < node.children.length; c++) {
-                                let cnode = data.instance.get_node(node.children[c]);
-                                console.log("^ checked..." + cnode.text);
+                            if (!original.hasOwnProperty("perspective")) {
+                                self.addService(original);
+                            }
+                        } else {
+                            if (node.children.length > 0) {
+                                console.log("^ ignore/remove..." + node.text, original);
+                                if (original.hasOwnProperty("perspective")) {
+                                    original.perspective.remove();
+                                    delete original.perspective;
+                                }
+
+                                for (c = 0; c < node.children.length; c++) {
+                                    let cnode = data.instance.get_node(node.children[c]);
+                                    original = cnode.original;
+                                    console.log("^ checked..." + cnode.text, cnode.original);
+                                    if (!original.hasOwnProperty("perspective")) {
+                                        self.addService(original);
+                                    }
+                                }
                             }
                         }
                     }
                 });
 
                 self.layerlist.on('uncheck_node.jstree', function (e, data) {
-                    let length = data.selected.length;
                     let node = data.instance.get_node(data.node.a_attr.id);
-                    console.log("^ unchecked..." + node.text);
+                    let original = node.original;
 
-                    for (i = 0, j = length; i < j; i++) {
-                        let node = data.instance.get_node(data.selected[i]);
-                        console.log("^ unchecked..." + node.text);
+                    console.log("^ unchecked..." + node.text, original);
+                    if (original.hasOwnProperty("perspective")) {
+                        original.perspective.remove();
+                        delete original.perspective;
+
+                        if (node.children.length > 0) {
+                            let length = data.children.length;
+                            for (c = 0; c < length; c++) {
+                                let cnode = data.instance.get_node(node.children[c]);
+                                original = cnode.original;
+                                console.log("^ unchecked..." + cnode.text, cnode.original);
+                                if (!original.hasOwnProperty("perspective")) {
+                                    original.perspective.remove();
+                                    delete original.perspective;
+                                }
+                            }
+                        }
                     }
                 });
 
@@ -75,11 +107,10 @@ define(["vendor/js/jstree/jstree"],
                         console.log("+ select..." + node.text);
 
                         let original = node.original;
-                        if (original.layer.hasOwnProperty("query")) {
-                            if ((original.layer.query || false) === true) {
-                                node.state.selected = false;
-                                self.discoverLayers(node);
-                            }
+                        if (original.layer.hasOwnProperty("query") &&
+                            ((original.layer.query || false) === true)) {
+                            node.state.selected = false;
+                            self.discoverLayers(node);
                         }
                     }
                 });
@@ -127,6 +158,7 @@ define(["vendor/js/jstree/jstree"],
                         try {
                             if (data.hasOwnProperty("subLayers")) {
                                 if (data.subLayers.length > 0) {
+                                    console.log("... adding sublayers");
                                     $.each(data.subLayers, function (index, value) {
                                         original.layer.subLayers.push({ id: value.id, name: value.name });
 
@@ -134,14 +166,16 @@ define(["vendor/js/jstree/jstree"],
                                         delete layerCopy.layer.query;
                                         layerCopy.id = original.id + "-" + value.id;
                                         layerCopy.text = value.name;
-                                        layerCopy.icon = "/esri-cmapi/extensions/layerlist/icons/DMS.png";
+                                        layerCopy.icon = "/esri-cmapi/plugins/layerlist/icons/DMS.png";
                                         layerCopy.layer.layers = "" + value.id;
 
-                                        let id = $('#layerlistDiv').jstree('create_node', $("#" + pnode.a_attr.id), layerCopy, 'last', false, true);
+                                        let id = $('#layerlistDiv').jstree('create_node', $("#" + pnode.a_attr.id), layerCopy, 'last', false, false);
+                                        console.log($('#layerlistDiv').jstree().get_node(id));
                                     });
                                 }
                             } else {
                                 if (data.layers.length > 0) {
+                                    console.log("... adding feature layers");
                                     $.each(data.layers, function (index, value) {
                                         original.layer.subLayers.push({ id: value.id, name: value.name });
 
@@ -150,12 +184,14 @@ define(["vendor/js/jstree/jstree"],
                                         layerCopy.id = original.id + "-" + value.id;
                                         layerCopy.text = value.name;
                                         if (value.type === "Feature Layer") {
-                                            layerCopy.icon = "/esri-cmapi/extensions/layerlist/icons/FS.png";
+                                            layerCopy.icon = "/esri-cmapi/plugins/layerlist/icons/FS.png";
+                                            layerCopy.layer.params.serviceType = "feature";
                                         }
                                         layerCopy.layer.layers = "" + value.id;
                                         layerCopy.layer.query = false;
 
-                                        let id = $('#layerlistDiv').jstree('create_node', $("#" + pnode.a_attr.id), layerCopy, 'last', false, true);
+                                        let id = $('#layerlistDiv').jstree('create_node', $("#" + pnode.a_attr.id), layerCopy, 'last', false, false);
+                                        console.log($('#layerlistDiv').jstree().get_node(id));
                                     });
                                 }
                             }
@@ -166,6 +202,17 @@ define(["vendor/js/jstree/jstree"],
                 }
             };
 
+            self.addService = function (service) {
+                if (service.layer.hasOwnProperty("params")) {
+                    if (service.layer.params.hasOwnProperty("serviceType")) {
+                        if (service.layer.params.serviceType === "dynamic") {
+                            service.perspective = new esriDynamicMapService(map, search, notify, service);
+                        } else if (service.layer.params.serviceType === "feature") {
+                        }
+                    }
+                }
+            };
+
             self.addLayers = function (layers) {
                 layers.forEach(element => {
                     console.log(element);
@@ -173,7 +220,9 @@ define(["vendor/js/jstree/jstree"],
                 });
 
                 console.log(layers, self.layers);
-            }
+            };
+
+            self.init();
         };
 
         return extLayerlist;

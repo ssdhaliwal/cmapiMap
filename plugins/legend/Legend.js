@@ -3,7 +3,7 @@ define(["esri/dijit/Legend"],
 
         let extLegend = function (global) {
             let self = this;
-            let map = global.extensions.extMap.map;
+            let map = global.plugins.extMap.map;
             self.layers = [];
             self.legend = null;
 
@@ -20,7 +20,7 @@ define(["esri/dijit/Legend"],
             };
 
             self.handleClick = function () {
-                global.extensions.extToolbar.toggleOptions("#legend");
+                global.plugins.extToolbar.toggleOptions("#legend");
 
                 if ($("#legend").hasClass("selected")) {
                     $("#infoPanel_wrapper").css("display", "block");
@@ -73,6 +73,8 @@ define(["esri/dijit/Legend"],
 
                 $("#legend").on("click", self.handleClick);
             };
+
+            self.init();
         };
 
         return extLegend;

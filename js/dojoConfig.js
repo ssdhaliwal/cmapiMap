@@ -162,7 +162,11 @@ dojoConfig.packages = [
         name: "vendor"
     },
     {
-        location: window.contextPath + "extensions",
-        name: "extensions"
+        location: window.contextPath + "plugins",
+        name: "plugins"
+    },
+    {
+        location: window.contextPath + "interface",
+        name: "interface"
     }
 ];
