@@ -236,16 +236,28 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService"],
 
             self.addService = function (service) {
                 console.log("... add service!!", service);
-                /*
+
                 if (service.layer.hasOwnProperty("params")) {
                     if (service.layer.params.hasOwnProperty("serviceType")) {
                         if (service.layer.params.serviceType === "dynamic") {
-                            service.perspective = new esriDynamicMapService(map, search, notify, service);
+                             service.perspective = new esriDynamicMapService(map, search, notify, service);
                         } else if (service.layer.params.serviceType === "feature") {
+                        } else if (service.layer.params.serviceType === "kml") {
+                        } else if (service.layer.params.serviceType === "wms") {
+                        } else if (service.layer.params.serviceType === "tiles") {
+                        } else if (service.layer.params.serviceType === "image") {
+                        } else if (service.layer.params.serviceType === "csv") {
+                        } else if (service.layer.params.serviceType === "raster") {
+                        } else if (service.layer.params.serviceType === "vectorTile") {
+                        } else if (service.layer.params.serviceType === "webmap") {
+                        } else if (service.layer.params.serviceType === "vectorImage") {
+                        } else if (service.layer.params.serviceType === "stream") {
+                        } else if (service.layer.params.serviceType === "wcs") {
+                        } else if (service.layer.params.serviceType === "wcf") {
+                        } else if (service.layer.params.serviceType === "geoJson") {
                         }
                     }
                 }
-                */
             };
 
             self.addLayers = function (layers) {

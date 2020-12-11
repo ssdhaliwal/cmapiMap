@@ -18,6 +18,7 @@ require([
   "plugins/legend/Legend",
   "plugins/bookmarks/Bookmarks",
   "plugins/layerlist/Layerlist",
+  "interface/messageService",
   "dojo/domReady!"
 ], function (
   parser,
@@ -33,11 +34,13 @@ require([
   extBasemap,
   extLegend,
   extBookmarks,
-  extLayerlist
+  extLayerlist,
+  messageService
 ) {
   var global = {};
   global.plugins = {};
   global.data = {};
+  global.interfaces = {};
 
   parser.parse();
 
@@ -74,18 +77,18 @@ require([
 
     window.setTimeout(() => {
       let layers = [{
-          "url":"http://servicesbeta.esri.com/arcgis/rest/services/US_Counties_Antialiasing/MapServer",
-          "id":"US_Counties_Antialiasing_2423",
-          "visibility":true,
-          "opacity":"0.74",
-          "title":"US_Counties_Antialiasing"
-        },{
-          "url":"http://servicesbeta.esri.com/arcgis/rest/services/US_Counties_Antialiasing/MapServer",
-          "id":"US_Counties_Antialiasing_2423",
-          "visibility":true,
-          "opacity":"0.74",
-          "title":"US_Counties_Antialiasing"
-        }
+        "url": "http://servicesbeta.esri.com/arcgis/rest/services/US_Counties_Antialiasing/MapServer",
+        "id": "US_Counties_Antialiasing_2423",
+        "visibility": true,
+        "opacity": "0.74",
+        "title": "US_Counties_Antialiasing"
+      }, {
+        "url": "http://servicesbeta.esri.com/arcgis/rest/services/US_Counties_Antialiasing/MapServer",
+        "id": "US_Counties_Antialiasing_2423",
+        "visibility": true,
+        "opacity": "0.74",
+        "title": "US_Counties_Antialiasing"
+      }
       ];
 
       global.plugins.extLayerlist.addLayers(layers);
@@ -101,6 +104,8 @@ require([
 
       global.plugins.extMap.map.addLayers([waterbodies, rivers]);
       */
+
+      global.interfaces.messageService = new messageService(global);
     }, 1000);
   }
 });

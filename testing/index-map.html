@@ -18,15 +18,25 @@
 				<br />CMAPI Interface for ESRI Map in IFRAME</p>
 		</div>
 		<div class="row content">
-			<div class="row content toc">
+			<div class="row content toc" style="text-align: center;">
 				Select CMAPI Message:</br>
 				<select id='configFontSelect'>
 					<option value='map.overlay.create'>map.overlay.create</option>
-				</select>
+				</select></br>
+				<hr /></br>
+				Enter text for message:</br>
+				<textarea type="text" id="cmapiText" name="cmapiText" rows="20"
+					style="width: 95%;height: 300px;"></textarea></br>
+				<input type="submit" value="Click to send" style="width: 95%;" onclick="onSubmit();">
+				<hr />
+				Output from Map:</br>
+				<div id="mapMessage"
+					style="background-color: #f7f1d8; height: 400px; width: 100%;overflow-y: auto; overflow-x: auto;white-space: nowrap; text-align: left;">
+				</div>
 			</div>
 			<div class="row content data">
-				<IFrame src="/esri-cmapi/index.html" name="cmapiMap" id="cmapiMap" frameborder="0" marginwidth="0"
-					marginheight="0" scrolling="auto" onload="" allowtransparency="false"
+				<IFrame id="map" src="/esri-cmapi/index.html" name="cmapiMap" id="cmapiMap" frameborder="0"
+					marginwidth="0" marginheight="0" scrolling="auto" onload="" allowtransparency="false"
 					style="width:100%; height:100%; display:block;"></IFrame>
 			</div>
 		</div>
@@ -34,6 +44,21 @@
 			<p><b>version 1.0.0</b> &nbsp;S. Dhaliwal</p>
 		</div>
 	</div>
+	<script>
+		let map = window.frames.map;
+
+		onSubmit = function () {
+			let eOptions = document.getElementById("configFontSelect");
+			let message = eOptions.options[eOptions.selectedIndex].value;
+			let text = document.getElementById("cmapiText").value;
+
+			console.log(message, text);
+			if (text.trim() !== "") {
+				map.contentWindow.postMessage(JSON.stringify({"message":message, "value":text}), '*');
+			}
+			return false;
+		};
+	</script>
 </body>
 
 </html>
