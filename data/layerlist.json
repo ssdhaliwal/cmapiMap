@@ -146,7 +146,7 @@
                                     "OWF Users"
                                 ],
                                 "dateVerified": "20201208",
-                                "url": "https://nowcoast.noaa.gov/arcgis/rest/services/nowcoast/wwa_meteocean_tropicalcyclones_trackintensityfcsts_time/MapServer/0",
+                                "url": "https://nowcoast.noaa.gov/arcgis/rest/services/nowcoast/wwa_meteocean_tropicalcyclones_trackintensityfcsts_time/MapServer/",
                                 "credentials": {
                                     "required": false,
                                     "token": ""

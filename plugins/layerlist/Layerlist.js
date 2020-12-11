@@ -84,17 +84,17 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService"],
                     if (original.hasOwnProperty("perspective")) {
                         original.perspective.remove();
                         delete original.perspective;
+                    }
 
-                        if (node.children.length > 0) {
-                            let length = data.children.length;
-                            for (c = 0; c < length; c++) {
-                                let cnode = data.instance.get_node(node.children[c]);
-                                original = cnode.original;
-                                console.log("^ unchecked..." + cnode.text, cnode.original);
-                                if (!original.hasOwnProperty("perspective")) {
-                                    original.perspective.remove();
-                                    delete original.perspective;
-                                }
+                    if (node.children.length > 0) {
+                        let length = node.children.length;
+                        for (c = 0; c < length; c++) {
+                            let cnode = data.instance.get_node(node.children[c]);
+                            original = cnode.original;
+                            console.log("^ unchecked..." + cnode.text, cnode.original);
+                            if (original.hasOwnProperty("perspective")) {
+                                original.perspective.remove();
+                                delete original.perspective;
                             }
                         }
                     }
@@ -133,7 +133,7 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService"],
                     original.layer.subLayers = [];
 
                     let request = {
-                        "url": original.layer.properties.url + "/Layers/?f=pjson",
+                        "url": original.layer.properties.url + "Layers/?f=pjson",
                         xhrFields: {
                             withCredentials: false
                         },
@@ -158,7 +158,6 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService"],
                         try {
                             if (data.hasOwnProperty("subLayers")) {
                                 if (data.subLayers.length > 0) {
-                                    console.log("... adding sublayers");
                                     $.each(data.subLayers, function (index, value) {
                                         original.layer.subLayers.push({ id: value.id, name: value.name });
 
@@ -166,32 +165,65 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService"],
                                         delete layerCopy.layer.query;
                                         layerCopy.id = original.id + "-" + value.id;
                                         layerCopy.text = value.name;
-                                        layerCopy.icon = "/esri-cmapi/plugins/layerlist/icons/DMS.png";
+                                        layerCopy.icon = "/esri-cmapi/plugins/layerlist/icons/DMS-Query.png";
                                         layerCopy.layer.layers = "" + value.id;
 
                                         let id = $('#layerlistDiv').jstree('create_node', $("#" + pnode.a_attr.id), layerCopy, 'last', false, false);
-                                        console.log($('#layerlistDiv').jstree().get_node(id));
                                     });
                                 }
                             } else {
                                 if (data.layers.length > 0) {
-                                    console.log("... adding feature layers");
+                                    let newValues = {}, newNodes = {}, newMarked = [];
                                     $.each(data.layers, function (index, value) {
-                                        original.layer.subLayers.push({ id: value.id, name: value.name });
+                                        newValues[value.id] = value;
+                                    });
 
-                                        let layerCopy = JSON.parse(JSON.stringify(original));
-                                        delete layerCopy.layer.query;
-                                        layerCopy.id = original.id + "-" + value.id;
-                                        layerCopy.text = value.name;
-                                        if (value.type === "Feature Layer") {
-                                            layerCopy.icon = "/esri-cmapi/plugins/layerlist/icons/FS.png";
-                                            layerCopy.layer.params.serviceType = "feature";
+                                    let parent = pnode;
+                                    $.each(newValues, function (index, value) {
+                                        if (value.hasOwnProperty("subLayers") && (value.subLayers.length > 0)) {
+                                            // set parent
+                                            $.each(newNodes, function(pIndex, pValue) {
+                                                $.each(pValue.subLayers, function(subIndex, subValue) {
+                                                    if (subValue.id === value.id) {
+                                                        parent = $('#layerlistDiv').jstree().get_node(pValue.id);
+                                                    }
+                                                });
+                                            });
+                                            original.layer.subLayers.push({ id: value.id, name: value.name });
+
+                                            let layerCopy = JSON.parse(JSON.stringify(original));
+                                            delete layerCopy.layer.query;
+                                            layerCopy.id = original.id + "-" + value.id;
+                                            layerCopy.text = value.name;
+                                            layerCopy.icon = "/esri-cmapi/plugins/layerlist/icons/DMS.png";
+                                            layerCopy.layer.layers = "" + value.id;
+    
+                                            let id = $('#layerlistDiv').jstree('create_node', $("#" + parent.a_attr.id), layerCopy, 'last', false, false);
+                                            newNodes[value.id] = {"id": id, "parent": parent, "subLayers": value.subLayers};
+                                        } else {
+                                            $.each(newNodes, function(pIndex, pValue) {
+                                                $.each(pValue.subLayers, function(subIndex, subValue) {
+                                                    if (subValue.id === value.id) {
+                                                        parent = $('#layerlistDiv').jstree().get_node(pValue.id);
+                                                    }
+                                                });
+                                            });
+
+                                            original.layer.subLayers.push({ id: value.id, name: value.name });
+
+                                            let layerCopy = JSON.parse(JSON.stringify(original));
+                                            delete layerCopy.layer.query;
+                                            layerCopy.id = original.id + "-" + value.id;
+                                            layerCopy.text = value.name;
+                                            if (value.type === "Feature Layer") {
+                                                layerCopy.icon = "/esri-cmapi/plugins/layerlist/icons/FS.png";
+                                                layerCopy.layer.params.serviceType = "feature";
+                                            }
+                                            layerCopy.layer.layers = "" + value.id;
+                                            layerCopy.layer.query = false;
+
+                                            let id = $('#layerlistDiv').jstree('create_node', $("#" + parent.a_attr.id), layerCopy, 'last', false, false);
                                         }
-                                        layerCopy.layer.layers = "" + value.id;
-                                        layerCopy.layer.query = false;
-
-                                        let id = $('#layerlistDiv').jstree('create_node', $("#" + pnode.a_attr.id), layerCopy, 'last', false, false);
-                                        console.log($('#layerlistDiv').jstree().get_node(id));
                                     });
                                 }
                             }
@@ -203,6 +235,8 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService"],
             };
 
             self.addService = function (service) {
+                console.log("... add service!!", service);
+                /*
                 if (service.layer.hasOwnProperty("params")) {
                     if (service.layer.params.hasOwnProperty("serviceType")) {
                         if (service.layer.params.serviceType === "dynamic") {
@@ -211,6 +245,7 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService"],
                         }
                     }
                 }
+                */
             };
 
             self.addLayers = function (layers) {
