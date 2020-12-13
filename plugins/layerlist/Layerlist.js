@@ -58,18 +58,9 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService"],
                         } else {
                             if (node.children.length > 0) {
                                 console.log("^ ignore/remove..." + node.text, original);
-                                if (original.hasOwnProperty("perspective")) {
-                                    original.perspective.remove();
-                                    delete original.perspective;
-                                }
-
-                                for (c = 0; c < node.children.length; c++) {
-                                    let cnode = data.instance.get_node(node.children[c]);
-                                    original = cnode.original;
-                                    console.log("^ checked..." + cnode.text, cnode.original);
-                                    if (!original.hasOwnProperty("perspective")) {
-                                        self.addService(original);
-                                    }
+                                changeNodeStatus(data.selected[i], "disable");
+                                if (!original.hasOwnProperty("perspective")) {
+                                    self.addService(original);
                                 }
                             }
                         }
@@ -81,22 +72,12 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService"],
                     let original = node.original;
 
                     console.log("^ unchecked..." + node.text, original);
+                    changeNodeStatus(node, "enable");
+
+                    console.log("^ clearing..." + node.text, node.original);
                     if (original.hasOwnProperty("perspective")) {
                         original.perspective.remove();
                         delete original.perspective;
-                    }
-
-                    if (node.children.length > 0) {
-                        let length = node.children.length;
-                        for (c = 0; c < length; c++) {
-                            let cnode = data.instance.get_node(node.children[c]);
-                            original = cnode.original;
-                            console.log("^ unchecked..." + cnode.text, cnode.original);
-                            if (original.hasOwnProperty("perspective")) {
-                                original.perspective.remove();
-                                delete original.perspective;
-                            }
-                        }
                     }
                 });
 
@@ -109,7 +90,12 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService"],
                         let original = node.original;
                         if (original.layer.hasOwnProperty("query") &&
                             ((original.layer.query || false) === true)) {
-                            node.state.selected = false;
+                                if (original.hasOwnProperty("perspective")) {
+                                    original.perspective.remove();
+                                    delete original.perspective;
+                                }
+
+                            uncheckSelected(node);
                             self.discoverLayers(node);
                         }
                     }
@@ -163,6 +149,8 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService"],
 
                                         let layerCopy = JSON.parse(JSON.stringify(original));
                                         delete layerCopy.layer.query;
+                                        delete layerCopy.layer.subLayers;
+
                                         layerCopy.id = original.id + "-" + value.id;
                                         layerCopy.text = value.name;
                                         layerCopy.icon = "/esri-cmapi/plugins/layerlist/icons/DMS-Query.png";
@@ -182,8 +170,8 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService"],
                                     $.each(newValues, function (index, value) {
                                         if (value.hasOwnProperty("subLayers") && (value.subLayers.length > 0)) {
                                             // set parent
-                                            $.each(newNodes, function(pIndex, pValue) {
-                                                $.each(pValue.subLayers, function(subIndex, subValue) {
+                                            $.each(newNodes, function (pIndex, pValue) {
+                                                $.each(pValue.subLayers, function (subIndex, subValue) {
                                                     if (subValue.id === value.id) {
                                                         parent = $('#layerlistDiv').jstree().get_node(pValue.id);
                                                     }
@@ -193,16 +181,18 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService"],
 
                                             let layerCopy = JSON.parse(JSON.stringify(original));
                                             delete layerCopy.layer.query;
+                                            delete layerCopy.layer.subLayers;
+
                                             layerCopy.id = original.id + "-" + value.id;
                                             layerCopy.text = value.name;
                                             layerCopy.icon = "/esri-cmapi/plugins/layerlist/icons/DMS.png";
                                             layerCopy.layer.layers = "" + value.id;
-    
+
                                             let id = $('#layerlistDiv').jstree('create_node', $("#" + parent.a_attr.id), layerCopy, 'last', false, false);
-                                            newNodes[value.id] = {"id": id, "parent": parent, "subLayers": value.subLayers};
+                                            newNodes[value.id] = { "id": id, "parent": parent, "subLayers": value.subLayers };
                                         } else {
-                                            $.each(newNodes, function(pIndex, pValue) {
-                                                $.each(pValue.subLayers, function(subIndex, subValue) {
+                                            $.each(newNodes, function (pIndex, pValue) {
+                                                $.each(pValue.subLayers, function (subIndex, subValue) {
                                                     if (subValue.id === value.id) {
                                                         parent = $('#layerlistDiv').jstree().get_node(pValue.id);
                                                     }
@@ -213,6 +203,8 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService"],
 
                                             let layerCopy = JSON.parse(JSON.stringify(original));
                                             delete layerCopy.layer.query;
+                                            delete layerCopy.layer.subLayers;
+
                                             layerCopy.id = original.id + "-" + value.id;
                                             layerCopy.text = value.name;
                                             if (value.type === "Feature Layer") {
@@ -240,7 +232,7 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService"],
                 if (service.layer.hasOwnProperty("params")) {
                     if (service.layer.params.hasOwnProperty("serviceType")) {
                         if (service.layer.params.serviceType === "dynamic") {
-                             service.perspective = new esriDynamicMapService(map, search, notify, service);
+                            service.perspective = new esriDynamicMapService(map, search, notify, service);
                         } else if (service.layer.params.serviceType === "feature") {
                         } else if (service.layer.params.serviceType === "kml") {
                         } else if (service.layer.params.serviceType === "wms") {
@@ -258,6 +250,35 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService"],
                         }
                     }
                 }
+            };
+
+            uncheckSelected = function (nodeId) {
+                let node = $("#layerlistDiv").jstree().get_node(nodeId);
+                $("#layerlistDiv").jstree().uncheck_node(node);
+            };
+
+            changeNodeStatus = function (nodeId, status) {
+                let node = $("#layerlistDiv").jstree().get_node(nodeId);
+                let cnode, original;
+                node.children.forEach(function (child_id) {
+                    cnode = $("#layerlistDiv").jstree().get_node(child_id);
+                    if (status === 'enable') {
+                        $("#layerlistDiv").jstree().enable_node(cnode);
+                    } else {
+                        $("#layerlistDiv").jstree().disable_node(cnode);
+                    }
+
+                    original = cnode.original;
+                    console.log("^ clearing..." + cnode.text, cnode.original);
+                    if (original.hasOwnProperty("perspective")) {
+                        original.perspective.remove();
+                        delete original.perspective;
+                    }
+
+                    if (cnode.children.length > 0) {
+                        changeNodeStatus(child_id, status);
+                    }
+                });
             };
 
             self.addLayers = function (layers) {
