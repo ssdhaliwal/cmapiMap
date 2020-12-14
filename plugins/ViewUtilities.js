@@ -482,16 +482,19 @@ define(["esri/geometry/Extent"],
             * @param {string} data      The data in CSV format.
             * @param {string} delimeter [optional] a custom delimeter. Comma ',' by default
             *                           The Delimeter must be a single character.
+            * @param {Boolean} isNumeric (if numeric, returns number array)
             * @return {Array} array     A two dimensional array containing the data
             * @throw {String} error     The method throws an error when there is an
             *                           error in the provided data.
             */
-            csv2Array: function (data, delimeter) {
+            csv2Array: function (data, delimeter, isNumeric) {
                 // Retrieve the delimeter
                 if (delimeter == undefined)
                     delimeter = ',';
                 if (delimeter && delimeter.length > 1)
                     delimeter = ',';
+                if (isNumeric == undefined)
+                    isNumeric = false;
 
                 // initialize variables
                 var newline = '\n';
@@ -550,9 +553,10 @@ define(["esri/geometry/Extent"],
                     }
 
                     // add the value to the array
-                    if (array.length <= row)
+                    if (array.length <= row) {
                         array.push(new Array());
-                    array[row].push(value);
+                    }
+                    array[row].push((isNumeric ? parseInt(value) : value));
 
                     // skip whitespaces
                     while (c == ' ' || c == '\t' || c == '\r') {

@@ -13,10 +13,7 @@ define(["esri/layers/ArcGISDynamicMapServiceLayer", "plugins/ViewUtilities"],
                 console.log("... creating layer: " + self.service.text);
                 let params = self.service.layer.params || {};
                 let properties = self.service.layer.properties || {};
-                let visibleLayers = ViewUtilities.csv2Array(self.service.layer.layers);
                 self.layer = new ArcGISDynamicMapServiceLayer(properties.url, params);
-
-                self.layer.setVisibleLayers(visibleLayers);
 
 				//Handle additional parameters
 				if (params.dpi) {
@@ -34,6 +31,9 @@ define(["esri/layers/ArcGISDynamicMapServiceLayer", "plugins/ViewUtilities"],
 				if (params.imageTransparency) {
 					self.layer.setImageTransparency(params.imageTransparency);
 				}
+				//if (params.infoTemplates) {
+				//	self.layer.setInfoTemplates(params.infoTemplates);
+				//}
 				if (params.layerDefinitions) {
 					self.layer.setLayerDefinitions(params.layerDefinitions);
 				}
@@ -49,11 +49,17 @@ define(["esri/layers/ArcGISDynamicMapServiceLayer", "plugins/ViewUtilities"],
 				if (params.minScale) {
 					self.layer.setMinScale(params.minScale);
 				}
+				//if (params.opacity) {
+				//	self.layer.setOpacity(params.opacity);
+				//}
+				//if (params.refreshInterval) {
+				//	self.layer.RefreshInterval(params.refreshInterval);
+				//}
+				if (params.scaleRange) {
+					self.layer.setScaleRange(params.scaleRange.minScale, params.scaleRange.maxRange);
+				}
 				if (params.visibleLayers) {
 					self.layer.setVisibleLayers(params.visibleLayers);
-				}
-				if (params.definitionExpression) {
-					self.layer.setDefinitionExpression(params.definitionExpression);
 				}
 
 				// remove token info before adding to the map
