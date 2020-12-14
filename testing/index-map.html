@@ -45,6 +45,20 @@
 		</div>
 	</div>
 	<script>
+		// Here "addEventListener" is for standards-compliant web browsers and "attachEvent" is for IE Browsers.
+		var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
+		var eventer = window[eventMethod];
+
+		var messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
+
+		// Listen to message from child IFrame window
+		eventer(messageEvent, function (e) {
+			// if (e.origin == 'http://iframe.example.com') {
+				alert(e.data);
+			// }
+		}, false);  
+
+		// iframe sender
 		let map = window.frames.map;
 
 		onSubmit = function () {

@@ -58,6 +58,9 @@ define(["esri/layers/ArcGISDynamicMapServiceLayer", "plugins/ViewUtilities"],
 				if (params.scaleRange) {
 					self.layer.setScaleRange(params.scaleRange.minScale, params.scaleRange.maxRange);
 				}
+                //if (params.useMapTime) {
+				//	self.layer.setUseMapTime(params.useMapTime);
+				//}
 				if (params.visibleLayers) {
 					self.layer.setVisibleLayers(params.visibleLayers);
 				}
@@ -99,6 +102,10 @@ define(["esri/layers/ArcGISDynamicMapServiceLayer", "plugins/ViewUtilities"],
                     self.search.addSource(searchOptions);
                 }
 
+				self.registerEvents();
+			};
+
+			self.registerEvents = function() {
 				self.layer.on("load", function () {
 					if (ViewUtilities.getBoolean(params.zoom)) {
 						ViewUtilities.zoomToLayer(self.map, self.layer);
@@ -117,7 +124,7 @@ define(["esri/layers/ArcGISDynamicMapServiceLayer", "plugins/ViewUtilities"],
                 self.layer.on('visible-layers-change', function(e) {
                     self.remove();
                 });
-            };
+			};
 
             self.remove = function() {
                 console.log("... removed layer: " + self.service.text);

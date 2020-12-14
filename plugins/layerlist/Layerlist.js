@@ -1,5 +1,5 @@
-define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService"],
-    function (JSTree, esriDynamicMapService) {
+define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService", "interface/esriFeatureService"],
+    function (JSTree, esriDynamicMapService, esriFeatureService) {
 
         let extLayerlist = function (global) {
             let self = this;
@@ -57,7 +57,7 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService"],
                             }
                         } else {
                             if (node.children.length > 0) {
-                                console.log("^ ignore/remove..." + node.text, original);
+                                console.log("^ checked..." + node.text, original);
                                 changeNodeStatus(data.selected[i], "disable");
                                 if (!original.hasOwnProperty("perspective")) {
                                     self.addService(original);
@@ -154,7 +154,6 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService"],
                                         layerCopy.id = original.id + "-" + value.id;
                                         layerCopy.text = value.name;
                                         layerCopy.icon = "/esri-cmapi/plugins/layerlist/icons/DMS-Query.png";
-                                        layerCopy.layer.layers = "" + value.id;
 
                                         let id = $('#layerlistDiv').jstree('create_node', $("#" + pnode.a_attr.id), layerCopy, 'last', false, false);
                                     });
@@ -186,7 +185,6 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService"],
                                             layerCopy.id = original.id + "-" + value.id;
                                             layerCopy.text = value.name;
                                             layerCopy.icon = "/esri-cmapi/plugins/layerlist/icons/DMS.png";
-                                            layerCopy.layer.layers = "" + value.id;
 
                                             let id = $('#layerlistDiv').jstree('create_node', $("#" + parent.a_attr.id), layerCopy, 'last', false, false);
                                             newNodes[value.id] = { "id": id, "parent": parent, "subLayers": value.subLayers };
@@ -211,7 +209,7 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService"],
                                                 layerCopy.icon = "/esri-cmapi/plugins/layerlist/icons/FS.png";
                                                 layerCopy.layer.params.serviceType = "feature";
                                             }
-                                            layerCopy.layer.layers = "" + value.id;
+                                            layerCopy.layer.properties.url = original.layer.properties.url + "/" + value.id;
                                             layerCopy.layer.query = false;
 
                                             let id = $('#layerlistDiv').jstree('create_node', $("#" + parent.a_attr.id), layerCopy, 'last', false, false);
@@ -234,6 +232,7 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService"],
                         if (service.layer.params.serviceType === "dynamic") {
                             service.perspective = new esriDynamicMapService(map, search, notify, service);
                         } else if (service.layer.params.serviceType === "feature") {
+                            service.perspective = new esriFeatureService(map, search, notify, service);
                         } else if (service.layer.params.serviceType === "kml") {
                         } else if (service.layer.params.serviceType === "wms") {
                         } else if (service.layer.params.serviceType === "tiles") {

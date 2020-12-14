@@ -16,7 +16,9 @@ define([],
                 window.addEventListener("message", function (event) {
                     console.log("received: " + event.data);
 
-                    // can message back using event.source.postMessage(...)
+                    // send message back using event.source.postMessage(...)
+                    // or window.top.postMessage('hello', '*')
+                    // or window.parent.postMessage("Hello From IFrame", "*");
                 });
             };
 
