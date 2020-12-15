@@ -225,7 +225,7 @@ define(["esri/geometry/Extent"],
                 }
             },
 
-            _numberToHex: function (value) {
+            numberToHex: function (value) {
                 var hex = Number(value).toString(16);
                 return (hex.length < 2) ? "0" + hex : hex;
             },
@@ -238,15 +238,15 @@ define(["esri/geometry/Extent"],
 
                 if (Array.isArray(color)) {
                     if (color.length === 4) {
-                        color = this._numberToHex(color[0]) + this._numberToHex(color[1]) + this._numberToHex(color[2]) + this._numberToHex(color[3]);
+                        color = this.numberToHex(color[0]) + this.numberToHex(color[1]) + this.numberToHex(color[2]) + this.numberToHex(color[3]);
                     } else if (color.length === 3) {
-                        color = this._numberToHex(color[0]) + this._numberToHex(color[1]) + this._numberToHex(color[2]) + "ff";
+                        color = this.numberToHex(color[0]) + this.numberToHex(color[1]) + this.numberToHex(color[2]) + "ff";
                     }
                 } else if (typeof color === "object") {
                     if (('r' in color) && ('g' in color) && ('b' in color) && !('a' in color)) {
-                        color = this._numberToHex(color.r) + this._numberToHex(color.g) + this._numberToHex(color.b) + "ff";
+                        color = this.numberToHex(color.r) + this.numberToHex(color.g) + this.numberToHex(color.b) + "ff";
                     } else if (('r' in color) && ('g' in color) && ('b' in color) && ('a' in color)) {
-                        color = this._numberToHex(color.r) + this._numberToHex(color.g) + this._numberToHex(color.b) + this._numberToHex(color.a);
+                        color = this.numberToHex(color.r) + this.numberToHex(color.g) + this.numberToHex(color.b) + this.numberToHex(color.a);
                     }
                 }
 
@@ -585,7 +585,7 @@ define(["esri/geometry/Extent"],
                 return array;
             },
 
-            zoomToLayer: function(map, layer) {
+            zoomToLayer: function (map, layer) {
                 if (layer.hasOwnProperty("fullExtent")) {
                     map.setExtent(layer.fullExtent);
                 } else {
@@ -601,6 +601,33 @@ define(["esri/geometry/Extent"],
                         }
                     });
                 }
+            },
+
+            fromHex(hex) {
+                let str = "";
+
+                try {
+                    str = decodeURIComponent(hex.replace(/(..)/g, '%$1'))
+                }
+                catch (e) {
+                    str = hex
+                }
+                return str
+            },
+
+            toHex: function (str) {
+                let hex = "";
+
+                try {
+                    hex = unescape(encodeURIComponent(str))
+                        .split('').map(function (v) {
+                            return v.charCodeAt(0).toString(16).padStart(2, '0')
+                        }).join('')
+                }
+                catch (e) {
+                    hex = str
+                }
+                return hex
             }
         };
 

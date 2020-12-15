@@ -96,15 +96,17 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService", "interface
                         console.log("+ select..." + node.text);
 
                         let original = node.original;
-                        if (original.layer.hasOwnProperty("query") &&
-                            ((original.layer.query || false) === true)) {
-                                if (original.hasOwnProperty("perspective")) {
-                                    original.perspective.remove();
-                                    delete original.perspective;
-                                }
+                        if (original.hasOwnProperty("layer")) {
+                            if (original.layer.hasOwnProperty("query") &&
+                                ((original.layer.query || false) === true)) {
+                                    if (original.hasOwnProperty("perspective")) {
+                                        original.perspective.remove();
+                                        delete original.perspective;
+                                    }
 
-                            uncheckSelected(node);
-                            self.discoverLayers(node);
+                                uncheckSelected(node);
+                                self.discoverLayers(node);
+                            }
                         }
                     }
                 });

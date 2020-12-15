@@ -1,5 +1,5 @@
-define([],
-    function () {
+define(["plugins/ViewUtilities"],
+    function (ViewUtilities) {
 
         let messageService = function (global) {
             let self = this;
@@ -17,9 +17,15 @@ define([],
                     console.log("received: " + event.data);
                     // send message back using event.source.postMessage(...)
                 });
+
+                window.GlobalNotify = function (channel, payload) {
+                    // payload.mapId = window.cmwapiMapId;
+                    // OWF.Eventing.publish(channel, JSON.stringify(payload));
+                    window.parent.postMessage(JSON.stringify({ channel: channel, payload: ViewUtilities.fromHex(payload) }), "*");
+                };
             };
 
-            self.sendMessage = function(message) {
+            self.sendMessage = function (message) {
                 // send message back using event.source.postMessage(...)
                 // or window.top.postMessage('hello', '*')
                 // or window.parent.postMessage("Hello From IFrame", "*");

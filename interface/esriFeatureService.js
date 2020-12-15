@@ -4,7 +4,7 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
     "dojo/_base/Color", "esri/symbols/SimpleFillSymbol", "esri/symbols/SimpleLineSymbol", "esri/symbols/SimpleMarkerSymbol",
     "esri/symbols/TextSymbol",
     "esri/InfoTemplate", "esri/dijit/PopupTemplate",
-    "esri/tasks/query", "dojo/_base/array",
+    "esri/tasks/query", "dojo/_base/array", "dojo/dom-construct",
     "esri/graphicsUtils", "plugins/ViewUtilities"],
     function (FeatureLayer, GraphicsLayer,
         LabelClass, graphic, Point, Circle, Polygon,
@@ -12,18 +12,19 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
         Color, SimpleFillSymbol, SimpleLineSymbol, SimpleMarkerSymbol,
         TextSymbol,
         InfoTemplate, PopupTemplate,
-        Query, array,
+        Query, array, domConstruct,
         graphicsUtils, ViewUtilities) {
 
         let esriFeatureService = function (global, service) {
             let self = this;
             self.map = global.plugins.extMap.map;
             self.search = global.plugins.extSearch;
-			self.notify = global.plugins.extNotify;
-			self.message = global.interfaces.messageService;
+            self.notify = global.plugins.extNotify;
+            self.message = global.interfaces.messageService;
             self.service = service;
             self.layer = null;
             self.selectedFeatures = [];
+            self.searchOptions = null;
 
             self.init = function () {
                 console.log("... creating layer: " + self.service.text);
@@ -290,6 +291,7 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                 self.map.addLayers([self.layer]);
 
                 self.registerEvents();
+                self.registerSearch();
             };
 
             self.registerEvents = function () {
@@ -422,6 +424,7 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                                         "</tbody> " +
                                         "</table></div></div>";
                                 }
+
                                 if (params.infoTemplateClass.standard.commandSet &&
                                     params.infoTemplateClass.standard.commandSet.title &&
                                     params.infoTemplateClass.standard.commandSet.channel &&
@@ -438,15 +441,17 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                                             actionData += "\"" + field + "\":\"${" + field + "}\","
                                         }
                                     });
+                                    
                                     if (params.infoTemplateClass.standard.commandSet.staticFields) {
                                         actionData += "staticFields:" + JSON.stringify(params.infoTemplateClass.standard.commandSet.staticFields);
                                     }
                                     params.infoTemplateClass.standard.commandSet.actions.forEach(function (action) {
-                                        description += "<a style='padding-right: 5px;' href='javascript:window.OWFGlobalPublish(\"" +
+                                        description += "<a style='padding-right: 5px;' href='javascript:window.GlobalNotify(\"" +
                                             params.infoTemplateClass.standard.commandSet.channel + "\", {" +
                                             "\"" + action.name + "\":\"" + action.value + "\"," + actionData + "});'>" + action.name + "</a>";
                                     });
                                 }
+
                                 template.setContent(description);
                                 self.layer.setInfoTemplate(template);
                             }
@@ -475,18 +480,16 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                 self.layer.on('click', function (e) {
 
                     // update popup dynamically
-                    /*
-                    let layer = e.graphic.getLayer();
+                    let gLayer = e.graphic.getLayer();
                     if (e.ctrlKey === true) {
                         let template = new esri.InfoTemplate();
                         // Flag icons are from http://twitter.com/thefella, released under creative commons.
                         template.setTitle("<b>${NAME}</b>");
-                        template.setContent(getLayerControlInfoTemplate);
-                        layer.setInfoTemplate(template);
+                        template.setContent(self.getLayerControlInfoTemplate);
+                        gLayer.setInfoTemplate(template);
 
                         return false;
                     }
-                    */
 
                     // click actions
                     self.selectedFeatures = [];
@@ -507,32 +510,17 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                             keys: []
                         }
                     }));
-                    /*
-                    cmwapi.feature.clicked.send({
-                        overlayId: overlayId,
-                        featureId: featureId,
-                        lat: e.mapPoint.y,
-                        lon: e.mapPoint.x,
-                        button: "left",
-                        type: "single",
-                        keys: []
-                    });
-                    */
 
-                    console.log("... feature selected: ", {
-                        selectedFeatures: [{
-                            selectedId: e.graphic.attributes.id
-                        }]
-                    });
-                    /*
-                    cmwapi.status.selected.send({
-                        overlayId: overlayId,
-                        selectedFeatures: [{
-                            featureId: featureId,
-                            selectedId: e.graphic.attributes.id
-                        }]
-                    });
-                    */
+                    self.message.sendMessage(JSON.stringify({
+                        message: "map.status.selected",
+                        payload: {
+                            overlayId: self.service.overlayId,
+                            selectedFeatures: [{
+                                featureId: self.service.id,
+                                selectedId: e.graphic.attributes.id
+                            }]
+                        }
+                    }));
 
                     if (e.graphic.geometry.type === "point") {
                         selectQuery.geometry = ViewUtils.pointToExtent(map, e.graphic.geometry, 10);
@@ -552,77 +540,58 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                                 });
                             }
 
-                            console.log("... feature selected: ", {
-                                selectedId: e.graphic.getLayer().id,
-                                selectedName: e.graphic.getLayer().name,
-                                features: featureItems
-                            });
-                            /*
-                            cmwapi.feature.selected.send({
-                                overlayId: overlayId,
-                                featureId: featureId,
-                                selectedId: e.graphic.getLayer().id,
-                                selectedName: e.graphic.getLayer().name,
-                                features: featureItems
-                            });
-                            */
+                            self.message.sendMessage(JSON.stringify({
+                                message: "map.feature.selected",
+                                payload: {
+                                    overlayId: self.service.overlayId,
+                                    featureId: self.service.id,
+                                    selectedId: e.graphic.getLayer().id,
+                                    selectedName: e.graphic.getLayer().name,
+                                    features: featureItems
+                                }
+                            }));
                         } else {
-                            console.log("... feature selected: ", {
-                                selectedId: e.graphic.getLayer().id,
-                                selectedName: e.graphic.getLayer().name
-                            });
-                            /*
-                            cmwapi.feature.selected.send({
-                                overlayId: overlayId,
-                                featureId: featureId,
-                                selectedId: e.graphic.getLayer().id,
-                                selectedName: e.graphic.getLayer().name
-                            });
-                            */
+                            self.message.sendMessage(JSON.stringify({
+                                message: "map.feature.selected",
+                                payload: {
+                                    overlayId: self.service.overlayId,
+                                    featureId: self.service.id,
+                                    selectedId: e.graphic.getLayer().id,
+                                    selectedName: e.graphic.getLayer().name
+                                }
+                            }));
                         }
                     });
                 });
 
                 self.layer.on('mouse-down', function (e) {
-                    console.log("... feature mouse-down: ", {
-                        lat: e.mapPoint.y,
-                        lon: e.mapPoint.x,
-                        button: "left",
-                        type: "single",
-                        keys: []
-                    });
-                    /*
-                    cmwapi.feature.mousedown.send({
-                        overlayId: overlayId,
-                        featureId: featureId,
-                        lat: e.mapPoint.y,
-                        lon: e.mapPoint.x,
-                        button: "left",
-                        type: "single",
-                        keys: []
-                    });
-                    */
+                    self.message.sendMessage(JSON.stringify({
+                        message: "map.feature.mousedown",
+                        payload: {
+                            overlayId: self.service.overlayId,
+                            featureId: self.service.id,
+                            lat: e.mapPoint.y,
+                            lon: e.mapPoint.x,
+                            button: "left",
+                            type: "single",
+                            keys: []
+                        }
+                    }));
                 });
 
                 self.layer.on('mouse-up', function (e) {
-                    console.log("... feature mouse-up: ", {
-                        lat: e.mapPoint.y,
-                        lon: e.mapPoint.x,
-                        button: "left",
-                        type: "single",
-                        keys: []
-                    });
-                    /*
-                    cmwapi.feature.mouseup.send({
-                        overlayId: overlayId,
-                        featureId: featureId,
-                        lat: e.mapPoint.y,
-                        lon: e.mapPoint.x,
-                        button: "left",
-                        type: "single",
-                        keys: []
-                    });
-                    */
+                    self.message.sendMessage(JSON.stringify({
+                        message: "map.feature.mouseup",
+                        payload: {
+                            overlayId: self.service.overlayId,
+                            featureId: self.service.id,
+                            lat: e.mapPoint.y,
+                            lon: e.mapPoint.x,
+                            button: "left",
+                            type: "single",
+                            keys: []
+                        }
+                    }));
                 });
 
                 self.layer.on("error", function (e) {
@@ -646,24 +615,60 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                     self.search.removeSource(self.layer.searchOptions);
                 }
                 self.map.removeLayer(self.layer);
+                self.deregisterSearch();
 
-                $.each(self.selectedFeatures, function(index, feature) {
-                    console.log("... feature deselected: ", {
-                        deSelectedId: feature.deselectedId,
-                        deSelectedName: feature.deselectedName
-                    });
+                $.each(self.selectedFeatures, function (index, feature) {
+                    self.message.sendMessage(JSON.stringify({
+                        message: "map.feature.deselected",
+                        payload: {
+                            overlayId: self.service.overlayId,
+                            featureId: self.service.id,
+                            deSelectedId: feature.deselectedId,
+                            deSelectedName: feature.deselectedName
+                        }
+                    }));
                 });
                 self.selectedFeatures = [];
             };
 
             // layer specific functions
             self.registerSearch = function () {
+                let params = self.service.layer.params || {};
 
+                if (params.hasOwnProperty("searchOptions")) {
+                    self.searchOptions = {};
+                    self.searchOptions.featureLayer = self.layer;
+                    self.searchOptions.placeholder = params.searchOptions.placeholder;
+                    self.searchOptions.enableLabel = params.searchOptions.enableLabel;
+                    self.searchOptions.searchFields = params.searchOptions.searchFields;
+                    self.searchOptions.displayField = params.searchOptions.displayField;
+                    self.searchOptions.exactMatch = params.searchOptions.exactMatch;
+                    self.searchOptions.maxResults = params.searchOptions.maxResults;
+                    self.searchOptions.outFields = params.outFields;
+
+                    self.search.addSource(self.searchOptions);
+                }
             };
 
             self.deregisterSearch = function () {
-
+                if (self.searchOptions !== null) {
+                    self.search.removeSource(self.searchOptions);
+                }
             }
+
+            self.getLayerControlInfoTemplate = function (graphic) {
+                // Display attribute information.
+                let message = {
+                    overlayId: self.service.overlayId,
+                    featureId: self.service.id,
+                    attributes: JSON.stringify(graphic.attributes)
+                };
+
+                let node = domConstruct.toDom("<div>I'm a Node {" + graphic.attributes.FID + "}<br>" +
+                    "<a href='javascript:window.GlobalNotify(\"ctrl-message\",\"" + 
+                        ViewUtilities.toHex(JSON.stringify(message)) + "\");'>click here</a></div>");
+                return node;
+            };
 
             self.init();
         };

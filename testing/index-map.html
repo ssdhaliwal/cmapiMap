@@ -33,6 +33,7 @@
 				<div id="mapMessage"
 					style="background-color: #f7f1d8; height: 400px; width: 100%;overflow-y: auto; overflow-x: auto;white-space: nowrap; text-align: left;">
 				</div>
+				<input type="submit" value="Click to clear" style="width: 95%;" onclick="onClear();">
 			</div>
 			<div class="row content data">
 				<IFrame id="map" src="/esri-cmapi/index.html" name="cmapiMap" id="cmapiMap" frameborder="0"
@@ -73,6 +74,10 @@
 				map.contentWindow.postMessage(JSON.stringify({"message":message, "value":text}), '*');
 			}
 			return false;
+		};
+
+		onClear = function () {
+			document.getElementById("mapMessage").innerHTML = "";
 		};
 	</script>
 </body>
