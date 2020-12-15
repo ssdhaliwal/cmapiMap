@@ -163,6 +163,55 @@
                         }
                     }
                 ]
+            },
+            {
+                "id": "WTHR1003",
+                "text": "Current/Watches",
+                "icon": "",
+                "state": {
+                    "opened": true,
+                    "disabled": false,
+                    "selected": false
+                },
+                "a_attr": {
+                    "class": "no_checkbox"
+                },
+                "children": [{
+                    "id": "WTHR1003-01",
+                    "text": "NWS_Forecasts_Guidance_Warnings",
+                    "icon": "/esri-cmapi/plugins/layerlist/icons/DMS-Query.png",
+                    "state": {
+                        "opened": true,
+                        "disabled": false,
+                        "selected": false
+                    },
+                    "layer": {
+                        "query": true,
+                        "properties": {
+                            "dateCreated": "20180521",
+                            "role": [
+                                "OWF Users"
+                            ],
+                            "dateVerified": "20201208",
+                            "url": "https://idpgis.ncep.noaa.gov/arcgis/rest/services/NWS_Forecasts_Guidance_Warnings/watch_warn_adv/MapServer/",
+                            "credentials": {
+                                "required": false,
+                                "token": ""
+                            }
+                        },
+                        "params": {
+                            "serviceType": "dynamic",
+                            "format": "image/png",
+                            "refreshInterval": "10",
+                            "zoom": "false",
+                            "showLabels": "false",
+                            "opacity": "0.50",
+                            "transparent": "true",
+                            "useProxy": "false"
+                        }
+                    }
+                }
+                ]
             }
         ]
     }

@@ -1,12 +1,15 @@
-define(["esri/layers/FeatureLayer", "esri/layers/LabelClass",
+define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
+    "esri/layers/LabelClass", "esri/graphic", "esri/geometry/Point", "esri/geometry/Circle", "esri/geometry/Polygon",
     "esri/renderers/ClassBreaksRenderer", "esri/renderers/SimpleRenderer", "esri/renderers/UniqueValueRenderer",
-    "esri/symbols/SimpleFillSymbol", "esri/symbols/SimpleLineSymbol", "esri/symbols/SimpleMarkerSymbol",
+    "dojo/_base/Color", "esri/symbols/SimpleFillSymbol", "esri/symbols/SimpleLineSymbol", "esri/symbols/SimpleMarkerSymbol",
     "esri/symbols/TextSymbol",
-    "plugins/ViewUtilities"],
-    function (FeatureLayer, LabelClass,
+    "esri/graphicsUtils", "plugins/ViewUtilities"],
+    function (FeatureLayer, GraphicsLayer,
+        LabelClass, graphic, Point, Circle, Polygon,
         ClassBreaksRenderer, SimpleRenderer, UniqueValueRenderer,
-        SimpleFillSymbol, SimpleLineSymbol, SimpleMarkerSymbol, TextSymbol,
-        ViewUtilities) {
+        Color, SimpleFillSymbol, SimpleLineSymbol, SimpleMarkerSymbol,
+        TextSymbol,
+        graphicsUtils, ViewUtilities) {
 
         let esriFeatureService = function (map, search, notify, service) {
             let self = this;
@@ -142,6 +145,149 @@ define(["esri/layers/FeatureLayer", "esri/layers/LabelClass",
                 //if (params.WebGLEnabled) {
                 //	self.layer.setWebGLEnabled(params.WebGLEnabled);
                 //}
+
+                // added for query/selection
+                if (params.hasOwnProperty("_querySelect")) {
+                    // create graphic layer for adding
+                    var bufferLayer = new GraphicsLayer({
+                        id: featureId + "_buffer"
+                    });
+
+                    params._querySelect.graphic = [];
+                    params._querySelect.filters.forEach(filter => {
+                        var graphic = null;
+                        if (filter.type === "buffer") {
+                            filter.geometry.forEach(marker => {
+                                var point = new Point(marker.x, marker.y,
+                                    new SpatialReference({
+                                        wkid: filter.wkid || 4326
+                                    }));
+
+                                if (filter.hasOwnProperty("range")) {
+                                    if (!filter.range.hasOwnProperty("1") && !filter.range.hasOwnProperty("2")) {
+                                        var buffer = new Circle({
+                                            center: point,
+                                            geodesic: filter.geodesic || true,
+                                            radius: filter.range,
+                                            radiusUnit: filter.measureUnit || "esriMiles"
+                                        });
+
+                                        graphic = new Graphic(buffer, new SimpleFillSymbol(
+                                            SimpleFillSymbol.STYLE_NULL,
+                                            new SimpleLineSymbol(
+                                                SimpleLineSymbol.STYLE_SHORTDASHDOTDOT,
+                                                new Color([105, 105, 105]), 2),
+                                            new Color([255, 255, 0, 0.25])
+                                        ));
+
+                                        params["_querySelect"].graphic.push(buffer);
+                                        bufferLayer.add(graphic);
+                                    } else {
+                                        if (filter.range.hasOwnProperty("1")) {
+                                            var buffer = new Circle({
+                                                center: point,
+                                                geodesic: filter.geodesic || true,
+                                                radius: filter.range["1"],
+                                                radiusUnit: filter.measureUnit || "esriMiles"
+                                            });
+
+                                            graphic = new Graphic(buffer, new SimpleFillSymbol(
+                                                SimpleFillSymbol.STYLE_SOLID,
+                                                new SimpleLineSymbol(
+                                                    SimpleLineSymbol.STYLE_SHORTDASHDOTDOT,
+                                                    new Color([105, 105, 105]),
+                                                    2
+                                                ), new Color([255, 255, 0, 0.25])
+                                            ));
+
+                                            params["_querySelect"].graphic.push(buffer);
+                                            bufferLayer.add(graphic);
+                                        }
+
+                                        if (filter.range.hasOwnProperty("2")) {
+                                            var buffer = new Circle({
+                                                center: point,
+                                                geodesic: filter.geodesic || true,
+                                                radius: filter.range["2"],
+                                                radiusUnit: filter.measureUnit || "esriMiles"
+                                            });
+
+                                            graphic = new Graphic(buffer, new SimpleFillSymbol(
+                                                SimpleFillSymbol.STYLE_NULL,
+                                                new SimpleLineSymbol(
+                                                    SimpleLineSymbol.STYLE_SHORTDASHDOTDOT,
+                                                    new Color([105, 105, 105]),
+                                                    2
+                                                ), new Color([255, 255, 0, 0.25])
+                                            ));
+
+                                            params["_querySelect"].graphic.push(buffer);
+                                            bufferLayer.add(graphic);
+                                        }
+                                    }
+                                } else {
+                                    var buffer = new Circle({
+                                        center: point,
+                                        geodesic: filter.geodesic || true,
+                                        radius: 20,
+                                        radiusUnit: filter.measureUnit || "esriMiles"
+                                    });
+
+                                    graphic = new Graphic(buffer, new SimpleFillSymbol(
+                                        SimpleFillSymbol.STYLE_SOLID,
+                                        new SimpleLineSymbol(
+                                            SimpleLineSymbol.STYLE_SHORTDASHDOTDOT,
+                                            new Color([105, 105, 105]),
+                                            2
+                                        ), new Color([255, 255, 0, 0.25])
+                                    ));
+
+                                    params["_querySelect"].graphic.push(buffer);
+                                    bufferLayer.add(graphic);
+                                }
+                            });
+
+                            //bufferLayer.setOpacity(1.0);
+                        }
+                        if (filter.type === "area") {
+                            filter.geometry.forEach(ring => {
+                                var buffer = new Polygon({
+                                    "rings": ring.rings,
+                                    "spatialReference": { "wkid": filter.wkid || 4326 }
+                                });
+
+                                graphic = new Graphic(buffer, new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
+                                    new SimpleLineSymbol(SimpleLineSymbol.STYLE_SHORTDASHDOTDOT,
+                                        new Color([255, 0, 0]), 2), new Color([255, 255, 0, 0.25])
+                                ));
+
+                                params["_querySelect"].graphic.push(buffer);
+                                bufferLayer.add(graphic);
+                            })
+                        }
+                    });
+
+                    self.layer.bufferLayer = bufferLayer;
+                    map.addLayers([bufferLayer]);
+
+                    //  self.layer.layer.setMinScale(9244648.868618);
+                    //  self.layer.layer.bufferLayer.setMinScale(9244648.868618);
+
+                    // get extent of all graphics for query limitation
+                    var layerExtent = graphicsUtils.graphicsExtent(bufferLayer.graphics);
+                    params.definitionExpression = params.definitionExpression || {};
+                    params.definitionExpression.geometry = layerExtent;
+                    params.definitionExpression.geometryType = "esriGeometryPolygon";
+                    params.definitionExpression.spatialRel = "esriSpatialRelIntersects";
+                }
+
+                self.map.addLayers([self.layer]);
+
+                self.registerEvents();
+            };
+
+            self.registerEvents = function () {
+                // syncSearchOptions();
             };
 
             self.remove = function () {
@@ -151,6 +297,15 @@ define(["esri/layers/FeatureLayer", "esri/layers/LabelClass",
                 }
                 self.map.removeLayer(self.layer);
             };
+
+            // layer specific functions
+            self.registerSearch = function () {
+
+            };
+
+            self.deregisterSearch = function () {
+
+            }
 
             self.init();
         };

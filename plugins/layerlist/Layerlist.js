@@ -138,6 +138,11 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService", "interface
                     }
 
                     $.ajax(request).done(function (data) {
+                        // try to parse json if not parsed
+                        try {
+                            data = JSON.parse(data);
+                        } catch (exception) {}
+
                         // is multiple layers; check if sub-layers is present
                         // if yes, then add them as dynamic layers
                         // if no, as them as feature layers
