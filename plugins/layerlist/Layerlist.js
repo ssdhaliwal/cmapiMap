@@ -4,8 +4,6 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService", "interface
         let extLayerlist = function (global) {
             let self = this;
             let map = global.plugins.extMap.map;
-            let search = global.plugins.extSearch;
-            let notify = global.plugins.extNotify;
             self.layerlist = null;
             self.instance = null;
             self.layers = [];
@@ -49,18 +47,28 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService", "interface
                     for (i = 0, j = length; i < j; i++) {
                         let node = data.instance.get_node(data.selected[i]);
                         let original = node.original;
+
+                        let parentId, parentNode, parentText;
                         if (node.children.length === 0) {
                             console.log("^ checked..." + node.text, original);
 
                             if (!original.hasOwnProperty("perspective")) {
-                                self.addService(original);
+                                parentId = data.instance.get_parent(node);
+                                parentNode = data.instance.get_node(parentId);
+                                parentText = parentNode.text;
+
+                                self.addService(parentId, parentText, original);
                             }
                         } else {
                             if (node.children.length > 0) {
                                 console.log("^ checked..." + node.text, original);
                                 changeNodeStatus(data.selected[i], "disable");
                                 if (!original.hasOwnProperty("perspective")) {
-                                    self.addService(original);
+                                    parentId = data.instance.get_parent(node);
+                                    parentNode = data.instance.get_node(parentId);
+                                    parentText = parentNode.text;
+                                    
+                                    self.addService(parentId, parentText, original);
                                 }
                             }
                         }
@@ -229,15 +237,18 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService", "interface
                 }
             };
 
-            self.addService = function (service) {
-                console.log("... add service!!", service);
+            self.addService = function (overlayId, overlayText, service) {
+                console.log("... add service!!", overlayId, overlayText, service);
+
+                service.overlayId = overlayId;
+                service.overlayText = overlayText;
 
                 if (service.layer.hasOwnProperty("params")) {
                     if (service.layer.params.hasOwnProperty("serviceType")) {
                         if (service.layer.params.serviceType === "dynamic") {
-                            service.perspective = new esriDynamicMapService(map, search, notify, service);
+                            service.perspective = new esriDynamicMapService(global, service);
                         } else if (service.layer.params.serviceType === "feature") {
-                            service.perspective = new esriFeatureService(map, search, notify, service);
+                            service.perspective = new esriFeatureService(global, service);
                         } else if (service.layer.params.serviceType === "kml") {
                         } else if (service.layer.params.serviceType === "wms") {
                         } else if (service.layer.params.serviceType === "tiles") {

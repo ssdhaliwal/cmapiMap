@@ -54,7 +54,9 @@
 		// Listen to message from child IFrame window
 		eventer(messageEvent, function (e) {
 			// if (e.origin == 'http://iframe.example.com') {
-				alert(e.data);
+				let cData = document.getElementById("mapMessage").innerHTML;
+				let nData = "<span>" + e.data + "</span><br/>" + cData;
+				document.getElementById("mapMessage").innerHTML = nData;
 			// }
 		}, false);  
 

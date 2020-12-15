@@ -15,12 +15,16 @@ define([],
             self.registerEvents = function () {
                 window.addEventListener("message", function (event) {
                     console.log("received: " + event.data);
-
                     // send message back using event.source.postMessage(...)
-                    // or window.top.postMessage('hello', '*')
-                    // or window.parent.postMessage("Hello From IFrame", "*");
                 });
             };
+
+            self.sendMessage = function(message) {
+                // send message back using event.source.postMessage(...)
+                // or window.top.postMessage('hello', '*')
+                // or window.parent.postMessage("Hello From IFrame", "*");
+                window.parent.postMessage(JSON.stringify(message), "*");
+            }
 
             self.init();
         };

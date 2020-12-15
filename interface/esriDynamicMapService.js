@@ -1,11 +1,12 @@
 define(["esri/layers/ArcGISDynamicMapServiceLayer", "plugins/ViewUtilities"],
     function (ArcGISDynamicMapServiceLayer, ViewUtilities) {
 
-        let esriDynamicMapService = function (map, search, notify, service) {
+        let esriDynamicMapService = function (global, service) {
             let self = this;
-            self.map = map;
-            self.search = search;
-            self.notify = notify;
+            self.map = global.plugins.extMap.map;
+            self.search = global.plugins.extSearch;
+			self.notify = global.plugins.extNotify;
+			self.message = global.interfaces.messageService;
             self.service = service;
             self.layer = null;
 

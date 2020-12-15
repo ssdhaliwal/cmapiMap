@@ -1,10 +1,24 @@
 [
     {
+        "id": "USER1001",
+        "text": "USER FAVORITES",
+        "icon": "",
+        "state": {
+            "opened": true,
+            "disabled": false,
+            "selected": false
+        },
+        "a_attr": {
+            "class": "no_checkbox"
+        },
+        "children": []
+    },
+    {
         "id": "WTHR1001",
         "text": "Weather (NOAA)",
         "icon": "",
         "state": {
-            "opened": true,
+            "opened": false,
             "disabled": false,
             "selected": false
         },
@@ -56,10 +70,13 @@
                                 "opacity": "0.50",
                                 "transparent": "true",
                                 "useProxy": "false",
-                                "visibleLayers": [0]
+                                "visibleLayers": [
+                                    0
+                                ]
                             }
                         }
-                    },{
+                    },
+                    {
                         "id": "WTHR1002-02",
                         "text": "Short-Duration Hazards",
                         "icon": "/esri-cmapi/plugins/layerlist/icons/DMS-Query.png",
@@ -93,7 +110,8 @@
                                 "useProxy": "false"
                             }
                         }
-                    },{
+                    },
+                    {
                         "id": "WTHR1002-03",
                         "text": "NEXRAD MRMS Weather Radar",
                         "icon": "/esri-cmapi/plugins/layerlist/icons/DMS.png",
@@ -124,10 +142,13 @@
                                 "opacity": "0.50",
                                 "transparent": "true",
                                 "useProxy": "false",
-                                "visibleLayers": [0]
+                                "visibleLayers": [
+                                    0
+                                ]
                             }
                         }
-                    },{
+                    },
+                    {
                         "id": "WTHR1002-04",
                         "text": "Tropical Cyclone Track and Intensity",
                         "icon": "/esri-cmapi/plugins/layerlist/icons/DMS-Query.png",
@@ -176,41 +197,42 @@
                 "a_attr": {
                     "class": "no_checkbox"
                 },
-                "children": [{
-                    "id": "WTHR1003-01",
-                    "text": "NWS_Forecasts_Guidance_Warnings",
-                    "icon": "/esri-cmapi/plugins/layerlist/icons/DMS-Query.png",
-                    "state": {
-                        "opened": true,
-                        "disabled": false,
-                        "selected": false
-                    },
-                    "layer": {
-                        "query": true,
-                        "properties": {
-                            "dateCreated": "20180521",
-                            "role": [
-                                "OWF Users"
-                            ],
-                            "dateVerified": "20201208",
-                            "url": "https://idpgis.ncep.noaa.gov/arcgis/rest/services/NWS_Forecasts_Guidance_Warnings/watch_warn_adv/MapServer/",
-                            "credentials": {
-                                "required": false,
-                                "token": ""
-                            }
+                "children": [
+                    {
+                        "id": "WTHR1003-01",
+                        "text": "NWS_Forecasts_Guidance_Warnings",
+                        "icon": "/esri-cmapi/plugins/layerlist/icons/DMS-Query.png",
+                        "state": {
+                            "opened": true,
+                            "disabled": false,
+                            "selected": false
                         },
-                        "params": {
-                            "serviceType": "dynamic",
-                            "format": "image/png",
-                            "refreshInterval": "10",
-                            "zoom": "false",
-                            "showLabels": "false",
-                            "opacity": "0.50",
-                            "transparent": "true",
-                            "useProxy": "false"
+                        "layer": {
+                            "query": true,
+                            "properties": {
+                                "dateCreated": "20180521",
+                                "role": [
+                                    "OWF Users"
+                                ],
+                                "dateVerified": "20201208",
+                                "url": "https://idpgis.ncep.noaa.gov/arcgis/rest/services/NWS_Forecasts_Guidance_Warnings/watch_warn_adv/MapServer/",
+                                "credentials": {
+                                    "required": false,
+                                    "token": ""
+                                }
+                            },
+                            "params": {
+                                "serviceType": "dynamic",
+                                "format": "image/png",
+                                "refreshInterval": "10",
+                                "zoom": "false",
+                                "showLabels": "false",
+                                "opacity": "0.50",
+                                "transparent": "true",
+                                "useProxy": "false"
+                            }
                         }
                     }
-                }
                 ]
             }
         ]
