@@ -22,6 +22,55 @@
 				Select CMAPI Message:</br>
 				<select id='configFontSelect'>
 					<option value='map.overlay.create'>map.overlay.create</option>
+					<option value='map.overlay.remove'>map.overlay.remove</option>
+					<option value='map.overlay.hide'>map.overlay.hide</option>
+					<option value='map.overlay.show'>map.overlay.show</option>
+					<option value='map.overlay.update'>map.overlay.update</option>
+					<option disabled>--*--*--*--*--*--*--*--*--*--*--*--*--</option>
+					<option value='map.feature.plot'>map.feature.plot</option>
+					<option value='map.feature.plot.batch'>map.feature.plot.batch</option>
+					<option value='map.feature.plot.url'>map.feature.plot.url</option>
+					<option value='map.feature.unplot'>map.feature.unplot</option>
+					<option value='map.feature.unplot.batch'>map.feature.unplot.batch</option>
+					<option value='map.feature.hide'>map.feature.hide</option>
+					<option value='map.feature.show'>map.feature.show</option>
+					<option value='map.feature.selected'>map.feature.selected</option>
+					<option value='map.feature.selected.batch'>map.feature.selected.batch</option>
+					<option value='map.feature.deselected'>map.feature.deselected</option>
+					<option value='map.feature.deselected.batch'>map.feature.deselected.batch</option>
+					<option value='map.feature.update'>map.feature.update</option>
+					<option value='map.feature.edit'>map.feature.edit</option>
+					<option value='map.feature.draw'>map.feature.draw</option>
+					<option value='map.feature.clicked'>map.feature.clicked</option>
+					<option value='map.feature.mousedown'>map.feature.mousedown</option>
+					<option value='map.feature.mouseup'>map.feature.mouseup</option>
+					<option disabled>--*--*--*--*--*--*--*--*--*--*--*--*--</option>
+					<option value='map.view.zoom'>map.view.zoom</option>
+					<option value='map.view.center.overlay'>map.view.center.overlay</option>
+					<option value='map.view.center.feature'>map.view.center.feature</option>
+					<option value='map.view.center.location'>map.view.center.location</option>
+					<option value='map.view.center.bounds'>map.view.center.bounds</option>
+					<option value='map.view.clicked'>map.view.clicked</option>
+					<!--option value='map.view.mousedown'>map.view.mousedown</option-->
+					<!--option value='map.view.mouseup'>map.view.mouseup</option-->
+					<!--option value='map.view.area.selected'>map.view.area.selected</option-->
+					<option disabled>--*--*--*--*--*--*--*--*--*--*--*--*--</option>
+					<!--option value='map.status.request'>map.status.request</option-->
+					<!--option value='map.status.view'>map.status.view</option-->
+					<!--option value='map.status.format'>map.status.format</option-->
+					<!--option value='map.status.about'>map.status.about</option-->
+					<!--option value='map.status.selected'>map.status.selected</option-->
+					<!--option value='map.status.initialization'>map.status.initialization</option-->
+					<!--option disabled>--*--*--*--*--*--*--*--*--*--*--*--*--</option-->
+					<!--option value='map.message.complete'>map.message.complete</option-->
+					<!--option value='map.feature.edit.complete'>map.feature.edit.complete</option-->
+					<!--option value='map.feature.draw.complete'>map.feature.draw.complete</option-->
+					<!--option value='map.get.complete'>map.get.complete</option-->
+					<!--option value='map.message.progress'>map.message.progress</option-->
+					<option value='map.message.cancel'>map.message.cancel</option>
+
+					<!--option value='map.error'>map.error</option-->
+					<option value='map.get'>map.get</option>
 				</select></br>
 				<hr /></br>
 				Enter text for message:</br>
@@ -56,7 +105,7 @@
 		eventer(messageEvent, function (e) {
 			// if (e.origin == 'http://iframe.example.com') {
 				let cData = document.getElementById("mapMessage").innerHTML;
-				let nData = "<span>" + e.data + "</span><br/>" + cData;
+				let nData = "<span>" + (new Date().toISOString()) + ", " + e.data + "</span><br/>" + cData;
 				document.getElementById("mapMessage").innerHTML = nData;
 			// }
 		}, false);  

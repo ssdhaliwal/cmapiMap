@@ -104,7 +104,7 @@ define(["esri/geometry/Extent"],
                 try {
                     var layers = esriLayer.getLayers();
                 }
-                catch (err) {
+                catch (exception) {
                     var layers = [esriLayer];
                 }
 
@@ -603,13 +603,24 @@ define(["esri/geometry/Extent"],
                 }
             },
 
+            tryJSONParse(str) {
+                let json = "";
+
+                try {
+                    json = JSON.parse(str);
+                } catch (exception) {
+                    json = str;
+                }
+                return json;
+            },
+
             fromHex(hex) {
                 let str = "";
 
                 try {
                     str = decodeURIComponent(hex.replace(/(..)/g, '%$1'))
                 }
-                catch (e) {
+                catch (exception) {
                     str = hex
                 }
                 return str
@@ -624,7 +635,7 @@ define(["esri/geometry/Extent"],
                             return v.charCodeAt(0).toString(16).padStart(2, '0')
                         }).join('')
                 }
-                catch (e) {
+                catch (exception) {
                     hex = str
                 }
                 return hex

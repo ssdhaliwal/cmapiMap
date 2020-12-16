@@ -77,19 +77,29 @@ require([
 
     window.setTimeout(() => {
       let layers = [{
-        "url": "http://servicesbeta.esri.com/arcgis/rest/services/US_Counties_Antialiasing/MapServer",
-        "id": "US_Counties_Antialiasing_2423",
-        "visibility": true,
-        "opacity": "0.74",
-        "title": "US_Counties_Antialiasing"
-      }, {
-        "url": "http://servicesbeta.esri.com/arcgis/rest/services/US_Counties_Antialiasing/MapServer",
-        "id": "US_Counties_Antialiasing_2423",
-        "visibility": true,
-        "opacity": "0.74",
-        "title": "US_Counties_Antialiasing"
-      }
-      ];
+        "overlayId": "SUBDIR01",
+        "feature": "USER1001-01",
+        "text": "User Layer - Test1",
+        "layer": {
+          "properties": {
+            "url": "https://nowcoast.noaa.gov/arcgis/rest/services/nowcoast/wwa_meteocean_tropicalcyclones_trackintensityfcsts_time/MapServer/",
+            "credentials": {
+              "required": false,
+              "token": ""
+            }
+          },
+          "params": {
+            "serviceType": "dynamic",
+            "format": "image/png",
+            "refreshInterval": "10",
+            "zoom": "false",
+            "showLabels": "false",
+            "opacity": "0.50",
+            "transparent": "true",
+            "useProxy": "false"
+          }
+        }
+      }];
 
       global.plugins.extLayerlist.addLayers(layers);
       /*

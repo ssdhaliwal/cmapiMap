@@ -148,10 +148,8 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService", "interface
                     }
 
                     $.ajax(request).done(function (data) {
-                        // try to parse json if not parsed
-                        try {
-                            data = JSON.parse(data);
-                        } catch (exception) {}
+                        // try to parse json if not parsed (some types json is returned as a string?)
+                        data = ViewUtilities.tryJSONParse(data);
 
                         // is multiple layers; check if sub-layers is present
                         // if yes, then add them as dynamic layers
@@ -296,6 +294,14 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService", "interface
                         changeNodeStatus(child_id, status);
                     }
                 });
+            };
+
+            self.addOverlay = function (overlayId, overlay) {
+                // get USER FAVORITES node and add new items as child nodes
+            };
+
+            self.removeOverlay = function(overlayId) {
+                // get USER FAVORITES node and remove items from child nodes
             };
 
             self.addLayers = function (layers) {
