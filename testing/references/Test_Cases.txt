@@ -1,0 +1,40 @@
+map.overlay.create
+// create
+{
+    "name": "TEST-01"
+}
+{
+    "overlayId": "TEST-99"
+}
+// rename
+{
+    "name": "TEST-02",
+    "overlayId": "TEST-01"
+}
+// create (duplicate name)
+{
+    "name": "TEST-02",
+    "overlayId": "TEST-02"
+}
+// ignore
+{
+    "name": "TEST-02",
+    "overlayId": "TEST-01"
+}
+// rename
+{
+    "name": "TEST-03",
+    "overlayId": "TEST-01"
+}
+
+// link to parent
+{
+    "name": "TEST-01-1",
+    "overlayId": "TEST-01-1",
+    "parentId": "TEST-01"
+}
+
+map.overlay.remove
+{
+    "overlayId": "TEST-01"
+}

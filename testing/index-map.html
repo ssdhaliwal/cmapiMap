@@ -104,23 +104,23 @@
 		// Listen to message from child IFrame window
 		eventer(messageEvent, function (e) {
 			// if (e.origin == 'http://iframe.example.com') {
-				let cData = document.getElementById("mapMessage").innerHTML;
-				let nData = "<span>" + (new Date().toISOString()) + ", " + e.data + "</span><br/>" + cData;
-				document.getElementById("mapMessage").innerHTML = nData;
+			let cData = document.getElementById("mapMessage").innerHTML;
+			let nData = "<span>" + (new Date().toISOString()) + ", " + e.data + "</span><br/>" + cData;
+			document.getElementById("mapMessage").innerHTML = nData;
 			// }
-		}, false);  
+		}, false);
 
 		// iframe sender
 		let map = window.frames.map;
 
 		onSubmit = function () {
 			let eOptions = document.getElementById("configFontSelect");
-			let message = eOptions.options[eOptions.selectedIndex].value;
+			let channel = eOptions.options[eOptions.selectedIndex].value;
 			let text = document.getElementById("cmapiText").value;
 
-			console.log(message, text);
+			console.log(channel, text);
 			if (text.trim() !== "") {
-				map.contentWindow.postMessage(JSON.stringify({"message":message, "value":text}), '*');
+				map.contentWindow.postMessage(JSON.stringify({ "channel": channel, "payload": text }), '*');
 			}
 			return false;
 		};

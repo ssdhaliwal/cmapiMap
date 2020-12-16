@@ -639,6 +639,14 @@ define(["esri/geometry/Extent"],
                     hex = str
                 }
                 return hex
+            },
+
+            isEmpty: function (str) {
+                if ((str === undefined) || (str === null) || (str.trim().length === 0)) {
+                    return true;
+                } else {
+                    return false;
+                }
             }
         };
 

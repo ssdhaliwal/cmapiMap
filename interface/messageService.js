@@ -1,9 +1,10 @@
-define(["plugins/ViewUtilities"],
-    function (ViewUtilities) {
+define(["interface/cmapiAdapter", "plugins/ViewUtilities"],
+    function (cmapiAdapter, ViewUtilities) {
 
         let messageService = function (global) {
             let self = this;
             let map = global.plugins.extMap.map;
+            self.cmapiAdapter = new cmapiAdapter(global);
 
             self.init = function () {
                 self.registerEvents();
@@ -14,7 +15,20 @@ define(["plugins/ViewUtilities"],
 
             self.registerEvents = function () {
                 window.addEventListener("message", function (event) {
-                    console.log("received: " + event.data);
+                    let data = ViewUtilities.tryJSONParse(event.data);
+                    console.log(data);
+
+                    if (data.hasOwnProperty("channel") && data.hasOwnProperty("payload")) {
+                        switch (data.channel) {
+                            case "map.overlay.create":
+                                self.cmapiAdapter.onMapOverlayCreate(ViewUtilities.tryJSONParse(data.payload));
+                                break;
+                            case "map.overlay.remove":
+                                self.cmapiAdapter.onMapOverlayRemove(ViewUtilities.tryJSONParse(data.payload));
+                                break;
+                        }
+                    }
+
                     // send message back using event.source.postMessage(...)
                 });
 

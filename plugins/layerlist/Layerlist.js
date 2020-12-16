@@ -1,5 +1,7 @@
-define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService", "interface/esriFeatureService"],
-    function (JSTree, esriDynamicMapService, esriFeatureService) {
+define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService", "interface/esriFeatureService",
+    "plugins/ViewUtilities"],
+    function (JSTree, esriDynamicMapService, esriFeatureService,
+        ViewUtilities) {
 
         let extLayerlist = function (global) {
             let self = this;
@@ -45,48 +47,12 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService", "interface
                 self.layerlist.on('check_node.jstree', function (e, data) {
                     let length = data.selected.length;
                     for (i = 0, j = length; i < j; i++) {
-                        let node = data.instance.get_node(data.selected[i]);
-                        let original = node.original;
-
-                        let parentId, parentNode, parentText;
-                        if (node.children.length === 0) {
-                            console.log("^ checked..." + node.text, original);
-
-                            if (!original.hasOwnProperty("perspective")) {
-                                parentId = data.instance.get_parent(node);
-                                parentNode = data.instance.get_node(parentId);
-                                parentText = parentNode.text;
-
-                                self.addService(parentId, parentText, original);
-                            }
-                        } else {
-                            if (node.children.length > 0) {
-                                console.log("^ checked..." + node.text, original);
-                                changeNodeStatus(data.selected[i], "disable");
-                                if (!original.hasOwnProperty("perspective")) {
-                                    parentId = data.instance.get_parent(node);
-                                    parentNode = data.instance.get_node(parentId);
-                                    parentText = parentNode.text;
-                                    
-                                    self.addService(parentId, parentText, original);
-                                }
-                            }
-                        }
+                        self.showOverlay({overlayId: data.selected[i]});
                     }
                 });
 
                 self.layerlist.on('uncheck_node.jstree', function (e, data) {
-                    let node = data.instance.get_node(data.node.a_attr.id);
-                    let original = node.original;
-
-                    console.log("^ unchecked..." + node.text, original);
-                    changeNodeStatus(node, "enable");
-
-                    console.log("^ clearing..." + node.text, node.original);
-                    if (original.hasOwnProperty("perspective")) {
-                        original.perspective.remove();
-                        delete original.perspective;
-                    }
+                    self.hideOverlay({overlayId: data.node});
                 });
 
                 self.layerlist.on('select_node.jstree', function (e, data) {
@@ -99,10 +65,10 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService", "interface
                         if (original.hasOwnProperty("layer")) {
                             if (original.layer.hasOwnProperty("query") &&
                                 ((original.layer.query || false) === true)) {
-                                    if (original.hasOwnProperty("perspective")) {
-                                        original.perspective.remove();
-                                        delete original.perspective;
-                                    }
+                                if (original.hasOwnProperty("perspective")) {
+                                    original.perspective.remove();
+                                    delete original.perspective;
+                                }
 
                                 uncheckSelected(node);
                                 self.discoverLayers(node);
@@ -185,7 +151,7 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService", "interface
                                             $.each(newNodes, function (pIndex, pValue) {
                                                 $.each(pValue.subLayers, function (subIndex, subValue) {
                                                     if (subValue.id === value.id) {
-                                                        parent = $('#layerlistDiv').jstree().get_node(pValue.id);
+                                                        parent = self.instance.get_node(pValue.id);
                                                     }
                                                 });
                                             });
@@ -205,7 +171,7 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService", "interface
                                             $.each(newNodes, function (pIndex, pValue) {
                                                 $.each(pValue.subLayers, function (subIndex, subValue) {
                                                     if (subValue.id === value.id) {
-                                                        parent = $('#layerlistDiv').jstree().get_node(pValue.id);
+                                                        parent = self.instance.get_node(pValue.id);
                                                     }
                                                 });
                                             });
@@ -268,19 +234,19 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService", "interface
             };
 
             uncheckSelected = function (nodeId) {
-                let node = $("#layerlistDiv").jstree().get_node(nodeId);
-                $("#layerlistDiv").jstree().uncheck_node(node);
+                let node = self.instance.get_node(nodeId);
+                self.instance.uncheck_node(node);
             };
 
             changeNodeStatus = function (nodeId, status) {
-                let node = $("#layerlistDiv").jstree().get_node(nodeId);
+                let node = self.instance.get_node(nodeId);
                 let cnode, original;
                 node.children.forEach(function (child_id) {
-                    cnode = $("#layerlistDiv").jstree().get_node(child_id);
+                    cnode = self.instance.get_node(child_id);
                     if (status === 'enable') {
-                        $("#layerlistDiv").jstree().enable_node(cnode);
+                        self.instance.enable_node(cnode);
                     } else {
-                        $("#layerlistDiv").jstree().disable_node(cnode);
+                        self.instance.disable_node(cnode);
                     }
 
                     original = cnode.original;
@@ -296,12 +262,111 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService", "interface
                 });
             };
 
-            self.addOverlay = function (overlayId, overlay) {
+            self.addOverlay = function (request) {
                 // get USER FAVORITES node and add new items as child nodes
+                let pNode = self.instance.get_node("USER1001");
+                if (request.hasOwnProperty("parentId")) {
+                    let cNode = self.instance.get_node(request.parentId);
+                    if ((cNode !== null) || (cNode !== undefined)) {
+                        pNode = cNode;
+                    }
+                }
+
+                // check if node already exists; if yes - ignore
+                let oNode = self.instance.get_node(request.overlayId);
+                if ((oNode === undefined) || (oNode === null) || (!oNode)) {
+                    let pId = pNode.a_attr.id;
+
+                    let nNode = {
+                        "id": request.overlayId,
+                        "text": request.name,
+                        "icon": "",
+                        "state": {
+                            "opened": false,
+                            "disabled": false,
+                            "selected": false
+                        },
+                        "a_attr": {
+                            "class": "no_checkbox"
+                        }
+                    };
+
+                    let nId = $('#layerlistDiv').jstree('create_node', $("#" + pId), nNode, 'last', false, false);
+                } else {
+                    if (oNode.text !== request.name) {
+                        oNode.text = request.name;
+                        oNode.original.text = request.name;
+
+                        let oId = oNode.a_attr.id;
+                        $('#layerlistDiv').jstree('rename_node', $("#" + oId), oNode.text)
+                    }
+                }
             };
 
-            self.removeOverlay = function(overlayId) {
+            self.removeOverlay = function (request) {
                 // get USER FAVORITES node and remove items from child nodes
+                let oNode = $("#layerlistDiv").jstree().get_node(request.overlayId);
+                if ((oNode !== undefined) || (oNode !== null)) {
+                    let pId = oNode.a_attr.id;
+
+                    // uncheck and remove the layers from map
+                    uncheckSelected(pId);
+                    $("#layerlistDiv").jstree("delete_node", $("#" + pId));
+                }
+            };
+
+            self.hideOverlay = function (request) {
+                // get USER FAVORITES node and remove items from child nodes
+                let node = self.instance.get_node(request.overlayId);
+                if ((node !== undefined) || (node !== null)) {
+                    let pId = node.a_attr.id;
+
+                    // uncheck and remove the layers from map
+                    uncheckSelected(pId);
+                    let original = node.original;
+
+                    console.log("^ unchecked..." + node.text, original);
+                    changeNodeStatus(node, "enable");
+
+                    console.log("^ clearing..." + node.text, node.original);
+                    if (original.hasOwnProperty("perspective")) {
+                        original.perspective.remove();
+                        delete original.perspective;
+                    }
+                }
+            };
+
+            self.showOverlay = function (request) {
+                // get USER FAVORITES node and remove items from child nodes
+                let node = self.instance.get_node(request.overlayId);
+                if ((Node !== undefined) || (Node !== null)) {
+                    let original = node.original;
+
+                    let parentId, parentNode, parentText;
+                    if (node.children.length === 0) {
+                        console.log("^ checked..." + node.text, original);
+
+                        if (!original.hasOwnProperty("perspective")) {
+                            parentId = self.instance.get_parent(node);
+                            parentNode = self.instance.get_node(parentId);
+                            parentText = parentNode.text;
+
+                            self.addService(parentId, parentText, original);
+                        }
+                    } else {
+                        if (node.children.length > 0) {
+                            console.log("^ checked..." + node.text, original);
+                            changeNodeStatus(node, "disable");
+                            if (!original.hasOwnProperty("perspective")) {
+                                parentId = self.instance.get_parent(node);
+                                parentNode = self.instance.get_node(parentId);
+                                parentText = parentNode.text;
+
+                                self.addService(parentId, parentText, original);
+                            }
+                        }
+                    }
+                }
             };
 
             self.addLayers = function (layers) {

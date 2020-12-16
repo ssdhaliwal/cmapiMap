@@ -76,45 +76,6 @@ require([
     global.plugins.extLayerlist = new extLayerlist(global);
 
     window.setTimeout(() => {
-      let layers = [{
-        "overlayId": "SUBDIR01",
-        "feature": "USER1001-01",
-        "text": "User Layer - Test1",
-        "layer": {
-          "properties": {
-            "url": "https://nowcoast.noaa.gov/arcgis/rest/services/nowcoast/wwa_meteocean_tropicalcyclones_trackintensityfcsts_time/MapServer/",
-            "credentials": {
-              "required": false,
-              "token": ""
-            }
-          },
-          "params": {
-            "serviceType": "dynamic",
-            "format": "image/png",
-            "refreshInterval": "10",
-            "zoom": "false",
-            "showLabels": "false",
-            "opacity": "0.50",
-            "transparent": "true",
-            "useProxy": "false"
-          }
-        }
-      }];
-
-      global.plugins.extLayerlist.addLayers(layers);
-      /*
-      let rivers = new FeatureLayer("https://sampleserver3.arcgisonline.com/ArcGIS/rest/services/Hydrography/Watershed173811/MapServer/1", {
-        mode: FeatureLayer.MODE_ONDEMAND,
-        outFields: ["*"]
-      });
-      let waterbodies = new FeatureLayer("https://sampleserver3.arcgisonline.com/ArcGIS/rest/services/Hydrography/Watershed173811/MapServer/0", {
-        mode: FeatureLayer.MODE_ONDEMAND,
-        outFields: ["*"]
-      });
-
-      global.plugins.extMap.map.addLayers([waterbodies, rivers]);
-      */
-
       global.interfaces.messageService = new messageService(global);
     }, 1000);
   }
