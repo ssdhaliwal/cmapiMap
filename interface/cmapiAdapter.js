@@ -17,6 +17,7 @@ define(["plugins/ViewUtilities"],
             self.init();
 
             // cmapi functions
+            // 1. map.overlay.*
             self.onMapOverlayCreate = function(request) {
                 // check minimum requirement - name or id
                 if (request.hasOwnProperty("name") || request.hasOwnProperty("overlayId")) {
@@ -35,6 +36,19 @@ define(["plugins/ViewUtilities"],
                 // check minimum requirement - name or id
                 if (request.hasOwnProperty("overlayId")) {
                     global.plugins.extLayerlist.removeOverlay(request);
+                }
+            };
+
+            // 2. map.feature.*
+            self.onMapFeaturePlotUrl = function(request) {
+                if (request.hasOwnProperty("featureId") && request.hasOwnProperty("url")) {
+                    if (!ViewUtilities.isEmpty(request.featureId) && !ViewUtilities.isEmpty(request.url)) {
+                        if (!request.hasOwnProperty("name") || ViewUtilities.isEmpty(request.name)) {
+                            request.name = request.featureId;
+                        }
+                        
+                        global.plugins.extLayerlist.plotFeatureUrl(request);
+                    }
                 }
             };
 

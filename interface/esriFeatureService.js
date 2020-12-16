@@ -124,7 +124,7 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                     }
                 }
 
-                if (params.showLabels && (params.showLabels === true || params.showLabels === "true")) {
+                if (params.showLabels && ViewUtilities.getBoolean(params.showLabels)) {
                     var lblSymbol = null, lblClass = null;
 
                     if (params.lblClass) {

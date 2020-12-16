@@ -223,6 +223,8 @@ define(["esri/geometry/Extent"],
                         return false;
                     }
                 }
+
+                return false;
             },
 
             numberToHex: function (value) {

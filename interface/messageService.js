@@ -19,12 +19,19 @@ define(["interface/cmapiAdapter", "plugins/ViewUtilities"],
                     console.log(data);
 
                     if (data.hasOwnProperty("channel") && data.hasOwnProperty("payload")) {
+                        let payload = ViewUtilities.tryJSONParse(data.payload);
+
                         switch (data.channel) {
+                            // 1. map.overlay.*
                             case "map.overlay.create":
-                                self.cmapiAdapter.onMapOverlayCreate(ViewUtilities.tryJSONParse(data.payload));
+                                self.cmapiAdapter.onMapOverlayCreate(payload);
                                 break;
                             case "map.overlay.remove":
-                                self.cmapiAdapter.onMapOverlayRemove(ViewUtilities.tryJSONParse(data.payload));
+                                self.cmapiAdapter.onMapOverlayRemove(payload);
+                                break;
+                            // 2. map.feature.*
+                            case "map.feature.plot.url":
+                                self.cmapiAdapter.onMapFeaturePlotUrl(payload);
                                 break;
                         }
                     }
