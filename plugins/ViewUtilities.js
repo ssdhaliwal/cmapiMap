@@ -326,12 +326,12 @@ define(["esri/geometry/Extent"],
                 img.src = url + "/favicon.ico";
             },
 
-            convertDDToDDM: function (latitude, longitude) {
-                return convertDDLatitudeToDDM(latitude) + ", " +
-                    convertDDLongitudeToDDM(longitude);
+            convertDDToDMM: function (latitude, longitude) {
+                return convertDDLatitudeToDMM(latitude) + ", " +
+                convertDDLongitudeToDMM(longitude);
             },
 
-            convertDDLongitudeToDDM: function (longitude) {
+            convertDDLongitudeToDMM: function (longitude) {
                 var lon = Number(longitude);
                 var dir = (lon >= 0 ? 'E' : 'W');
                 lon = Math.abs(lon);
@@ -340,7 +340,7 @@ define(["esri/geometry/Extent"],
                 return d + '° ' + m + '\' ' + dir;
             },
 
-            convertDDLatitudeToDDM: function (latitude) {
+            convertDDLatitudeToDMM: function (latitude) {
                 var lat = Number(latitude);
                 var dir = (lat >= 0 ? 'N' : 'S');
                 lat = Math.abs(lat);

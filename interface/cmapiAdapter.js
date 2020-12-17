@@ -14,8 +14,6 @@ define(["plugins/ViewUtilities"],
             self.registerEvents = function () {
             };
 
-            self.init();
-
             // cmapi functions
             // 1. map.overlay.*
             self.onMapOverlayCreateUpdate = function (request) {
@@ -117,6 +115,7 @@ define(["plugins/ViewUtilities"],
 
             // 5. map.message.*
 
+            self.init();
         };
 
         return cmapiAdapter;

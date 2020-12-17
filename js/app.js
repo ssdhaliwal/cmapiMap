@@ -18,6 +18,7 @@ require([
   "plugins/legend/Legend",
   "plugins/bookmarks/Bookmarks",
   "plugins/layerlist/Layerlist",
+  "interface/geometryService",
   "interface/messageService",
   "dojo/domReady!"
 ], function (
@@ -35,6 +36,7 @@ require([
   extLegend,
   extBookmarks,
   extLayerlist,
+  geometryService,
   messageService
 ) {
   var global = {};
@@ -61,6 +63,8 @@ require([
   });
   global.plugins.extMap = { map: {} };
   global.interfaces.messageService = new messageService(global);
+  global.interfaces.geometryService = new geometryService(global);
+
   global.plugins.extNotify = new extNotify(global);
   global.plugins.extToolbar = new extToolbar(global);
   global.plugins.extConfig = new extConfig(global);
