@@ -523,7 +523,7 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                     }));
 
                     if (e.graphic.geometry.type === "point") {
-                        selectQuery.geometry = ViewUtils.pointToExtent(map, e.graphic.geometry, 10);
+                        selectQuery.geometry = ViewUtilities.pointToExtent(self.map, e.graphic.geometry, 10);
                     } else {
                         selectQuery.geometry = e.graphic.geometry;
                     }

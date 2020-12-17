@@ -38,3 +38,39 @@ map.overlay.remove
 {
     "overlayId": "TEST-01"
 }
+
+map.feature.plot.url
+{
+	"featureId": "Test Url-Default KML",
+	"url": "https://nowcoast.noaa.gov/arcgis/rest/services/nowcoast/forecast_meteoceanhydro_pts_zones_geolinks/MapServer/1/"
+}
+{
+	"overlayId": "TEST-01",
+	"featureId": "Test Url-01FS",
+	"url": "https://nowcoast.noaa.gov/arcgis/rest/services/nowcoast/forecast_meteoceanhydro_pts_zones_geolinks/MapServer/1/",
+	"params": {
+		"serviceType": "feature"
+	}
+}
+{
+	"overlayId": "TEST",
+	"featureId": "USER1001-01",
+	"name": "Air Quality Index",
+	"url": "https://nowcoast.noaa.gov/arcgis/rest/services/nowcoast/forecast_meteoceanhydro_pts_zones_geolinks/MapServer/1/",
+	"format": "feature",
+	"properties": {
+		"credentials": {
+			"required": false,
+			"token": ""
+		}
+	},
+	"params": {
+		"format": "image/png",
+		"refreshInterval": "10",
+		"showLabels": "false",
+		"opacity": "0.50",
+		"transparent": "true",
+		"useProxy": "false"
+	},
+	"zoom": "false"
+}

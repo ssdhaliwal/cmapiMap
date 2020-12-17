@@ -51,9 +51,6 @@
                         "layer": {
                             "properties": {
                                 "dateCreated": "20180521",
-                                "role": [
-                                    "OWF Users"
-                                ],
                                 "dateVerified": "20201208",
                                 "url": "https://nowcoast.noaa.gov/arcgis/rest/services/nowcoast/obs_meteocean_insitu_sfc_time/MapServer/",
                                 "credentials": {
@@ -63,13 +60,7 @@
                             },
                             "params": {
                                 "serviceType": "dynamic",
-                                "format": "image/png",
-                                "refreshInterval": "10",
                                 "zoom": "true",
-                                "showLabels": "false",
-                                "opacity": "0.50",
-                                "transparent": "true",
-                                "useProxy": "false",
                                 "visibleLayers": [
                                     0
                                 ]
@@ -89,9 +80,6 @@
                             "query": true,
                             "properties": {
                                 "dateCreated": "20180521",
-                                "role": [
-                                    "OWF Users"
-                                ],
                                 "dateVerified": "20201208",
                                 "url": "https://nowcoast.noaa.gov/arcgis/rest/services/nowcoast/wwa_meteoceanhydro_shortduration_hazards_warnings_time/MapServer/",
                                 "credentials": {
@@ -100,14 +88,7 @@
                                 }
                             },
                             "params": {
-                                "serviceType": "dynamic",
-                                "format": "image/png",
-                                "refreshInterval": "10",
-                                "zoom": "false",
-                                "showLabels": "false",
-                                "opacity": "0.50",
-                                "transparent": "true",
-                                "useProxy": "false"
+                                "serviceType": "dynamic"
                             }
                         }
                     },
@@ -123,9 +104,6 @@
                         "layer": {
                             "properties": {
                                 "dateCreated": "20180521",
-                                "role": [
-                                    "OWF Users"
-                                ],
                                 "dateVerified": "20201208",
                                 "url": "https://nowcoast.noaa.gov/arcgis/rest/services/nowcoast/radar_meteo_imagery_nexrad_time/MapServer/",
                                 "credentials": {
@@ -135,13 +113,6 @@
                             },
                             "params": {
                                 "serviceType": "dynamic",
-                                "format": "image/png",
-                                "refreshInterval": "10",
-                                "zoom": "false",
-                                "showLabels": "false",
-                                "opacity": "0.50",
-                                "transparent": "true",
-                                "useProxy": "false",
                                 "visibleLayers": [
                                     0
                                 ]
@@ -161,9 +132,6 @@
                             "query": true,
                             "properties": {
                                 "dateCreated": "20180521",
-                                "role": [
-                                    "OWF Users"
-                                ],
                                 "dateVerified": "20201208",
                                 "url": "https://nowcoast.noaa.gov/arcgis/rest/services/nowcoast/wwa_meteocean_tropicalcyclones_trackintensityfcsts_time/MapServer/",
                                 "credentials": {
@@ -172,14 +140,7 @@
                                 }
                             },
                             "params": {
-                                "serviceType": "dynamic",
-                                "format": "image/png",
-                                "refreshInterval": "10",
-                                "zoom": "false",
-                                "showLabels": "false",
-                                "opacity": "0.50",
-                                "transparent": "true",
-                                "useProxy": "false"
+                                "serviceType": "dynamic"
                             }
                         }
                     }
@@ -211,9 +172,6 @@
                             "query": true,
                             "properties": {
                                 "dateCreated": "20180521",
-                                "role": [
-                                    "OWF Users"
-                                ],
                                 "dateVerified": "20201208",
                                 "url": "https://idpgis.ncep.noaa.gov/arcgis/rest/services/NWS_Forecasts_Guidance_Warnings/watch_warn_adv/MapServer/",
                                 "credentials": {
@@ -222,14 +180,7 @@
                                 }
                             },
                             "params": {
-                                "serviceType": "dynamic",
-                                "format": "image/png",
-                                "refreshInterval": "10",
-                                "zoom": "false",
-                                "showLabels": "false",
-                                "opacity": "0.50",
-                                "transparent": "true",
-                                "useProxy": "false"
+                                "serviceType": "dynamic"
                             }
                         }
                     }

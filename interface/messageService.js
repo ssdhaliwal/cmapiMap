@@ -20,6 +20,7 @@ define(["interface/cmapiAdapter", "plugins/ViewUtilities"],
 
                     if (data.hasOwnProperty("channel") && data.hasOwnProperty("payload")) {
                         let payload = ViewUtilities.tryJSONParse(data.payload);
+                        console.log(payload);
 
                         switch (data.channel) {
                             // 1. map.overlay.*
@@ -28,6 +29,16 @@ define(["interface/cmapiAdapter", "plugins/ViewUtilities"],
                                 break;
                             case "map.overlay.remove":
                                 self.cmapiAdapter.onMapOverlayRemove(payload);
+                                break;
+                            case "map.overlay.hide":
+                                self.cmapiAdapter.onMapOverlayRemove(payload);
+                                break;
+                            case "map.overlay.show":
+                                self.cmapiAdapter.onMapOverlayShow(payload);
+                                break;
+                            case "map.overlay.update":
+                                // cannot change parent Id...
+                                self.cmapiAdapter.onMapOverlayUpdate(payload);
                                 break;
                             // 2. map.feature.*
                             case "map.feature.plot.url":

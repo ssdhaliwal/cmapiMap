@@ -1,8 +1,6 @@
 define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService", "interface/esriFeatureService",
-    "interface/cmapiAdapter", 
     "plugins/ViewUtilities"],
     function (JSTree, esriDynamicMapService, esriFeatureService,
-        cmapiAdapter,
         ViewUtilities) {
 
         let extLayerlist = function (global) {
@@ -11,7 +9,16 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService", "interface
             self.layerlist = null;
             self.instance = null;
             self.layers = [];
-            self.userOverlayId = "USER1001";
+            self.defaultOverlayId = "USER1001";
+            self.defaultParams = {
+                "format": "image/png",
+                "refreshInterval": "10",
+                "zoom": "false",
+                "showLabels": "false",
+                "opacity": "0.50",
+                "transparent": "true",
+                "useProxy": "false"
+            };
 
             self.init = function () {
                 self.layerlist = $('#layerlistDiv').jstree({
@@ -212,6 +219,13 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService", "interface
                 service.overlayId = overlayId;
                 service.overlayText = overlayText;
 
+                // add default params to service if not present
+                $.each(self.defaultParams, function(index, value) {
+                    if (!service.layer.params.hasOwnProperty(index)) {
+                        service.layer.params[index] = value;
+                    }
+                });
+
                 if (service.layer.hasOwnProperty("params")) {
                     if (service.layer.params.hasOwnProperty("serviceType")) {
                         if (service.layer.params.serviceType === "dynamic") {
@@ -267,7 +281,7 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService", "interface
 
             self.addOverlay = function (request) {
                 // get USER FAVORITES node and add new items as child nodes
-                let pNode = self.instance.get_node(self.userOverlayId);
+                let pNode = self.instance.get_node(self.defaultOverlayId);
                 if (request.hasOwnProperty("parentId")) {
                     let cNode = self.instance.get_node(request.parentId);
                     if ((cNode !== null) || (cNode !== undefined)) {
@@ -374,77 +388,76 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService", "interface
 
             self.plotFeatureUrl = function (request) {
                 // create the overlay if not existing
-                if (request.hasOwnProperty("overlayId") && ViewUtilities.isEmpty(request.overlayId)) {
-                    cmapiAdapter.onMapOverlayCreate({overlayId: request.overlayId});
+                if (request.hasOwnProperty("overlayId") && !ViewUtilities.isEmpty(request.overlayId)) {
+                    global.interfaces.messageService.cmapiAdapter.onMapOverlayCreate({overlayId: request.overlayId});
                 }
 
-                let overlayId = request.overlayId || self.userOverlayId;
-                
-                // create layer payload
-                let layerCopy = {	
-                    "id": request.featureId,
-                    "text": request.name,
-                    "layer": {
-                        "properties": {
-                            "url": request.url,
-                            "credentials": {
-                                "required": request.properties.credentials.required || false,
-                                "token": request.properties.credentials.token || ""
+                // check if feature id already exists
+                let fId = self.instance.get_node(request.featureId);
+                if ((fId === undefined) || (fId === null)) {
+                    // create layer payload
+                    let layerCopy = {	
+                        "id": request.featureId,
+                        "text": request.name,
+                        "icon": "/esri-cmapi/plugins/layerlist/icons/KML.png",
+                        "layer": {
+                            "properties": {
+                                "url": request.url,
+                                "credentials": {
+                                    "required": false,
+                                    "token": ""
+                                }
+                            },
+                            "params": {
+                                "serviceType": "kml"
                             }
-                        },
-                        "params": {
-                            "serviceType": "kml",
-                            "format": "image/png",
-                            "refreshInterval": "10",
-                            "zoom": "false",
-                            "showLabels": "false",
-                            "opacity": "0.50",
-                            "transparent": "true",
-                            "useProxy": "false"
                         }
-                    }
-                };
+                    };
 
-                // add param overrides & custom properties
-                $.each(request.params, function(index, param) {
-                    layerCopy.layer.params[param] = request.params.param;
-                });
+                    // add param overrides & custom properties
+                    $.each(request.params, function(index, value) {
+                        layerCopy.layer.params[index] = value;
+                    });
+                    $.each(request.properties, function(index, value) {
+                        layerCopy.layer.properties[index] = value;
+                    });
 
-                // add the layer to the layerlist
-                layerCopy.icon = "/esri-cmapi/plugins/layerlist/icons/FS.png";
-                layerCopy.layer.params.serviceType = "feature";
-                switch (layerCopy.layer.params.serviceType) {
-                    case "dynamic":
-                        layerCopy.icon = "/esri-cmapi/plugins/layerlist/icons/DMS.png";
-                        if (layerCopy.layer.hasOwnProperty("query") && ViewUtilities.getBoolean(layerCopy.layer.query)) {
-                            layerCopy.icon = "/esri-cmapi/plugins/layerlist/icons/DMS-Query.png";
-                        }
-                        layerCopy.layer.params.serviceType = "dynamic";
+                    // add the layer to the layerlist
+                    switch (layerCopy.layer.params.serviceType) {
+                        case "dynamic":
+                            layerCopy.icon = "/esri-cmapi/plugins/layerlist/icons/DMS.png";
+                            if (layerCopy.layer.hasOwnProperty("query") && ViewUtilities.getBoolean(layerCopy.layer.query)) {
+                                layerCopy.icon = "/esri-cmapi/plugins/layerlist/icons/DMS-Query.png";
+                            }
+                            layerCopy.layer.params.serviceType = "dynamic";
+                            break;
+                        case "feature":
+                            layerCopy.icon = "/esri-cmapi/plugins/layerlist/icons/FS.png";
+                            layerCopy.layer.params.serviceType = "feature";
                         break;
-                    case "feature":
-                        layerCopy.icon = "/esri-cmapi/plugins/layerlist/icons/FS.png";
-                        layerCopy.layer.params.serviceType = "feature";
-                    break;
-                    case "wms":
-                        layerCopy.icon = "/esri-cmapi/plugins/layerlist/icons/WMS.png";
-                        layerCopy.layer.params.serviceType = "wms";
-                    break;
-                    case "kml":
-                        layerCopy.icon = "/esri-cmapi/plugins/layerlist/icons/KML.png";
-                        layerCopy.layer.params.serviceType = "kml";
-                    break;
-                    case "kmz":
-                        layerCopy.icon = "/esri-cmapi/plugins/layerlist/icons/KMZ.png";
-                        layerCopy.layer.params.serviceType = "kmz";
-                    break;
-                    case "image":
-                        layerCopy.icon = "/esri-cmapi/plugins/layerlist/icons/ISL.png";
-                        layerCopy.layer.params.serviceType = "image";
-                    break;
-                }
+                        case "wms":
+                            layerCopy.icon = "/esri-cmapi/plugins/layerlist/icons/WMS.png";
+                            layerCopy.layer.params.serviceType = "wms";
+                        break;
+                        case "kml":
+                            layerCopy.icon = "/esri-cmapi/plugins/layerlist/icons/KML.png";
+                            layerCopy.layer.params.serviceType = "kml";
+                        break;
+                        case "kmz":
+                            layerCopy.icon = "/esri-cmapi/plugins/layerlist/icons/KMZ.png";
+                            layerCopy.layer.params.serviceType = "kmz";
+                        break;
+                        case "image":
+                            layerCopy.icon = "/esri-cmapi/plugins/layerlist/icons/ISL.png";
+                            layerCopy.layer.params.serviceType = "image";
+                        break;
+                    }
 
-                let pNode = self.instance.get_node(self.userOverlayId);
-                let id = $('#layerlistDiv').jstree('create_node', $("#" + pNode.a_attr.id), layerCopy, 'last', false, false);
+                    let overlayId = request.overlayId || self.defaultOverlayId;
+                    let pNode = self.instance.get_node(overlayId);
+                    console.log(layerCopy);
+                    let id = $('#layerlistDiv').jstree('create_node', $("#" + pNode.a_attr.id), layerCopy, 'last', false, false);
+                }
             };
 
             self.init();

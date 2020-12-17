@@ -33,9 +33,37 @@ define(["plugins/ViewUtilities"],
             };
 
             self.onMapOverlayRemove = function(request) {
-                // check minimum requirement - name or id
+                // check minimum requirement - id
                 if (request.hasOwnProperty("overlayId")) {
                     global.plugins.extLayerlist.removeOverlay(request);
+                }
+            };
+
+            self.onMapOverlayHide = function(request) {
+                // check minimum requirement - id
+                if (request.hasOwnProperty("overlayId")) {
+                    console.log(request);
+                }
+            };
+
+            self.onMapOverlayShow = function(request) {
+                // check minimum requirement - id
+                if (request.hasOwnProperty("overlayId")) {
+                    console.log(request);
+                }
+            };
+
+            self.onMapOverlayUpdate = function(request) {
+                // check minimum requirement - name or id
+                if (request.hasOwnProperty("name") || request.hasOwnProperty("overlayId")) {
+                    if (!request.hasOwnProperty("name") || ViewUtilities.isEmpty(request.name)) {
+                        request.name = request.overlayId;
+                    }
+                    if (!request.hasOwnProperty("overlayId") || ViewUtilities.isEmpty(request.overlayId)) {
+                        request.overlayId = request.name;
+                    }
+
+                    console.log(request);
                 }
             };
 
@@ -46,7 +74,7 @@ define(["plugins/ViewUtilities"],
                         if (!request.hasOwnProperty("name") || ViewUtilities.isEmpty(request.name)) {
                             request.name = request.featureId;
                         }
-                        
+
                         global.plugins.extLayerlist.plotFeatureUrl(request);
                     }
                 }
