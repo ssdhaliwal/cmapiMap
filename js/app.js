@@ -60,6 +60,7 @@ require([
     placement: "bottom"
   });
   global.plugins.extMap = { map: {} };
+  global.interfaces.messageService = new messageService(global);
   global.plugins.extNotify = new extNotify(global);
   global.plugins.extToolbar = new extToolbar(global);
   global.plugins.extConfig = new extConfig(global);
@@ -73,10 +74,9 @@ require([
     global.plugins.extBasemap = new extBasemap(global);
     global.plugins.extLegend = new extLegend(global);
     global.plugins.extBookmarks = new extBookmarks(global);
-    global.plugins.extLayerlist = new extLayerlist(global);
 
     window.setTimeout(() => {
-      global.interfaces.messageService = new messageService(global);
+      global.plugins.extLayerlist = new extLayerlist(global);
     }, 1000);
   }
 });

@@ -5,6 +5,7 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService", "interface
 
         let extLayerlist = function (global) {
             let self = this;
+            self.message = global.interfaces.messageService;
             self.layerlist = null;
             self.instance = null;
             self.layers = [];
@@ -54,14 +55,11 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService", "interface
                 $("#layerlist").on("click", self.handleClick);
 
                 self.layerlist.on('check_node.jstree', function (e, data) {
-                    let length = data.selected.length;
-                    for (i = 0, j = length; i < j; i++) {
-                        self.showOverlay({overlayId: data.selected[i]});
-                    }
+                    self.showOverlay({ overlayId: data.node });
                 });
 
                 self.layerlist.on('uncheck_node.jstree', function (e, data) {
-                    self.hideOverlay({overlayId: data.node});
+                    self.hideOverlay({ overlayId: data.node });
                 });
 
                 self.layerlist.on('select_node.jstree', function (e, data) {
@@ -206,7 +204,8 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService", "interface
                                 }
                             }
                         } catch (exception) {
-                            console.log(exception);
+                            let payload = { "type": "map.overlay.*", "msg": "user click on query overlay", "error": exception };
+                            self.message.sendMessage("map.error", JSON.stringify(payload));
                         }
                     });
                 }
@@ -219,34 +218,41 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService", "interface
                 service.overlayText = overlayText;
 
                 // add default params to service if not present
-                if (service.layer.hasOwnProperty("params")) {
-                    $.each(self.defaultParams, function(index, value) {
-                        if (!service.layer.params.hasOwnProperty(index)) {
-                            service.layer.params[index] = value;
-                        }
-                    });
+                if (service.hasOwnProperty("layer")) {
+                    if (service.layer.hasOwnProperty("params")) {
+                        $.each(self.defaultParams, function (index, value) {
+                            if (!service.layer.params.hasOwnProperty(index)) {
+                                service.layer.params[index] = value;
+                            }
+                        });
 
-                    if (service.layer.params.hasOwnProperty("serviceType")) {
-                        if (service.layer.params.serviceType === "dynamic") {
-                            service.perspective = new esriDynamicMapService(global, service);
-                        } else if (service.layer.params.serviceType === "feature") {
-                            service.perspective = new esriFeatureService(global, service);
-                        } else if (service.layer.params.serviceType === "kml") {
-                        } else if (service.layer.params.serviceType === "wms") {
-                        } else if (service.layer.params.serviceType === "tiles") {
-                        } else if (service.layer.params.serviceType === "image") {
-                        } else if (service.layer.params.serviceType === "csv") {
-                        } else if (service.layer.params.serviceType === "raster") {
-                        } else if (service.layer.params.serviceType === "vectorTile") {
-                        } else if (service.layer.params.serviceType === "webmap") {
-                        } else if (service.layer.params.serviceType === "vectorImage") {
-                        } else if (service.layer.params.serviceType === "stream") {
-                        } else if (service.layer.params.serviceType === "wcs") {
-                        } else if (service.layer.params.serviceType === "wcf") {
-                        } else if (service.layer.params.serviceType === "geoJson") {
+                        if (service.layer.params.hasOwnProperty("serviceType")) {
+                            if (service.layer.params.serviceType === "dynamic") {
+                                service.perspective = new esriDynamicMapService(global, service);
+                            } else if (service.layer.params.serviceType === "feature") {
+                                service.perspective = new esriFeatureService(global, service);
+                            } else if (service.layer.params.serviceType === "kml") {
+                            } else if (service.layer.params.serviceType === "wms") {
+                            } else if (service.layer.params.serviceType === "tiles") {
+                            } else if (service.layer.params.serviceType === "image") {
+                            } else if (service.layer.params.serviceType === "csv") {
+                            } else if (service.layer.params.serviceType === "raster") {
+                            } else if (service.layer.params.serviceType === "vectorTile") {
+                            } else if (service.layer.params.serviceType === "webmap") {
+                            } else if (service.layer.params.serviceType === "vectorImage") {
+                            } else if (service.layer.params.serviceType === "stream") {
+                            } else if (service.layer.params.serviceType === "wcs") {
+                            } else if (service.layer.params.serviceType === "wcf") {
+                            } else if (service.layer.params.serviceType === "geoJson") {
+                            }
                         }
                     }
                 }
+            };
+
+            checkSelected = function (nodeId) {
+                let node = self.instance.get_node(nodeId);
+                self.instance.check_node(node);
             };
 
             uncheckSelected = function (nodeId) {
@@ -289,9 +295,9 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService", "interface
                 }
 
                 // check if node already exists; if yes - ignore
+                let pId = pNode.a_attr.id;
                 let oNode = self.instance.get_node(request.overlayId);
                 if (!ViewUtilities.getBoolean(oNode)) {
-                    let pId = pNode.a_attr.id;
 
                     let nNode = {
                         "id": request.overlayId,
@@ -309,12 +315,22 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService", "interface
 
                     let nId = $('#layerlistDiv').jstree('create_node', $("#" + pId), nNode, 'last', false, false);
                 } else {
-                    if (oNode.text !== request.name) {
-                        oNode.text = request.name;
-                        oNode.original.text = request.name;
-
+                    if ((oNode.text !== request.name) || request.hasOwnProperty("parentId")) {
                         let oId = oNode.a_attr.id;
-                        $('#layerlistDiv').jstree('rename_node', $("#" + oId), oNode.text)
+                        if (oNode.text !== request.name) {
+                            oNode.text = request.name;
+                            oNode.original.text = request.name;
+
+                            $('#layerlistDiv').jstree('rename_node', $("#" + oId), oNode.text);
+                        }
+
+                        // if parent id is provided; move the node
+                        if (request.hasOwnProperty("parentId")) {
+                            $('#layerlistDiv').jstree('move_node', oNode, $("#" + pId), 'last', false, false);
+                        }
+                    } else {
+                        let payload = { "type": "map.overlay.create", "msg": request, "error": "duplicate overlay, already exists!" };
+                        self.message.sendMessage("map.error", JSON.stringify(payload));
                     }
                 }
             };
@@ -359,6 +375,7 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService", "interface
                     let original = node.original;
 
                     let parentId, parentNode, parentText;
+                    checkSelected(node.id);
                     if (node.children.length === 0) {
                         console.log("^ checked..." + node.text, original);
 
@@ -388,14 +405,14 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService", "interface
             self.plotFeatureUrl = function (request) {
                 // create the overlay if not existing
                 if (request.hasOwnProperty("overlayId") && !ViewUtilities.isEmpty(request.overlayId)) {
-                    global.interfaces.messageService.cmapiAdapter.onMapOverlayCreate({overlayId: request.overlayId});
+                    global.interfaces.messageService.cmapiAdapter.onMapOverlayCreate({ overlayId: request.overlayId });
                 }
 
                 // check if feature id already exists
                 let oNode = self.instance.get_node(request.featureId);
                 if (!ViewUtilities.getBoolean(oNode)) {
                     // create layer payload
-                    let layerCopy = {	
+                    let layerCopy = {
                         "id": request.featureId,
                         "text": request.name,
                         "icon": "/esri-cmapi/plugins/layerlist/icons/KML.png",
@@ -414,10 +431,10 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService", "interface
                     };
 
                     // add param overrides & custom properties
-                    $.each(request.params, function(index, value) {
+                    $.each(request.params, function (index, value) {
                         layerCopy.layer.params[index] = value;
                     });
-                    $.each(request.properties, function(index, value) {
+                    $.each(request.properties, function (index, value) {
                         layerCopy.layer.properties[index] = value;
                     });
 
@@ -433,23 +450,23 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService", "interface
                         case "feature":
                             layerCopy.icon = "/esri-cmapi/plugins/layerlist/icons/FS.png";
                             layerCopy.layer.params.serviceType = "feature";
-                        break;
+                            break;
                         case "wms":
                             layerCopy.icon = "/esri-cmapi/plugins/layerlist/icons/WMS.png";
                             layerCopy.layer.params.serviceType = "wms";
-                        break;
+                            break;
                         case "kml":
                             layerCopy.icon = "/esri-cmapi/plugins/layerlist/icons/KML.png";
                             layerCopy.layer.params.serviceType = "kml";
-                        break;
+                            break;
                         case "kmz":
                             layerCopy.icon = "/esri-cmapi/plugins/layerlist/icons/KMZ.png";
                             layerCopy.layer.params.serviceType = "kmz";
-                        break;
+                            break;
                         case "image":
                             layerCopy.icon = "/esri-cmapi/plugins/layerlist/icons/ISL.png";
                             layerCopy.layer.params.serviceType = "image";
-                        break;
+                            break;
                     }
 
                     let overlayId = request.overlayId || self.defaultOverlayId;

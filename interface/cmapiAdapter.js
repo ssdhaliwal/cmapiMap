@@ -18,7 +18,7 @@ define(["plugins/ViewUtilities"],
 
             // cmapi functions
             // 1. map.overlay.*
-            self.onMapOverlayCreate = function(request) {
+            self.onMapOverlayCreateUpdate = function(request) {
                 // check minimum requirement - name or id
                 if (request.hasOwnProperty("name") || request.hasOwnProperty("overlayId")) {
                     if (!request.hasOwnProperty("name") || ViewUtilities.isEmpty(request.name)) {
@@ -42,28 +42,14 @@ define(["plugins/ViewUtilities"],
             self.onMapOverlayHide = function(request) {
                 // check minimum requirement - id
                 if (request.hasOwnProperty("overlayId")) {
-                    console.log(request);
+                    global.plugins.extLayerlist.hideOverlay(request);
                 }
             };
 
             self.onMapOverlayShow = function(request) {
                 // check minimum requirement - id
                 if (request.hasOwnProperty("overlayId")) {
-                    console.log(request);
-                }
-            };
-
-            self.onMapOverlayUpdate = function(request) {
-                // check minimum requirement - name or id
-                if (request.hasOwnProperty("name") || request.hasOwnProperty("overlayId")) {
-                    if (!request.hasOwnProperty("name") || ViewUtilities.isEmpty(request.name)) {
-                        request.name = request.overlayId;
-                    }
-                    if (!request.hasOwnProperty("overlayId") || ViewUtilities.isEmpty(request.overlayId)) {
-                        request.overlayId = request.name;
-                    }
-
-                    console.log(request);
+                    global.plugins.extLayerlist.showOverlay(request);
                 }
             };
 

@@ -26,10 +26,20 @@ map.overlay.create
     "name": "TEST-03",
     "overlayId": "TEST-01"
 }
-
-// link to parent
+// new child to parent
 {
     "name": "TEST-01-1",
+    "overlayId": "TEST-01-1",
+    "parentId": "TEST-01"
+}
+// move parent
+{
+    "overlayId": "TEST-01-1",
+    "parentId": "TEST-02"
+}
+// move parent and rename
+{
+    "name": "TEST-01-1 UPDATE",
     "overlayId": "TEST-01-1",
     "parentId": "TEST-01"
 }
@@ -37,6 +47,19 @@ map.overlay.create
 map.overlay.remove
 {
     "overlayId": "TEST-01"
+}
+
+map.overlay.show
+{
+    "overlayId": "WTHR1002-01"
+}
+{
+    "overlayId": "WTHR1003-01"
+}
+
+map.overlay.hide
+{
+    "overlayId": "WTHR1002-01"
 }
 
 map.feature.plot.url

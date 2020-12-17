@@ -441,7 +441,7 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                                             actionData += "\"" + field + "\":\"${" + field + "}\","
                                         }
                                     });
-                                    
+
                                     if (params.infoTemplateClass.standard.commandSet.staticFields) {
                                         actionData += "staticFields:" + JSON.stringify(params.infoTemplateClass.standard.commandSet.staticFields);
                                     }
@@ -498,9 +498,8 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                         deselectedName: e.graphic.getLayer().name
                     });
 
-                    self.message.sendMessage(JSON.stringify({
-                        message: "map.feature.clicked",
-                        payload: {
+                    self.message.sendMessage("map.feature.clicked",
+                        JSON.stringify({
                             overlayId: self.service.overlayId,
                             featureId: self.service.id,
                             lat: e.mapPoint.y,
@@ -508,19 +507,16 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                             button: "left",
                             type: "single",
                             keys: []
-                        }
-                    }));
+                        }));
 
-                    self.message.sendMessage(JSON.stringify({
-                        message: "map.status.selected",
-                        payload: {
+                    self.message.sendMessage("map.status.selected",
+                        JSON.stringify({
                             overlayId: self.service.overlayId,
                             selectedFeatures: [{
                                 featureId: self.service.id,
                                 selectedId: e.graphic.attributes.id
                             }]
-                        }
-                    }));
+                        }));
 
                     if (e.graphic.geometry.type === "point") {
                         selectQuery.geometry = ViewUtilities.pointToExtent(self.map, e.graphic.geometry, 10);
@@ -540,34 +536,29 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                                 });
                             }
 
-                            self.message.sendMessage(JSON.stringify({
-                                message: "map.feature.selected",
-                                payload: {
+                            self.message.sendMessage("map.feature.selected",
+                                JSON.stringify({
                                     overlayId: self.service.overlayId,
                                     featureId: self.service.id,
                                     selectedId: e.graphic.getLayer().id,
                                     selectedName: e.graphic.getLayer().name,
                                     features: featureItems
-                                }
-                            }));
+                                }));
                         } else {
-                            self.message.sendMessage(JSON.stringify({
-                                message: "map.feature.selected",
-                                payload: {
+                            self.message.sendMessage("map.feature.selected",
+                                JSON.stringify({
                                     overlayId: self.service.overlayId,
                                     featureId: self.service.id,
                                     selectedId: e.graphic.getLayer().id,
                                     selectedName: e.graphic.getLayer().name
-                                }
-                            }));
+                                }));
                         }
                     });
                 });
 
                 self.layer.on('mouse-down', function (e) {
-                    self.message.sendMessage(JSON.stringify({
-                        message: "map.feature.mousedown",
-                        payload: {
+                    self.message.sendMessage("map.feature.mousedown",
+                        JSON.stringify({
                             overlayId: self.service.overlayId,
                             featureId: self.service.id,
                             lat: e.mapPoint.y,
@@ -575,14 +566,12 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                             button: "left",
                             type: "single",
                             keys: []
-                        }
-                    }));
+                        }));
                 });
 
                 self.layer.on('mouse-up', function (e) {
-                    self.message.sendMessage(JSON.stringify({
-                        message: "map.feature.mouseup",
-                        payload: {
+                    self.message.sendMessage("map.feature.mouseup",
+                        JSON.stringify({
                             overlayId: self.service.overlayId,
                             featureId: self.service.id,
                             lat: e.mapPoint.y,
@@ -590,8 +579,7 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                             button: "left",
                             type: "single",
                             keys: []
-                        }
-                    }));
+                        }));
                 });
 
                 self.layer.on("error", function (e) {
@@ -618,15 +606,13 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                 self.deregisterSearch();
 
                 $.each(self.selectedFeatures, function (index, feature) {
-                    self.message.sendMessage(JSON.stringify({
-                        message: "map.feature.deselected",
-                        payload: {
+                    self.message.sendMessage("map.feature.deselected",
+                        JSON.stringify({
                             overlayId: self.service.overlayId,
                             featureId: self.service.id,
                             deSelectedId: feature.deselectedId,
                             deSelectedName: feature.deselectedName
-                        }
-                    }));
+                        }));
                 });
                 self.selectedFeatures = [];
             };
@@ -665,8 +651,8 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                 };
 
                 let node = domConstruct.toDom("<div>I'm a Node {" + graphic.attributes.FID + "}<br>" +
-                    "<a href='javascript:window.GlobalNotify(\"ctrl-message\",\"" + 
-                        ViewUtilities.toHex(JSON.stringify(message)) + "\");'>click here</a></div>");
+                    "<a href='javascript:window.GlobalNotify(\"ctrl-message\",\"" +
+                    ViewUtilities.toHex(JSON.stringify(message)) + "\");'>click here</a></div>");
                 return node;
             };
 
