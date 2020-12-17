@@ -3,7 +3,7 @@ define(["esri/layers/ArcGISDynamicMapServiceLayer", "plugins/ViewUtilities"],
 
         let esriDynamicMapService = function (global, service) {
             let self = this;
-            self.map = global.plugins.extMap.map;
+            self.map = global.plugins.extMap.instance;
             self.search = global.plugins.extSearch;
 			self.notify = global.plugins.extNotify;
 			self.message = global.interfaces.messageService;

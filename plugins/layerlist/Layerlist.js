@@ -5,7 +5,6 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService", "interface
 
         let extLayerlist = function (global) {
             let self = this;
-            let map = global.plugins.extMap.map;
             self.layerlist = null;
             self.instance = null;
             self.layers = [];
@@ -68,7 +67,7 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService", "interface
                 self.layerlist.on('select_node.jstree', function (e, data) {
                     let length = data.selected.length;
                     for (i = 0, j = length; i < j; i++) {
-                        let node = data.instance.get_node(data.selected[i]);
+                        let node = self.instance.get_node(data.selected[i]);
                         console.log("+ select..." + node.text);
 
                         let original = node.original;
@@ -90,7 +89,7 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService", "interface
                 self.layerlist.on('deselect_node.jstree', function (e, data) {
                     let length = data.selected.length;
                     for (i = 0, j = length; i < j; i++) {
-                        let node = data.instance.get_node(data.selected[i]);
+                        let node = self.instance.get_node(data.selected[i]);
                         console.log("+ deselect..." + node.text);
                     }
                 });
@@ -220,13 +219,13 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService", "interface
                 service.overlayText = overlayText;
 
                 // add default params to service if not present
-                $.each(self.defaultParams, function(index, value) {
-                    if (!service.layer.params.hasOwnProperty(index)) {
-                        service.layer.params[index] = value;
-                    }
-                });
-
                 if (service.layer.hasOwnProperty("params")) {
+                    $.each(self.defaultParams, function(index, value) {
+                        if (!service.layer.params.hasOwnProperty(index)) {
+                            service.layer.params[index] = value;
+                        }
+                    });
+
                     if (service.layer.params.hasOwnProperty("serviceType")) {
                         if (service.layer.params.serviceType === "dynamic") {
                             service.perspective = new esriDynamicMapService(global, service);
@@ -284,14 +283,14 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService", "interface
                 let pNode = self.instance.get_node(self.defaultOverlayId);
                 if (request.hasOwnProperty("parentId")) {
                     let cNode = self.instance.get_node(request.parentId);
-                    if ((cNode !== null) || (cNode !== undefined)) {
+                    if (ViewUtilities.getBoolean(cNode)) {
                         pNode = cNode;
                     }
                 }
 
                 // check if node already exists; if yes - ignore
                 let oNode = self.instance.get_node(request.overlayId);
-                if ((oNode === undefined) || (oNode === null) || (!oNode)) {
+                if (!ViewUtilities.getBoolean(oNode)) {
                     let pId = pNode.a_attr.id;
 
                     let nNode = {
@@ -323,7 +322,7 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService", "interface
             self.removeOverlay = function (request) {
                 // get USER FAVORITES node and remove items from child nodes
                 let oNode = $("#layerlistDiv").jstree().get_node(request.overlayId);
-                if ((oNode !== undefined) || (oNode !== null)) {
+                if (ViewUtilities.getBoolean(oNode)) {
                     let pId = oNode.a_attr.id;
 
                     // uncheck and remove the layers from map
@@ -335,7 +334,7 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService", "interface
             self.hideOverlay = function (request) {
                 // get USER FAVORITES node and remove items from child nodes
                 let node = self.instance.get_node(request.overlayId);
-                if ((node !== undefined) || (node !== null)) {
+                if (ViewUtilities.getBoolean(node)) {
                     let pId = node.a_attr.id;
 
                     // uncheck and remove the layers from map
@@ -356,7 +355,7 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService", "interface
             self.showOverlay = function (request) {
                 // get USER FAVORITES node and remove items from child nodes
                 let node = self.instance.get_node(request.overlayId);
-                if ((Node !== undefined) || (Node !== null)) {
+                if (ViewUtilities.getBoolean(node)) {
                     let original = node.original;
 
                     let parentId, parentNode, parentText;
@@ -393,8 +392,8 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService", "interface
                 }
 
                 // check if feature id already exists
-                let fId = self.instance.get_node(request.featureId);
-                if ((fId === undefined) || (fId === null)) {
+                let oNode = self.instance.get_node(request.featureId);
+                if (!ViewUtilities.getBoolean(oNode)) {
                     // create layer payload
                     let layerCopy = {	
                         "id": request.featureId,

@@ -3,11 +3,11 @@ define(["esri/dijit/Scalebar"],
 
         let extScalebar = function (global) {
             let self = this;
-            let map = global.plugins.extMap.map;
-            self.scalebar = null;
+            let map = global.plugins.extMap.instance;
+            self.instance = null;
 
             self.init = function () {
-                self.scalebar = new esriScalebar({
+                self.instance = new esriScalebar({
                     map: map,
                     attachTo: "bottom-left",
                     scalebarUnit: "dual"

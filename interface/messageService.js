@@ -3,7 +3,6 @@ define(["interface/cmapiAdapter", "plugins/ViewUtilities"],
 
         let messageService = function (global) {
             let self = this;
-            let map = global.plugins.extMap.map;
             self.cmapiAdapter = new cmapiAdapter(global);
 
             self.init = function () {

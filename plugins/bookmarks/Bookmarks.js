@@ -3,12 +3,12 @@ define(["esri/dijit/Bookmarks"],
 
         let extBookmark = function (global) {
             let self = this;
-            let map = global.plugins.extMap.map;
-            self.bookmarks = null;
+            let map = global.plugins.extMap.instance;
+            self.instance = null;
             self.sources = [];
 
             self.init = function () {
-                self.bookmarks = new esriBookmarks({
+                self.instance = new esriBookmarks({
                     map: map,
                     bookmarks: self.sources,
                     editable: true

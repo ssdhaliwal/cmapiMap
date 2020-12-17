@@ -3,7 +3,6 @@ define(["dojo/html", "dojo/dom", "dojo/on"],
 
         let extConfig = function (global) {
             let self = this;
-            let map = global.plugins.extMap.map;
             self.fontColor = global.data.fontColor || null;
             self.fontColorName = global.data.fontColorName || "YellowGreen;#9ACD32";
 

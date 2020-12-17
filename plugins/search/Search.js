@@ -5,9 +5,9 @@ define(["esri/dijit/Search", "esri/layers/FeatureLayer", "esri/InfoTemplate", "e
 
         let extSearch = function (global) {
             let self = this;
-            let map = global.plugins.extMap.map;
+            let map = global.plugins.extMap.instance;
             let notify = global.plugins.extNotify;
-            self.search = null;
+            self.instance = null;
             self.sources = null;
 
             /** Regular Expression templatitudees for search sources */
@@ -253,7 +253,7 @@ define(["esri/dijit/Search", "esri/layers/FeatureLayer", "esri/InfoTemplate", "e
             });
 
             self.init = function () {
-                self.search = new mySearch({
+                self.instance = new mySearch({
                     enableButtonMode: false,
                     enableLabel: true,
                     enableInfoWindow: true,
@@ -262,7 +262,7 @@ define(["esri/dijit/Search", "esri/layers/FeatureLayer", "esri/InfoTemplate", "e
                     map: map
                 }, "search");
 
-                self.sources = self.search.get("sources");
+                self.sources = self.instance.get("sources");
 
                 //Push the sources used to search, by default the ArcGIS Online World geocoder is included. In addition there is a feature layer of US congressional districts. The districts search is set up to find the "DISTRICTID". Also, a feature layer of senator information is set up to find based on the senator name. 
                 self.sources.push({
@@ -327,8 +327,8 @@ define(["esri/dijit/Search", "esri/layers/FeatureLayer", "esri/InfoTemplate", "e
                 });
 
                 //Set the sources above to the search widget
-                self.search.set("sources", self.sources);
-                self.search.startup();
+                self.instance.set("sources", self.sources);
+                self.instance.startup();
 
                 self.registerEvents();
             };
@@ -338,31 +338,31 @@ define(["esri/dijit/Search", "esri/layers/FeatureLayer", "esri/InfoTemplate", "e
             };
 
             self.registerEvents = function () {
-                self.search.on("select-result", function (e) {
+                self.instance.on("select-result", function (e) {
                     // console.log('selected result', e);
                 });
             };
 
             self.addSource = function (source) {
-                let sources = self.search.get("sources");
+                let sources = self.instance.get("sources");
                 let searchIndex = sources.indexOf(source);
 
                 if (searchIndex === -1) {
                     self.sources.push(source);
 
-                    self.search.set("sources", self.sources);
-                    self.search.startup();                }
+                    self.instance.set("sources", self.sources);
+                    self.instance.startup();                }
             };
 
             self.removeSource = function (source) {
-                let sources = self.search.get("sources");
+                let sources = self.instance.get("sources");
                 let searchIndex = sources.indexOf(source);
 
                 if (searchIndex !== -1) {
                     self.sources = self.sources.splice(searchIndex, 1);
 
-                    self.search.set("sources", self.sources);
-                    self.search.startup();                }
+                    self.instance.set("sources", self.sources);
+                    self.instance.startup();                }
             };
 
             self.init();

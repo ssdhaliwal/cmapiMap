@@ -3,19 +3,19 @@ define(["esri/dijit/Legend"],
 
         let extLegend = function (global) {
             let self = this;
-            let map = global.plugins.extMap.map;
+            let map = global.plugins.extMap.instance;
             self.layers = [];
-            self.legend = null;
+            self.instance = null;
 
             self.init = function () {
-                self.legend = new esriLegend({
+                self.instance = new esriLegend({
                     autoUpdate: true,
                     map: map,
                     respectCurrentMapScale: true,
                     layerInfos: self.layers
                 }, "legendDiv");
 
-                self.legend.startup();
+                self.instance.startup();
                 self.registerEvents();
             };
 
@@ -41,7 +41,7 @@ define(["esri/dijit/Legend"],
                         self.layers.push(layerInfo);
 
                         if (self.layers.length > 0) {
-                            self.legend.refresh(self.layers);
+                            self.instance.refresh(self.layers);
                         }
                     } else {
                         //kml layer....
@@ -54,7 +54,7 @@ define(["esri/dijit/Legend"],
                     for (var i = 0; i < self.layers.length; i++) {
                         if (self.layers[i].name === layer.layer.id) {
                             self.layers.splice(i, 1);
-                            self.legend.refresh(self.layers);
+                            self.instance.refresh(self.layers);
                             return;
                         }
                     }
@@ -65,7 +65,7 @@ define(["esri/dijit/Legend"],
                     for (var i = 0; i < self.layers.length; i++) {
                         if (self.layers[i].name === data.old_id) {
                             self.layers[i] = { name: data.layer.id, layer: data.layer }
-                            self.legend.refresh(self.layers);
+                            self.instance.refresh(self.layers);
                             return;
                         }
                     }
