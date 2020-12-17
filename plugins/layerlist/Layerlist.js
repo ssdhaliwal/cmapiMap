@@ -55,11 +55,11 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService", "interface
                 $("#layerlist").on("click", self.handleClick);
 
                 self.layerlist.on('check_node.jstree', function (e, data) {
-                    self.showOverlay({ overlayId: data.node });
+                    self.handleShowOverlay({ overlayId: data.node });
                 });
 
                 self.layerlist.on('uncheck_node.jstree', function (e, data) {
-                    self.hideOverlay({ overlayId: data.node });
+                    self.handleHideOverlay({ overlayId: data.node });
                 });
 
                 self.layerlist.on('select_node.jstree', function (e, data) {
@@ -211,8 +211,8 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService", "interface
                 }
             };
 
-            self.addService = function (overlayId, overlayText, service) {
-                console.log("... add service!!", overlayId, overlayText, service);
+            self.handleRenderService = function (overlayId, overlayText, service) {
+                console.log("... render service!!", overlayId, overlayText, service);
 
                 service.overlayId = overlayId;
                 service.overlayText = overlayText;
@@ -284,7 +284,7 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService", "interface
                 });
             };
 
-            self.addOverlay = function (request) {
+            self.handleAddOverlay = function (request) {
                 // get USER FAVORITES node and add new items as child nodes
                 let pNode = self.instance.get_node(self.defaultOverlayId);
                 if (request.hasOwnProperty("parentId")) {
@@ -335,7 +335,7 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService", "interface
                 }
             };
 
-            self.removeOverlay = function (request) {
+            self.handleRemoveOverlay = function (request) {
                 // get USER FAVORITES node and remove items from child nodes
                 let oNode = $("#layerlistDiv").jstree().get_node(request.overlayId);
                 if (ViewUtilities.getBoolean(oNode)) {
@@ -347,7 +347,7 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService", "interface
                 }
             };
 
-            self.hideOverlay = function (request) {
+            self.handleHideOverlay = function (request) {
                 // get USER FAVORITES node and remove items from child nodes
                 let node = self.instance.get_node(request.overlayId);
                 if (ViewUtilities.getBoolean(node)) {
@@ -368,7 +368,7 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService", "interface
                 }
             };
 
-            self.showOverlay = function (request) {
+            self.handleShowOverlay = function (request) {
                 // get USER FAVORITES node and remove items from child nodes
                 let node = self.instance.get_node(request.overlayId);
                 if (ViewUtilities.getBoolean(node)) {
@@ -384,7 +384,7 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService", "interface
                             parentNode = self.instance.get_node(parentId);
                             parentText = parentNode.text;
 
-                            self.addService(parentId, parentText, original);
+                            self.handleRenderService(parentId, parentText, original);
                         }
                     } else {
                         if (node.children.length > 0) {
@@ -395,17 +395,17 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService", "interface
                                 parentNode = self.instance.get_node(parentId);
                                 parentText = parentNode.text;
 
-                                self.addService(parentId, parentText, original);
+                                self.handleRenderService(parentId, parentText, original);
                             }
                         }
                     }
                 }
             };
 
-            self.plotFeatureUrl = function (request) {
+            self.handlePlotFeatureUrl = function (request) {
                 // create the overlay if not existing
                 if (request.hasOwnProperty("overlayId") && !ViewUtilities.isEmpty(request.overlayId)) {
-                    global.interfaces.messageService.cmapiAdapter.onMapOverlayCreate({ overlayId: request.overlayId });
+                    global.interfaces.messageService.cmapiAdapter.onMapOverlayCreateUpdate({ overlayId: request.overlayId });
                 }
 
                 // check if feature id already exists
