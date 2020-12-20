@@ -187,5 +187,44 @@
                 ]
             }
         ]
+    },
+    {
+        "id": "TEST1001",
+        "text": "Test - Internal",
+        "icon": "",
+        "state": {
+            "opened": false,
+            "disabled": false,
+            "selected": false
+        },
+        "a_attr": {
+            "class": "no_checkbox"
+        },
+        "children": [{
+            "id": "TEST1001-01",
+            "text": "KML - Interanet",
+            "icon": "/esri-cmapi/plugins/layerlist/icons/KML.png",
+            "state": {
+                "opened": true,
+                "disabled": false,
+                "selected": false
+            },
+            "layer": {
+                "query": true,
+                "properties": {
+                    "dateCreated": "20180521",
+                    "dateVerified": "20201208",
+                    "url": "/GlobalRepo/Catalogs/artifacts/TEST/TEST1001.kml",
+                    "intranet": true,
+                    "credentials": {
+                        "required": false,
+                        "token": ""
+                    }
+                },
+                "params": {
+                    "serviceType": "kml"
+                }
+            }
+        }]
     }
 ]

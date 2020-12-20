@@ -602,9 +602,9 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                 if (self.layer.hasOwnProperty("searchOptions")) {
                     self.search.removeSource(self.layer.searchOptions);
                 }
-                self.map.removeLayer(self.layer);
                 self.deregisterSearch();
 
+                self.map.removeLayer(self.layer);
                 $.each(self.selectedFeatures, function (index, feature) {
                     self.message.sendMessage("map.feature.deselected",
                         JSON.stringify({

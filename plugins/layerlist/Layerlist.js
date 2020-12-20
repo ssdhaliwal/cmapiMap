@@ -1,6 +1,8 @@
-define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService", "interface/esriFeatureService",
+define(["vendor/js/jstree/jstree", 
+    "interface/esriDynamicMapService", "interface/esriFeatureService", "interface/ogcKML",
     "plugins/ViewUtilities"],
-    function (JSTree, esriDynamicMapService, esriFeatureService,
+    function (JSTree, 
+        esriDynamicMapService, esriFeatureService, ogcKML,
         ViewUtilities) {
 
         let extLayerlist = function (global) {
@@ -231,7 +233,17 @@ define(["vendor/js/jstree/jstree", "interface/esriDynamicMapService", "interface
                                 service.perspective = new esriDynamicMapService(global, service);
                             } else if (service.layer.params.serviceType === "feature") {
                                 service.perspective = new esriFeatureService(global, service);
-                            } else if (service.layer.params.serviceType === "kml") {
+                            } else if ((service.layer.params.serviceType === "kml") ||
+                                (service.layer.params.serviceType === "kmz")) {
+                                // if properties has data or property has local = true with url
+                                if (service.layer.hasOwnProperty("properties")) {
+                                    if (service.layer.properties.hasOwnProperty("data") ||
+                                        service.layer.properties.hasOwnProperty("url")) {
+                                        service.perspective = new ogcKML(global, service);
+                                    } else {
+                                        // service.perspective = new esriKMLervice(global, service);
+                                    }
+                                }
                             } else if (service.layer.params.serviceType === "wms") {
                             } else if (service.layer.params.serviceType === "tiles") {
                             } else if (service.layer.params.serviceType === "image") {

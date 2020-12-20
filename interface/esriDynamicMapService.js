@@ -83,26 +83,6 @@ define(["esri/layers/ArcGISDynamicMapServiceLayer", "plugins/ViewUtilities"],
 
 				self.map.addLayer(self.layer);
 
-                // add search options
-                if (params.hasOwnProperty("searchOptions")) {
-                    var searchOptions = {};
-                    searchOptions.featureLayer = self.layer;
-                    searchOptions.placeholder = params.searchOptions.placeholder;
-                    searchOptions.enableLabel = params.searchOptions.enableLabel;
-                    searchOptions.searchFields = params.searchOptions.searchFields;
-                    searchOptions.displayField = params.searchOptions.displayField;
-                    searchOptions.exactMatch = params.searchOptions.exactMatch;
-                    searchOptions.maxResults = params.searchOptions.maxResults;
-                    searchOptions.outFields = params.outFields;
-
-                    //  if (params.searchOptions.hasOwnProperty("infoTemplate")) {
-                    //      searchOptions.infoTemplate = new InfoTemplate(params.searchOptions.infoTemplate[0], params.searchOptions.infoTemplate[1]);
-                    //  }
-
-                    self.layer.searchOptions = searchOptions;
-                    self.search.addSource(searchOptions);
-                }
-
 				self.registerEvents();
 			};
 

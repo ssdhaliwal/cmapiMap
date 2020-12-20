@@ -1,3 +1,5 @@
+KML has two container element types: <Folder> and <Document>, which in many ways are functionally equivalent. For practical purposes, the KML writer assumes that each KML file has a single <Document> root element, which cannot contain subsequent <Document> elements. Furthermore, the KML writer also assumes that each <Folder> element cannot contain any <Document> elements.
+
 map.overlay.create
 // create
 {

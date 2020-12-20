@@ -119,6 +119,12 @@ img {
     height: 28px;
 }
 
+.esriSimpleSliderTL {
+    top: 40px;
+    left: 0px;
+    margin-left: 2px;
+}
+
 .esriSimpleSliderVertical .esriSimpleSliderIncrementButton {
     border-bottom: none;
 }
@@ -189,7 +195,7 @@ img {
 }
 
 #home {
-    margin-left: 20px;
+    margin-left: 2px;
     width: 30px;
     height: 30px;
     background-image: url("../images/icons/home_Default.png");
@@ -198,8 +204,8 @@ img {
     border-radius: 5px;
     border: 1.5px solid #928F8F;
     position: absolute;
-    z-index: 3;
-    top: 80px;
+    z-index: 30;
+    top: 100px;
 }
 
 #home:hover {
@@ -276,7 +282,7 @@ img {
 #basemaps_wrapper {
     position: absolute;
     right: 0;
-    width: 30%;
+    width: 50%;
     height: calc(100vh - 15%);
     bottom: 25px;
     opacity: 0.85;
@@ -316,7 +322,7 @@ img {
 #infoPanel_wrapper {
     position: absolute;
     right: 0;
-    width: 30%;
+    width: 33.5%;
     height: calc(100vh - 15%);
     bottom: 25px;
     opacity: 0.85;
@@ -354,7 +360,7 @@ img {
 #layerlist_wrapper {
     position: absolute;
     right: 0;
-    width: 40%;
+    width: 33.5%;
     height: calc(100vh - 15%);
     bottom: 25px;
     opacity: 0.85;
@@ -470,10 +476,11 @@ img {
 
 #control-slider {
     position: absolute;
-    top: 20px;
-    right: 1px;
+    top: 2px;
+    right: 0px;
+    margin-right: 2px;
     width: 18px; 
-    height: 67px;
+    height: 30px;
     background-color: rgb(138, 148, 161);
     background-image: url("../images/icons/control_Default.png");
     background-position: center center;
@@ -494,9 +501,10 @@ img {
 
 #map-controls1 {
     position: absolute;
-    top: 20px;
+    top: 2px;
     z-index: 500;
     right: 20px;
+    margin-right: 2px;
     float: right;
     display: none;
     background-color: rgba(227,236,252,.50);
@@ -504,10 +512,9 @@ img {
 
 #map-controls2 {
     position: absolute;
-    top: 54px;
+    top: 2px;
+    margin-left: 2px;
     z-index: 500;
-    right: 20px;
-    float: right;
     display: none;
     background-color: rgba(227,236,252,.50);
 }
