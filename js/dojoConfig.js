@@ -168,5 +168,9 @@ dojoConfig.packages = [
     {
         location: window.contextPath + "interface",
         name: "interface"
+    },
+    {
+        location: window.contextPath + "resource",
+        name: "resource"
     }
 ];

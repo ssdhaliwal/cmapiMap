@@ -210,7 +210,6 @@
                 "selected": false
             },
             "layer": {
-                "query": true,
                 "properties": {
                     "dateCreated": "20180521",
                     "dateVerified": "20201208",

@@ -1,5 +1,5 @@
-define(["plugins/ViewUtilities"],
-    function (ViewUtilities) {
+define(["resource/KML2GraphicsLayer", "plugins/ViewUtilities"],
+    function (KML2GraphicsLayer, ViewUtilities) {
 
         let ogcKML = function (global, service) {
             let self = this;
@@ -142,69 +142,23 @@ define(["plugins/ViewUtilities"],
 
                     // send the data
                     resolve(document);
-                }).then(function (data) {
-                    console.log(data);
-                    processKml(data);
+                }).then(function (document) {
+                    console.log(document);
+                    processKml(document);
                 }, function (error) {
                     console.log(error);
                 });
             };
 
-            processKml = function (node, level, document, folder, id) {
-                if (level === undefined) {
-                    level = 0;
-                } else {
-                    level++;
-                }
-
-                if ((document === undefined) || (node.nodeName === "Document")) {
-                    document = node;
-                    if (node.nodeName === "Document") {
-                        let tId = getElementId(document);
-                        if (id === undefined) {
-                            id = tId || new Date().getTime().toString(16);
-                        } else {
-                            id += "/" + (tId || new Date().getTime().toString(16));
-                        }
-                    }
-                }
-                if ((folder === undefined) || (node.nodeName === "Folder")) {
-                    folder = node;
-                    if (node.nodeName === "Folder") {
-                        let tId = getElementId(folder);
-                        if (id === undefined) {
-                            id = tId || new Date().getTime().toString(16);
-                        } else {
-                            id += "/" + (tId || new Date().getTime().toString(16));
-                        }
-                    }
-                }
-
-                console.log(level, node.nodeName.padStart((node.nodeName.length + level), '-'), id);
-
-                node = node.firstChild;
-                while (node) {
-                    if (node.nodeType == 1) {
-                        processKml(node, level, document, folder, id);
-                    }
-                    node = node.nextSibling;
-                }
-            };
-
-            getElementId = function (node) {
-                let result = "";
-
-                $.each(node.children, function (index, child) {
-                    if (child.nodeName === "name") {
-                        result = child.nodeName;
-                        return false;
-                    }
+            processKml = function (document) {
+                new Promise(function (resolve, reject) {
+                    let layer = new KML2GraphicsLayer(self.service.text, document);
+                    resolve(layer);
+                }).then(function (layer) {
+                    console.log(layer, );
+                }, function (error) {
+                    console.log(error);
                 });
-                if ((node.id !== undefined) && (node.id !== "")) {
-                    result = node.id;
-
-                    return result;
-                }
             };
 
             self.init();
