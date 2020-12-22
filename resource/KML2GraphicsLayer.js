@@ -1,12 +1,16 @@
-define([],
-    function () {
+define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
+    "esri/symbols/SimpleFillSymbol",
+    "plugins/ViewUtilities"],
+    function (SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol,
+        ViewUtilities) {
 
         let KML2GraphicsLayer = function (name, document) {
             let self = this;
             self.document = document;
             self.graphicsLayer = null;
             self.kml = {
-                name: name
+                name: name,
+                count: 0
             };
             self.uniqueId = 0;
 
@@ -15,24 +19,30 @@ define([],
 
                 initializeDefaultStyles();
                 parse(self.document);
+
+                loadPlacemarks();
             };
 
             initializeDefaultStyles = function () {
-                self.defaultMarkerColor = "#504FB0DA";
-                self.defaultLineWidth = 2;
-                self.defaultLineColor = "#50000000";
-                self.defaultLineStyle = SimpleLineSymbol.STYLE_SOLID;
-                self.defaultFillColor = "#500F7CF8";
-                self.defaultFillStyle = SimpleFillSymbol.STYLE_SOLID;
-                self.defaultLineSymbol = new SimpleLineSymbol(self.defaultLineStyle,
-                    this._getColor(self.defaultLineColor), self.defaultLineWidth).toJson();
-                self.defaultPointSymbol = new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_CIRCLE, 10,
-                    new SimpleLineSymbol(self.defaultLineSymbol), this._getColor(self.defaultMarkerColor)).toJson();
-                self.defaultFillSymbol = new SimpleFillSymbol(self.defaultFillStyle,
-                    new SimpleLineSymbol(self.defaultLineSymbol), this._getColor(self.defaultFillColor)).toJson();
+                self.defaults = {};
+                self.defaults.MarkerColor = ViewUtilities.DEFAULT_COLOR;
+                self.defaults.LineWidth = ViewUtilities.DEFAULT_LINEWIDTH;
+                self.defaults.LineColor = ViewUtilities.DEFAULT_LINECOLOR;
+                self.defaults.LineStyle = ViewUtilities.DEFAULT_LINESTYLE;
+                self.defaults.FillColor = ViewUtilities.DEFAULT_FILLCOLOR;
+                self.defaults.FillStyle = SimpleFillSymbol.DEFAULT_FILLSTYLE;
+
+                self.defaults.PointSymbol = new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_CIRCLE, 10,
+                    new SimpleLineSymbol(self.defaults.LineSymbol), ViewUtilities.getColor(self.defaults.MarkerColor)).toJson();
+                self.defaults.LineSymbol = new SimpleLineSymbol(self.defaults.LineStyle,
+                    ViewUtilities.getColor(self.defaults.tLineColor), self.defaults.LineWidth).toJson();
+                self.defaults.FillSymbol = new SimpleFillSymbol(self.defaults.FillStyle,
+                    new SimpleLineSymbol(self.defaults.LineSymbol), ViewUtilities.getColor(self.defaults.FillColor)).toJson();
             };
 
-            parse = function (node, level, document, folder, docId, pDocId, folderId, currentId) {
+            parse = function (node, level, document, folder, docId, folderId, currentId) {
+                let newId = undefined;
+
                 if ((node.nodeName == "Document") || (node.nodeName === "Folder")) {
                     if (level === undefined) {
                         level = 0;
@@ -40,21 +50,23 @@ define([],
                         level++;
                     }
 
-                    pDocId = pDocId || docId;
-
                     if ((document === undefined) || (node.nodeName === "Document")) {
                         document = node;
                         if (node.nodeName === "Document") {
-                            docId = resolveElementId(document, docId);
-                            self.kml[docId] = {
-                                docId: docId,
-                                folderId: folderId || docId,
-                                pDocId: undefined,
-                                type: "document"
+                            newId = resolveDocumentId(document);
+                            docId = newId.id;
+                            folderId = (folderId ? (folderId + "/" + docId) : docId);
+
+                            self.kml.count++;
+                            self.kml[folderId] = {
+                                docId: folderId,
+                                folderId: folderId,
+                                type: "document",
+                                name: newId.name
                             };
 
-                            pDocId = docId;
-                            currentId = pDocId;
+                            docId = folderId;
+                            currentId = folderId;
                             if (folder === undefined) {
                                 folderId = docId;
                             }
@@ -63,12 +75,15 @@ define([],
                     if ((folder === undefined) || (node.nodeName === "Folder")) {
                         folder = node;
                         if (node.nodeName === "Folder") {
-                            folderId = resolveElementId(folder, docId);
+                            newId = resolveFolderId(folder, folderId);
+                            folderId = newId.id;
+
+                            self.kml.count++;
                             self.kml[folderId] = {
                                 docId: docId,
                                 folderId: folderId,
-                                pDocId: pDocId,
-                                type: "folder"
+                                type: "folder",
+                                name: newId.name
                             };
 
                             currentId = folderId;
@@ -117,34 +132,73 @@ define([],
                 node = node.firstChild;
                 while (node) {
                     if (node.nodeType == 1) {
-                        parse(node, level, document, folder, docId, pDocId, folderId, currentId);
+                        parse(node, level, document, folder, docId, folderId, currentId);
                     }
 
                     node = node.nextSibling;
                 }
             };
 
-            resolveElementId = function (node, id) {
-                let newId = undefined;
+            resolveDocumentId = function (node) {
+                let newId = undefined, name = undefined, uniqieId = undefined;
+
+                self.uniqueId++;
+                uniqueId = (new Date().getTime().toString(16)) + "-" + self.uniqueId;
 
                 $.each(node.children, function (index, child) {
                     if (child.nodeName === "name") {
-                        newId = child.innerHTML;
-                        return false;
+                        name = child.innerHTML;
+                    } else if (child.nodeName === "id") {
+                        newId = child.innerHTML + "-" + uniqueId;
                     }
                 });
-                if ((node.id !== undefined) && (node.id !== "")) {
-                    newId = node.id;
+
+                if (!name && !newId) {
+                    newId = name = uniqueId;
+                } else if (!name) {
+                    name = newId;
+                } else if (!newId) {
+                    newId = name.replace(/[ /]/g, "") + "-" + uniqueId;
                 }
+
+                if ((node.id !== undefined) && (node.id !== "")) {
+                    newId = node.id.replace(/[ /]/g, "") + "-" + uniqueId;
+                }
+
+                return {name: name, id: newId};
+            };
+
+            resolveFolderId = function (node, id) {
+                let newId = undefined, name = undefined, uniqieId = undefined;
 
                 self.uniqueId++;
-                if (id === undefined) {
-                    id = newId || ((new Date().getTime().toString(16)) + "." + self.uniqueId);
-                } else {
-                    id += "/" + (newId || ((new Date().getTime().toString(16)) + "." + self.uniqueId));
+                uniqueId = (new Date().getTime().toString(16)) + "-" + self.uniqueId;
+
+                $.each(node.children, function (index, child) {
+                    if (child.nodeName === "name") {
+                        name = child.innerHTML;
+                    } else if (child.nodeName === "id") {
+                        newId = child.innerHTML + "-" + uniqueId;
+                    }
+                });
+
+                if (!name && !newId) {
+                    newId = name = uniqueId;
+                } else if (!name) {
+                    name = newId;
+                } else if (!newId) {
+                    newId = name.replace(/[ /]/g, "") + "-" + uniqueId;
                 }
 
-                return id;
+                if ((node.id !== undefined) && (node.id !== "")) {
+                    newId = node.id.replace(/[ /]/g, "") + "-" + uniqueId;
+                }
+
+                if (id !== undefined) {
+                    newId = id + "/" + newId;
+                }
+
+                return {name: name, id: newId};
             };
 
             // retrieve document style/map and merge with local style

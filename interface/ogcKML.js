@@ -7,6 +7,7 @@ define(["resource/KML2GraphicsLayer", "plugins/ViewUtilities"],
             self.search = global.plugins.extSearch;
             self.notify = global.plugins.extNotify;
             self.message = global.interfaces.messageService;
+            self.layerList = global.plugins.extLayerlist;
             self.service = service;
             self.layer = null;
             self.selectedFeatures = [];
@@ -44,10 +45,11 @@ define(["resource/KML2GraphicsLayer", "plugins/ViewUtilities"],
                 console.log("... removed layer: " + self.service.text);
                 /*
                 self.map.removeLayer(self.layer);
+                // need to remove any nodes created by the layer
                 $.each(self.selectedFeatures, function (index, feature) {
                     self.message.sendMessage("map.feature.deselected",
                         JSON.stringify({
-                            overlayId: self.service.overlayId,
+                            overlayId: self.service.parentId,
                             featureId: self.service.id,
                             deSelectedId: feature.deselectedId,
                             deSelectedName: feature.deselectedName
@@ -155,7 +157,34 @@ define(["resource/KML2GraphicsLayer", "plugins/ViewUtilities"],
                     let layer = new KML2GraphicsLayer(self.service.text, document);
                     resolve(layer);
                 }).then(function (layer) {
-                    console.log(layer, );
+                    // if zero layer, then error
+                    // if one layer, then attach it to map and link events
+                    if (layer.kml.count === 0) {
+                    } else if (layer.kml.count === 1) {
+
+                    } else {
+                        // if more than one layer; then we need to create node for each layer
+                        let folders = undefined;
+                        $.each(layer.kml, function (index, subLayer) {
+                            if (subLayer.hasOwnProperty("folderId")) {
+                                folders = subLayer.folderId.split("/");
+
+                                if (folders.length === 1) {
+                                    self.layerList.handleAddOverlay({
+                                        "name": subLayer.name,
+                                        "overlayId": folders[0],
+                                        "parentId": service.id
+                                    });
+                                } else {
+                                    self.layerList.handleAddOverlay({
+                                        "name": subLayer.name,
+                                        "overlayId": folders[folders.length - 1],
+                                        "parentId": folders[folders.length - 2]
+                                    });
+                                }
+                            }
+                        });
+                    }
                 }, function (error) {
                     console.log(error);
                 });

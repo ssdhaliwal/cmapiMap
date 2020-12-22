@@ -213,7 +213,7 @@
                 "properties": {
                     "dateCreated": "20180521",
                     "dateVerified": "20201208",
-                    "url": "/GlobalRepo/Catalogs/artifacts/TEST/TEST1001.kml",
+                    "url": "/esri-cmapi/testing/testdata/kml_folders.kml",
                     "intranet": true,
                     "credentials": {
                         "required": false,

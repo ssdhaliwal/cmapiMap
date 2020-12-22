@@ -143,7 +143,7 @@ define(["vendor/js/jstree/jstree",
                                         layerCopy.text = value.name;
                                         layerCopy.icon = "/esri-cmapi/plugins/layerlist/icons/DMS-Query.png";
 
-                                        let id = $('#layerlistDiv').jstree('create_node', $("#" + pnode.a_attr.id), layerCopy, 'last', false, false);
+                                        let id = $('#layerlistDiv').jstree('create_node', pnode.id, layerCopy, 'last', false);
                                     });
                                 }
                             } else {
@@ -174,7 +174,7 @@ define(["vendor/js/jstree/jstree",
                                             layerCopy.text = value.name;
                                             layerCopy.icon = "/esri-cmapi/plugins/layerlist/icons/DMS.png";
 
-                                            let id = $('#layerlistDiv').jstree('create_node', $("#" + parent.a_attr.id), layerCopy, 'last', false, false);
+                                            let id = $('#layerlistDiv').jstree('create_node', parent.id, layerCopy, 'last', false);
                                             newNodes[value.id] = { "id": id, "parent": parent, "subLayers": value.subLayers };
                                         } else {
                                             $.each(newNodes, function (pIndex, pValue) {
@@ -200,7 +200,7 @@ define(["vendor/js/jstree/jstree",
                                             layerCopy.layer.properties.url = original.layer.properties.url + "/" + value.id;
                                             layerCopy.layer.query = false;
 
-                                            let id = $('#layerlistDiv').jstree('create_node', $("#" + parent.a_attr.id), layerCopy, 'last', false, false);
+                                            let id = $('#layerlistDiv').jstree('create_node', parent.id, layerCopy, 'last', false);
                                         }
                                     });
                                 }
@@ -213,11 +213,11 @@ define(["vendor/js/jstree/jstree",
                 }
             };
 
-            self.handleRenderService = function (overlayId, overlayText, service) {
-                console.log("... render service!!", overlayId, overlayText, service);
+            self.handleRenderService = function (parentId, parentText, service) {
+                console.log("... render service!!", parentId, parentText, service);
 
-                service.overlayId = overlayId;
-                service.overlayText = overlayText;
+                service.parentId = parentId;
+                service.parentText = parentText;
 
                 // add default params to service if not present
                 if (service.hasOwnProperty("layer")) {
@@ -307,10 +307,8 @@ define(["vendor/js/jstree/jstree",
                 }
 
                 // check if node already exists; if yes - ignore
-                let pId = pNode.a_attr.id;
                 let oNode = self.instance.get_node(request.overlayId);
                 if (!ViewUtilities.getBoolean(oNode)) {
-
                     let nNode = {
                         "id": request.overlayId,
                         "text": request.name,
@@ -319,26 +317,23 @@ define(["vendor/js/jstree/jstree",
                             "opened": false,
                             "disabled": false,
                             "selected": false
-                        },
-                        "a_attr": {
-                            "class": "no_checkbox"
                         }
                     };
 
-                    let nId = $('#layerlistDiv').jstree('create_node', $("#" + pId), nNode, 'last', false, false);
+                    let nId = $('#layerlistDiv').jstree('create_node', pNode.id, nNode, 'last', false);
                 } else {
                     if ((oNode.text !== request.name) || request.hasOwnProperty("parentId")) {
-                        let oId = oNode.a_attr.id;
+                        let oId = oNode.id;
                         if (oNode.text !== request.name) {
                             oNode.text = request.name;
                             oNode.original.text = request.name;
 
-                            $('#layerlistDiv').jstree('rename_node', $("#" + oId), oNode.text);
+                            $('#layerlistDiv').jstree('rename_node', oNode.id, oNode.text);
                         }
 
                         // if parent id is provided; move the node
                         if (request.hasOwnProperty("parentId")) {
-                            $('#layerlistDiv').jstree('move_node', oNode, $("#" + pId), 'last', false, false);
+                            $('#layerlistDiv').jstree('move_node', oNode, pNode.id, 'last', false);
                         }
                     } else {
                         let payload = { "type": "map.overlay.create", "msg": request, "error": "duplicate overlay, already exists!" };
@@ -351,7 +346,7 @@ define(["vendor/js/jstree/jstree",
                 // get USER FAVORITES node and remove items from child nodes
                 let oNode = $("#layerlistDiv").jstree().get_node(request.overlayId);
                 if (ViewUtilities.getBoolean(oNode)) {
-                    let pId = oNode.a_attr.id;
+                    let pId = oNode.id;
 
                     // uncheck and remove the layers from map
                     uncheckSelected(pId);
@@ -363,7 +358,7 @@ define(["vendor/js/jstree/jstree",
                 // get USER FAVORITES node and remove items from child nodes
                 let node = self.instance.get_node(request.overlayId);
                 if (ViewUtilities.getBoolean(node)) {
-                    let pId = node.a_attr.id;
+                    let pId = node.id;
 
                     // uncheck and remove the layers from map
                     uncheckSelected(pId);
@@ -484,7 +479,7 @@ define(["vendor/js/jstree/jstree",
                     let overlayId = request.overlayId || self.defaultOverlayId;
                     let pNode = self.instance.get_node(overlayId);
                     console.log(layerCopy);
-                    let id = $('#layerlistDiv').jstree('create_node', $("#" + pNode.a_attr.id), layerCopy, 'last', false, false);
+                    let id = $('#layerlistDiv').jstree('create_node', pNode.id, layerCopy, 'last', false);
                 }
             };
 

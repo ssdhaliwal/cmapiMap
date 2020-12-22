@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd http://www.google.com/kml/ext/2.2 http://code.google.com/apis/kml/schema/kml22gx.xsd">
+    <Document id="1000-00">
+        <name>Coast Guard Sectors</name>
+        <Style></Style>
+        <Style></Style>
+        <Style></Style>
+        <StyleMap></StyleMap>
+        <Placemark></Placemark>
+        <Placemark></Placemark>
+        <Placemark></Placemark>
+        <Folder id="1000-10">
+            <Document>
+                <id>1000-11</id>
+                <name>Second Document</name>
+                <Style></Style>
+                <Style></Style>
+                <StyleMap></StyleMap>
+                <Placemark></Placemark>
+                <Placemark></Placemark>
+            </Document>
+            <Document id="1000-12">
+                <Style></Style>
+                <Style></Style>
+                <StyleMap></StyleMap>
+                <Placemark></Placemark>
+                <Placemark></Placemark>
+                <Folder>
+                    <name>My Folder</name>
+                    <Placemark></Placemark>
+                    <Placemark></Placemark>
+                    <Folder id="1000-12-01-01">
+                        <Placemark></Placemark>
+                        <Placemark></Placemark>
+                        <Folder>
+                            <Placemark></Placemark>
+                            <Placemark></Placemark>
+                            <Placemark></Placemark>
+                            <Placemark></Placemark>
+                            <Placemark></Placemark>
+                        </Folder>
+                    </Folder>
+                </Folder>
+                <Folder id="1000-12-02">
+                    <Placemark></Placemark>
+                    <Placemark></Placemark>
+                    <Document id="1000-12-02-01">
+                        <Style></Style>
+                        <Style></Style>
+                        <StyleMap></StyleMap>
+                        <Placemark></Placemark>
+                        <Placemark></Placemark>
+                    </Document>
+                    <Folder id="1000-12-02-02">
+                        <Placemark></Placemark>
+                        <Placemark></Placemark>
+                        <Placemark></Placemark>
+                        <Placemark></Placemark>
+                    </Folder>
+                </Folder>
+            </Document>
+            <Document id="1000-13">
+                <Style></Style>
+                <Style></Style>
+                <Placemark></Placemark>
+                <Placemark></Placemark>
+                <Placemark></Placemark>
+            </Document>
+            <Document id="1000-14">
+                <Placemark></Placemark>
+                <Placemark></Placemark>
+                <Placemark></Placemark>
+            </Document>
+            <Document id="1000-15">
+                <Style></Style>
+                <Style></Style>
+                <Style></Style>
+                <Folder id="1000-15-01">
+                    <Placemark></Placemark>
+                    <Placemark></Placemark>
+                    <Placemark></Placemark>
+                    <Folder id="1000-15-01-01">
+                        <Placemark></Placemark>
+                        <Placemark></Placemark>
+                        <Placemark></Placemark>
+                        <Folder>
+                            <Placemark></Placemark>
+                            <Placemark></Placemark>
+                        </Folder>
+                    </Folder>
+                    <Folder id="1000-15-02">
+                        <Placemark></Placemark>
+                        <Placemark></Placemark>
+                        <Placemark></Placemark>
+                    </Folder>
+                </Folder>
+            </Document>
+        </Folder>
+    </Document>
+</kml>

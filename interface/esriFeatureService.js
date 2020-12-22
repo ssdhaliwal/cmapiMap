@@ -462,7 +462,7 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
 
                                 self.layer.infoTemplateClass = {};
                                 self.layer.infoTemplateClass.reference = params.infoTemplateClass.reference;
-                                self.layer.infoTemplateClass.reference.overlayId = self.service.overlayId;
+                                self.layer.infoTemplateClass.reference.parentId = self.service.parentId;
                                 self.layer.infoTemplateClass.reference.featureId = self.service.id;
 
                                 template.setContent(getLayerUrlInfoTemplate);
@@ -500,7 +500,7 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
 
                     self.message.sendMessage("map.feature.clicked",
                         JSON.stringify({
-                            overlayId: self.service.overlayId,
+                            overlayId: self.service.parentId,
                             featureId: self.service.id,
                             lat: e.mapPoint.y,
                             lon: e.mapPoint.x,
@@ -511,7 +511,7 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
 
                     self.message.sendMessage("map.status.selected",
                         JSON.stringify({
-                            overlayId: self.service.overlayId,
+                            overlayId: self.service.parentId,
                             selectedFeatures: [{
                                 featureId: self.service.id,
                                 selectedId: e.graphic.attributes.id
@@ -538,7 +538,7 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
 
                             self.message.sendMessage("map.feature.selected",
                                 JSON.stringify({
-                                    overlayId: self.service.overlayId,
+                                    overlayId: self.service.parentId,
                                     featureId: self.service.id,
                                     selectedId: e.graphic.getLayer().id,
                                     selectedName: e.graphic.getLayer().name,
@@ -547,7 +547,7 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                         } else {
                             self.message.sendMessage("map.feature.selected",
                                 JSON.stringify({
-                                    overlayId: self.service.overlayId,
+                                    overlayId: self.service.parentId,
                                     featureId: self.service.id,
                                     selectedId: e.graphic.getLayer().id,
                                     selectedName: e.graphic.getLayer().name
@@ -559,7 +559,7 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                 self.layer.on('mouse-down', function (e) {
                     self.message.sendMessage("map.feature.mousedown",
                         JSON.stringify({
-                            overlayId: self.service.overlayId,
+                            overlayId: self.service.parentId,
                             featureId: self.service.id,
                             lat: e.mapPoint.y,
                             lon: e.mapPoint.x,
@@ -572,7 +572,7 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                 self.layer.on('mouse-up', function (e) {
                     self.message.sendMessage("map.feature.mouseup",
                         JSON.stringify({
-                            overlayId: self.service.overlayId,
+                            overlayId: self.service.parentId,
                             featureId: self.service.id,
                             lat: e.mapPoint.y,
                             lon: e.mapPoint.x,
@@ -608,7 +608,7 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                 $.each(self.selectedFeatures, function (index, feature) {
                     self.message.sendMessage("map.feature.deselected",
                         JSON.stringify({
-                            overlayId: self.service.overlayId,
+                            overlayId: self.service.parentId,
                             featureId: self.service.id,
                             deSelectedId: feature.deselectedId,
                             deSelectedName: feature.deselectedName
@@ -645,7 +645,7 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
             self.getLayerControlInfoTemplate = function (graphic) {
                 // Display attribute information.
                 let message = {
-                    overlayId: self.service.overlayId,
+                    overlayId: self.service.parentId,
                     featureId: self.service.id,
                     attributes: JSON.stringify(graphic.attributes)
                 };

@@ -1,5 +1,5 @@
-define(["esri/geometry/Extent"],
-    function (Extent) {
+define(["esri/geometry/Extent", "esri/Color", "esri/symbols/SimpleLineSymbol", "esri/symbols/SimpleFillSymbol"],
+    function (Extent, Color, SimpleLineSymbol, SimpleFillSymbol) {
 
         /*
          * @see {@link https://developers.arcgis.com/en/javascript/jsapi/extent-amd.html|Extent}
@@ -45,6 +45,14 @@ define(["esri/geometry/Extent"],
              * @type number
              */
             INCHES_PER_METER: 39.37,
+
+            DEFAULT_COLOR: "#504FB0DA",
+            DEFAULT_LINEWIDTH: 2,
+            DEFAULT_LINECOLOR: "#50000000",
+            DEFAULT_LINESTYLE: SimpleLineSymbol.STYLE_SOLID,
+            DEFAULT_FILLCOLOR: "#500F7CF8",
+            DEFAULT_FILLSTYLE: SimpleFillSymbol.STYLE_SOLID,
+            DEFAULT_OPACITY: 0.36,
 
             /**
              * Calculates the scale at which to simulate a view at the given altitude in meters. We are assuming
@@ -230,6 +238,57 @@ define(["esri/geometry/Extent"],
             numberToHex: function (value) {
                 var hex = Number(value).toString(16);
                 return (hex.length < 2) ? "0" + hex : hex;
+            },
+
+            getColor: function (color, opacity, colorMode) {
+                if ((opacity === null) || (opacity === undefined)) {
+                    opacity = this.DEFAULT_OPACITY * 255;
+                } else {
+                    opacity = opacity * 255;
+                }
+
+                if (color) {
+                    let featureColor;
+
+                    if (Array.isArray(color)) {
+                        if (color.length === 4) {
+                            featureColor = new Color([color[0], color[1], color[2], (opacity || color[3] || 100)]);
+                        } else if (color.length === 3) {
+                            featureColor = new Color([color[0], color[1], color[2], (opacity || 100)]);
+                        }
+                    } else if (typeof color === "object") {
+                        if (('r' in color) && ('g' in color) && ('b' in color) && !('a' in color)) {
+                            featureColor = new Color([color.r, color.g, color.b, (opacity || 100)]);
+                        } else if (('r' in color) && ('g' in color) && ('b' in color) && ('a' in color)) {
+                            featureColor = new Color([color.r, color.g, color.b, (opacity || color.a || 100)]);
+                        }
+                    } else {
+                        if (!color.startsWith("#")) {
+                            color = "#" + color;
+                        }
+
+                        if ((opacity === null) || (opacity === undefined)) {
+                            if (color.length > 8) {
+                                opacity = parseInt(color.substring(7, 9), 16);
+                            } else {
+                                opacity = 100;
+                            }
+                        }
+
+                        featureColor = new Color([parseInt(color.substring(1, 3), 16),
+                        parseInt(color.substring(3, 5), 16),
+                        parseInt(color.substring(5, 7), 16), opacity]);
+                    }
+
+                    if (featureColor) {
+                        if (colorMode && colorMode === "random") {
+                            featureColor = this.getRandomColor(featureColor);
+                        }
+                        return featureColor;
+                    }
+                }
+
+                return this.getColor(this.DEFAULT_COLOR);
             },
 
             getRandomColor: function (color) {
