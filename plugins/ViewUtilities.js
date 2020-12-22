@@ -328,7 +328,7 @@ define(["esri/geometry/Extent"],
 
             convertDDToDMM: function (latitude, longitude) {
                 return convertDDLatitudeToDMM(latitude) + ", " +
-                convertDDLongitudeToDMM(longitude);
+                    convertDDLongitudeToDMM(longitude);
             },
 
             convertDDLongitudeToDMM: function (longitude) {

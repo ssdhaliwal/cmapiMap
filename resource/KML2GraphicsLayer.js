@@ -13,7 +13,23 @@ define([],
             self.init = function () {
                 self.document = document;
 
+                initializeDefaultStyles();
                 parse(self.document);
+            };
+
+            initializeDefaultStyles = function () {
+                self.defaultMarkerColor = "#504FB0DA";
+                self.defaultLineWidth = 2;
+                self.defaultLineColor = "#50000000";
+                self.defaultLineStyle = SimpleLineSymbol.STYLE_SOLID;
+                self.defaultFillColor = "#500F7CF8";
+                self.defaultFillStyle = SimpleFillSymbol.STYLE_SOLID;
+                self.defaultLineSymbol = new SimpleLineSymbol(self.defaultLineStyle,
+                    this._getColor(self.defaultLineColor), self.defaultLineWidth).toJson();
+                self.defaultPointSymbol = new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_CIRCLE, 10,
+                    new SimpleLineSymbol(self.defaultLineSymbol), this._getColor(self.defaultMarkerColor)).toJson();
+                self.defaultFillSymbol = new SimpleFillSymbol(self.defaultFillStyle,
+                    new SimpleLineSymbol(self.defaultLineSymbol), this._getColor(self.defaultFillColor)).toJson();
             };
 
             parse = function (node, level, document, folder, docId, pDocId, folderId, currentId) {
@@ -131,26 +147,21 @@ define([],
                 return id;
             };
 
-            // get all <Style> <StyleMap> for the node into array
-            loadStyles = function (node) {
-
-            };
-
             // retrieve document style/map and merge with local style
-            resolveStyle = function (styleId, style) {
+            resolveStyle = function (kml, styleId, style) {
 
             };
 
             // process all features objects (Placemarks)
-            loadPlacemarks = function (node) {
+            loadPlacemarks = function (kml) {
 
             };
 
-            loadOverlays = function (node) {
+            loadOverlays = function (kml) {
 
             };
 
-            loadNetworkLinks = function (node) {
+            loadNetworkLinks = function (kml) {
 
             };
 
