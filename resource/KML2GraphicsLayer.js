@@ -124,6 +124,20 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
                                     self.kml[currentId].Placemark.push(node);
                                 }
                                 break;
+                            case "Overlay":
+                                if (!self.kml[currentId].hasOwnProperty("Overlay")) {
+                                    self.kml[currentId].Placemark = [node];
+                                } else {
+                                    self.kml[currentId].Placemark.push(node);
+                                }
+                                break;
+                            case "NetworkLink":
+                                if (!self.kml[currentId].hasOwnProperty("NetworkLink")) {
+                                    self.kml[currentId].Placemark = [node];
+                                } else {
+                                    self.kml[currentId].Placemark.push(node);
+                                }
+                                break;
                         }
                         return;
                     }
@@ -165,7 +179,7 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
                     newId = node.id.replace(/[ /]/g, "") + "-" + uniqueId;
                 }
 
-                return {name: name, id: newId};
+                return { name: name, id: newId };
             };
 
             resolveFolderId = function (node, id) {
@@ -198,24 +212,24 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
                     newId = id + "/" + newId;
                 }
 
-                return {name: name, id: newId};
+                return { name: name, id: newId };
             };
 
             // retrieve document style/map and merge with local style
-            resolveStyle = function (kml, styleId, style) {
+            resolveStyle = function (docId, styleId, style) {
 
             };
 
             // process all features objects (Placemarks)
-            loadPlacemarks = function (kml) {
+            loadPlacemarks = function () {
 
             };
 
-            loadOverlays = function (kml) {
+            loadOverlays = function () {
 
             };
 
-            loadNetworkLinks = function (kml) {
+            loadNetworkLinks = function () {
 
             };
 
