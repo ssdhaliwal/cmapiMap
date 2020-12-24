@@ -1,14 +1,14 @@
-define(["vendor/js/jstree/jstree", 
+define(["vendor/js/jstree/jstree",
     "interface/esriDynamicMapService", "interface/esriFeatureService", "interface/ogcKML",
     "plugins/ViewUtilities"],
-    function (JSTree, 
+    function (JSTree,
         esriDynamicMapService, esriFeatureService, ogcKML,
         ViewUtilities) {
 
-        let extLayerlist = function (global) {
+        let extOverlay = function (global) {
             let self = this;
             self.message = global.interfaces.messageService;
-            self.layerlist = null;
+            self.overlay = null;
             self.instance = null;
             self.layers = [];
             self.defaultOverlayId = "USER1001";
@@ -23,7 +23,7 @@ define(["vendor/js/jstree/jstree",
             };
 
             self.init = function () {
-                self.layerlist = $('#layerlistDiv').jstree({
+                self.overlay = $('#overlayDiv').jstree({
                     "plugins": ["wholerow", "checkbox"],
                     "checkbox": {
                         "keep_selected_style": true,
@@ -33,38 +33,38 @@ define(["vendor/js/jstree/jstree",
                     'core': {
                         'check_callback': true,
                         'data': {
-                            'url': '/esri-cmapi/data/layerlist.json',
+                            'url': '/esri-cmapi/data/overlay.json',
                             'data': function (node) {
                                 return { 'id': node.id };
                             }
                         }
                     }
                 });
-                self.instance = $('#layerlistDiv').jstree(true);
+                self.instance = $('#overlayDiv').jstree(true);
 
                 self.registerEvents();
             };
 
             self.handleClick = function () {
-                global.plugins.extToolbar.toggleOptions("#layerlist");
+                global.plugins.extToolbar.toggleOptions("#overlay");
 
-                if ($("#layerlist").hasClass("selected")) {
-                    $("#layerlist_wrapper").css("display", "block");
+                if ($("#overlay").hasClass("selected")) {
+                    $("#overlay_wrapper").css("display", "block");
                 }
             };
 
             self.registerEvents = function () {
-                $("#layerlist").on("click", self.handleClick);
+                $("#overlay").on("click", self.handleClick);
 
-                self.layerlist.on('check_node.jstree', function (e, data) {
+                self.overlay.on('check_node.jstree', function (e, data) {
                     self.handleShowOverlay({ overlayId: data.node });
                 });
 
-                self.layerlist.on('uncheck_node.jstree', function (e, data) {
+                self.overlay.on('uncheck_node.jstree', function (e, data) {
                     self.handleHideOverlay({ overlayId: data.node });
                 });
 
-                self.layerlist.on('select_node.jstree', function (e, data) {
+                self.overlay.on('select_node.jstree', function (e, data) {
                     let length = data.selected.length;
                     for (i = 0, j = length; i < j; i++) {
                         let node = self.instance.get_node(data.selected[i]);
@@ -86,7 +86,7 @@ define(["vendor/js/jstree/jstree",
                     }
                 });
 
-                self.layerlist.on('deselect_node.jstree', function (e, data) {
+                self.overlay.on('deselect_node.jstree', function (e, data) {
                     let length = data.selected.length;
                     for (i = 0, j = length; i < j; i++) {
                         let node = self.instance.get_node(data.selected[i]);
@@ -141,9 +141,9 @@ define(["vendor/js/jstree/jstree",
 
                                         layerCopy.id = original.id + "-" + value.id;
                                         layerCopy.text = value.name;
-                                        layerCopy.icon = "/esri-cmapi/plugins/layerlist/icons/DMS-Query.png";
+                                        layerCopy.icon = "/esri-cmapi/plugins/overlay/icons/DMS-Query.png";
 
-                                        let id = $('#layerlistDiv').jstree('create_node', pnode.id, layerCopy, 'last', false);
+                                        let id = $('#overlayDiv').jstree('create_node', pnode.id, layerCopy, 'last', false);
                                     });
                                 }
                             } else {
@@ -172,9 +172,9 @@ define(["vendor/js/jstree/jstree",
 
                                             layerCopy.id = original.id + "-" + value.id;
                                             layerCopy.text = value.name;
-                                            layerCopy.icon = "/esri-cmapi/plugins/layerlist/icons/DMS.png";
+                                            layerCopy.icon = "/esri-cmapi/plugins/overlay/icons/DMS.png";
 
-                                            let id = $('#layerlistDiv').jstree('create_node', parent.id, layerCopy, 'last', false);
+                                            let id = $('#overlayDiv').jstree('create_node', parent.id, layerCopy, 'last', false);
                                             newNodes[value.id] = { "id": id, "parent": parent, "subLayers": value.subLayers };
                                         } else {
                                             $.each(newNodes, function (pIndex, pValue) {
@@ -194,13 +194,13 @@ define(["vendor/js/jstree/jstree",
                                             layerCopy.id = original.id + "-" + value.id;
                                             layerCopy.text = value.name;
                                             if (value.type === "Feature Layer") {
-                                                layerCopy.icon = "/esri-cmapi/plugins/layerlist/icons/FS.png";
+                                                layerCopy.icon = "/esri-cmapi/plugins/overlay/icons/FS.png";
                                                 layerCopy.layer.params.serviceType = "feature";
                                             }
                                             layerCopy.layer.properties.url = original.layer.properties.url + "/" + value.id;
                                             layerCopy.layer.query = false;
 
-                                            let id = $('#layerlistDiv').jstree('create_node', parent.id, layerCopy, 'last', false);
+                                            let id = $('#overlayDiv').jstree('create_node', parent.id, layerCopy, 'last', false);
                                         }
                                     });
                                 }
@@ -244,6 +244,7 @@ define(["vendor/js/jstree/jstree",
                                         // service.perspective = new esriKMLervice(global, service);
                                     }
                                 }
+                            } else if (service.layer.params.serviceType === "kml-ready") {
                             } else if (service.layer.params.serviceType === "wms") {
                             } else if (service.layer.params.serviceType === "tiles") {
                             } else if (service.layer.params.serviceType === "image") {
@@ -320,7 +321,7 @@ define(["vendor/js/jstree/jstree",
                         }
                     };
 
-                    let nId = $('#layerlistDiv').jstree('create_node', pNode.id, nNode, 'last', false);
+                    let nId = $('#overlayDiv').jstree('create_node', pNode.id, nNode, 'last', false);
                 } else {
                     if ((oNode.text !== request.name) || request.hasOwnProperty("parentId")) {
                         let oId = oNode.id;
@@ -328,12 +329,12 @@ define(["vendor/js/jstree/jstree",
                             oNode.text = request.name;
                             oNode.original.text = request.name;
 
-                            $('#layerlistDiv').jstree('rename_node', oNode.id, oNode.text);
+                            $('#overlayDiv').jstree('rename_node', oNode.id, oNode.text);
                         }
 
                         // if parent id is provided; move the node
                         if (request.hasOwnProperty("parentId")) {
-                            $('#layerlistDiv').jstree('move_node', oNode, pNode.id, 'last', false);
+                            $('#overlayDiv').jstree('move_node', oNode, pNode.id, 'last', false);
                         }
                     } else {
                         let payload = { "type": "map.overlay.create", "msg": request, "error": "duplicate overlay, already exists!" };
@@ -344,13 +345,13 @@ define(["vendor/js/jstree/jstree",
 
             self.handleRemoveOverlay = function (request) {
                 // get USER FAVORITES node and remove items from child nodes
-                let oNode = $("#layerlistDiv").jstree().get_node(request.overlayId);
+                let oNode = $("#overlayDiv").jstree().get_node(request.overlayId);
                 if (ViewUtilities.getBoolean(oNode)) {
                     let pId = oNode.id;
 
                     // uncheck and remove the layers from map
                     uncheckSelected(pId);
-                    $("#layerlistDiv").jstree("delete_node", $("#" + pId));
+                    $("#overlayDiv").jstree("delete_node", $("#" + pId));
                 }
             };
 
@@ -422,7 +423,7 @@ define(["vendor/js/jstree/jstree",
                     let layerCopy = {
                         "id": request.featureId,
                         "text": request.name,
-                        "icon": "/esri-cmapi/plugins/layerlist/icons/KML.png",
+                        "icon": "/esri-cmapi/plugins/overlay/icons/KML.png",
                         "layer": {
                             "properties": {
                                 "url": request.url,
@@ -445,33 +446,37 @@ define(["vendor/js/jstree/jstree",
                         layerCopy.layer.properties[index] = value;
                     });
 
-                    // add the layer to the layerlist
+                    // add the layer to the overlay
                     switch (layerCopy.layer.params.serviceType) {
                         case "dynamic":
-                            layerCopy.icon = "/esri-cmapi/plugins/layerlist/icons/DMS.png";
+                            layerCopy.icon = "/esri-cmapi/plugins/overlay/icons/DMS.png";
                             if (layerCopy.layer.hasOwnProperty("query") && ViewUtilities.getBoolean(layerCopy.layer.query)) {
-                                layerCopy.icon = "/esri-cmapi/plugins/layerlist/icons/DMS-Query.png";
+                                layerCopy.icon = "/esri-cmapi/plugins/overlay/icons/DMS-Query.png";
                             }
                             layerCopy.layer.params.serviceType = "dynamic";
                             break;
                         case "feature":
-                            layerCopy.icon = "/esri-cmapi/plugins/layerlist/icons/FS.png";
+                            layerCopy.icon = "/esri-cmapi/plugins/overlay/icons/FS.png";
                             layerCopy.layer.params.serviceType = "feature";
                             break;
                         case "wms":
-                            layerCopy.icon = "/esri-cmapi/plugins/layerlist/icons/WMS.png";
+                            layerCopy.icon = "/esri-cmapi/plugins/overlay/icons/WMS.png";
                             layerCopy.layer.params.serviceType = "wms";
                             break;
                         case "kml":
-                            layerCopy.icon = "/esri-cmapi/plugins/layerlist/icons/KML.png";
+                            layerCopy.icon = "/esri-cmapi/plugins/overlay/icons/KML.png";
                             layerCopy.layer.params.serviceType = "kml";
                             break;
+                        case "kml-ready":
+                            layerCopy.icon = "/esri-cmapi/plugins/overlay/icons/KML-Ready.png";
+                            layerCopy.layer.params.serviceType = "kml-ready";
+                            break;
                         case "kmz":
-                            layerCopy.icon = "/esri-cmapi/plugins/layerlist/icons/KMZ.png";
+                            layerCopy.icon = "/esri-cmapi/plugins/overlay/icons/KMZ.png";
                             layerCopy.layer.params.serviceType = "kmz";
                             break;
                         case "image":
-                            layerCopy.icon = "/esri-cmapi/plugins/layerlist/icons/ISL.png";
+                            layerCopy.icon = "/esri-cmapi/plugins/overlay/icons/ISL.png";
                             layerCopy.layer.params.serviceType = "image";
                             break;
                     }
@@ -479,12 +484,12 @@ define(["vendor/js/jstree/jstree",
                     let overlayId = request.overlayId || self.defaultOverlayId;
                     let pNode = self.instance.get_node(overlayId);
                     console.log(layerCopy);
-                    let id = $('#layerlistDiv').jstree('create_node', pNode.id, layerCopy, 'last', false);
+                    let id = $('#overlayDiv').jstree('create_node', pNode.id, layerCopy, 'last', false);
                 }
             };
 
             self.init();
         };
 
-        return extLayerlist;
+        return extOverlay;
     });

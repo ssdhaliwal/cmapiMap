@@ -7,7 +7,6 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
         let KML2GraphicsLayer = function (name, document) {
             let self = this;
             self.document = document;
-            self.graphicsLayer = null;
             self.kml = {
                 name: name,
                 count: 0

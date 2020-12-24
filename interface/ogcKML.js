@@ -7,9 +7,9 @@ define(["resource/KML2GraphicsLayer", "plugins/ViewUtilities"],
             self.search = global.plugins.extSearch;
             self.notify = global.plugins.extNotify;
             self.message = global.interfaces.messageService;
-            self.layerList = global.plugins.extLayerlist;
+            self.overlay = global.plugins.extOverlay;
             self.service = service;
-            self.layer = null;
+            self.layer = [];
             self.selectedFeatures = [];
 
             self.init = function () {
@@ -43,8 +43,11 @@ define(["resource/KML2GraphicsLayer", "plugins/ViewUtilities"],
 
             self.remove = function () {
                 console.log("... removed layer: " + self.service.text);
+
                 /*
+                // for each layer, remove the layer
                 self.map.removeLayer(self.layer);
+
                 // need to remove any nodes created by the layer
                 $.each(self.selectedFeatures, function (index, feature) {
                     self.message.sendMessage("map.feature.deselected",
@@ -169,14 +172,15 @@ define(["resource/KML2GraphicsLayer", "plugins/ViewUtilities"],
                             if (subLayer.hasOwnProperty("folderId")) {
                                 folders = subLayer.folderId.split("/");
 
+                                // add new items as serviceType = kml-ready
                                 if (folders.length === 1) {
-                                    self.layerList.handleAddOverlay({
+                                    self.overlay.handleAddOverlay({
                                         "name": subLayer.name,
                                         "overlayId": folders[0],
                                         "parentId": service.id
                                     });
                                 } else {
-                                    self.layerList.handleAddOverlay({
+                                    self.overlay.handleAddOverlay({
                                         "name": subLayer.name,
                                         "overlayId": folders[folders.length - 1],
                                         "parentId": folders[folders.length - 2]

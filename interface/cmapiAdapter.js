@@ -26,28 +26,28 @@ define(["plugins/ViewUtilities"],
                         request.overlayId = request.name;
                     }
 
-                    global.plugins.extLayerlist.handleAddOverlay(request);
+                    global.plugins.extOverlay.handleAddOverlay(request);
                 }
             };
 
             self.onMapOverlayRemove = function (request) {
                 // check minimum requirement - id
                 if (request.hasOwnProperty("overlayId")) {
-                    global.plugins.extLayerlist.handleRemoveOverlay(request);
+                    global.plugins.extOverlay.handleRemoveOverlay(request);
                 }
             };
 
             self.onMapOverlayHide = function (request) {
                 // check minimum requirement - id
                 if (request.hasOwnProperty("overlayId")) {
-                    global.plugins.extLayerlist.handleHideOverlay(request);
+                    global.plugins.extOverlay.handleHideOverlay(request);
                 }
             };
 
             self.onMapOverlayShow = function (request) {
                 // check minimum requirement - id
                 if (request.hasOwnProperty("overlayId")) {
-                    global.plugins.extLayerlist.handleShowOverlay(request);
+                    global.plugins.extOverlay.handleShowOverlay(request);
                 }
             };
 
@@ -59,7 +59,7 @@ define(["plugins/ViewUtilities"],
                             request.name = request.featureId;
                         }
 
-                        global.plugins.extLayerlist.handlePlotFeatureUrl(request);
+                        global.plugins.extOverlay.handlePlotFeatureUrl(request);
                     }
                 }
             };
