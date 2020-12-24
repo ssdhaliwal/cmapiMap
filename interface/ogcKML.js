@@ -69,7 +69,7 @@ define(["resource/KML2GraphicsLayer", "plugins/ViewUtilities"],
                 if (layer.hasOwnProperty("data")) {
                     parseKml(layer.properties.data);
                 } else {
-                    // process the intranet url (kml or kmz)
+                    // process the local (kml or kmz)
                     if (layer.properties.hasOwnProperty("url")) {
                         let request = {
                             "url": layer.properties.url,
@@ -93,30 +93,17 @@ define(["resource/KML2GraphicsLayer", "plugins/ViewUtilities"],
                         if (layer.params.serviceType === "kml") {
                             // retrieve kml and set it to "data" property
                             if (layer.properties.hasOwnProperty("url")) {
-                                if (layer.properties.hasOwnProperty("intranet")) {
-                                    if (ViewUtilities.getBoolean(layer.properties.intranet)) {
-                                        $.ajax(request)
-                                            .done(function (data, textStatus, xhr) {
-                                                console.log(data, textStatus);
-                                                processKml(data);
-                                            })
-                                            .fail(function (xhr, textStatus, error) {
-                                                console.log(textStatus, error);
-                                            });
-                                    }
-                                } else {
-
-                                }
-                            }
-                        } else {
-                            // retrieve kmz; parse it and store it with "data" property
-                            if (layer.properties.hasOwnProperty("url")) {
-                                if (layer.properties.hasOwnProperty("intranet")) {
-                                } else {
-
-                                }
+                                $.ajax(request)
+                                    .done(function (data, textStatus, xhr) {
+                                        console.log(data, textStatus);
+                                        processKml(data);
+                                    })
+                                    .fail(function (xhr, textStatus, error) {
+                                        console.log(textStatus, error);
+                                    });
                             }
                         }
+
                     }
                 }
             };
