@@ -42,7 +42,7 @@
                     {
                         "id": "WTHR1002-01",
                         "text": "Surface Weather and Ocean Observations",
-                        "icon": "/esri-cmapi/plugins/overlay/icons/DMS.png",
+                        "icon": "/esri-cmapi/plugins/layerlist/icons/DMS.png",
                         "state": {
                             "opened": true,
                             "disabled": false,
@@ -70,7 +70,7 @@
                     {
                         "id": "WTHR1002-02",
                         "text": "Short-Duration Hazards",
-                        "icon": "/esri-cmapi/plugins/overlay/icons/DMS-Query.png",
+                        "icon": "/esri-cmapi/plugins/layerlist/icons/DMS-Query.png",
                         "state": {
                             "opened": true,
                             "disabled": false,
@@ -95,7 +95,7 @@
                     {
                         "id": "WTHR1002-03",
                         "text": "NEXRAD MRMS Weather Radar",
-                        "icon": "/esri-cmapi/plugins/overlay/icons/DMS.png",
+                        "icon": "/esri-cmapi/plugins/layerlist/icons/DMS.png",
                         "state": {
                             "opened": true,
                             "disabled": false,
@@ -122,7 +122,7 @@
                     {
                         "id": "WTHR1002-04",
                         "text": "Tropical Cyclone Track and Intensity",
-                        "icon": "/esri-cmapi/plugins/overlay/icons/DMS-Query.png",
+                        "icon": "/esri-cmapi/plugins/layerlist/icons/DMS-Query.png",
                         "state": {
                             "opened": true,
                             "disabled": false,
@@ -162,7 +162,7 @@
                     {
                         "id": "WTHR1003-01",
                         "text": "NWS_Forecasts_Guidance_Warnings",
-                        "icon": "/esri-cmapi/plugins/overlay/icons/DMS-Query.png",
+                        "icon": "/esri-cmapi/plugins/layerlist/icons/DMS-Query.png",
                         "state": {
                             "opened": true,
                             "disabled": false,
@@ -203,7 +203,7 @@
         "children": [{
             "id": "TEST1001-01",
             "text": "KML - Interanet",
-            "icon": "/esri-cmapi/plugins/overlay/icons/KML.png",
+            "icon": "/esri-cmapi/plugins/layerlist/icons/KML.png",
             "state": {
                 "opened": true,
                 "disabled": false,
@@ -214,7 +214,7 @@
                     "dateCreated": "20180521",
                     "dateVerified": "20201208",
                     "url": "/esri-cmapi/testing/testdata/kml_folders.kml",
-                    "restricted": true,
+                    "intranet": true,
                     "credentials": {
                         "required": false,
                         "token": ""

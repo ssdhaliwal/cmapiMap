@@ -332,11 +332,11 @@ img {
     background: white;
 }
 
-#overlay {
+#layerlist {
     margin-right: 5px;
     width: 30px;
     height: 30px;
-    background-image: url("../images/icons/overlay_Default.png");
+    background-image: url("../images/icons/layerlist_Default.png");
     background-position: center center;
     background-repeat: no-repeat;
     border-radius: 5px;
@@ -345,19 +345,19 @@ img {
     z-index: 3;
 }
 
-#overlay:hover {
-    background-image: url("../images/icons/overlay_Hover.png");
+#layerlist:hover {
+    background-image: url("../images/icons/layerlist_Hover.png");
     background-position: center center;
     background-repeat: no-repeat;
 }
 
-#overlay.selected {
-    background-image: url("../images/icons/overlay_Selected.png");
+#layerlist.selected {
+    background-image: url("../images/icons/layerlist_Selected.png");
     background-position: center center;
     background-repeat: no-repeat;
 }
 
-#overlay_wrapper {
+#layerlist_wrapper {
     position: absolute;
     right: 0;
     width: 33.5%;
@@ -368,7 +368,7 @@ img {
     overflow-y: scroll;
 }
 
-#overlayDiv {
+#layerlistDiv {
     background: white;
     padding: 10px;
     height: 100%;

@@ -30,9 +30,9 @@ define([],
 
                 $("#infoPanel_wrapper").hide();
                 $("#basemaps_wrapper").hide();
-                $("#overlay_wrapper").hide();
+                $("#layerlist_wrapper").hide();
 
-                $("#basemaps, #bookmark, #legend, #config, #overlay").removeClass("selected");
+                $("#basemaps, #bookmark, #legend, #config, #layerlist").removeClass("selected");
 
                 if (elementId && !isSelected) {
                     $(elementId).addClass("selected");

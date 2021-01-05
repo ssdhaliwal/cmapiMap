@@ -17,7 +17,7 @@ require([
   "plugins/basemap/Basemap",
   "plugins/legend/Legend",
   "plugins/bookmarks/Bookmarks",
-  "plugins/overlay/Overlay",
+  "plugins/layerlist/Layerlist",
   "interface/geometryService",
   "interface/messageService",
   "dojo/domReady!"
@@ -35,7 +35,7 @@ require([
   extBasemap,
   extLegend,
   extBookmarks,
-  extOverlay,
+  extLayerlist,
   geometryService,
   messageService
 ) {
@@ -80,7 +80,7 @@ require([
     global.plugins.extBookmarks = new extBookmarks(global);
 
     window.setTimeout(() => {
-      global.plugins.extOverlay = new extOverlay(global);
+      global.plugins.extLayerlist = new extLayerlist(global);
     }, 1000);
   }
 });

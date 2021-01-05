@@ -7,9 +7,9 @@ define(["resource/KML2GraphicsLayer", "plugins/ViewUtilities"],
             self.search = global.plugins.extSearch;
             self.notify = global.plugins.extNotify;
             self.message = global.interfaces.messageService;
-            self.overlay = global.plugins.extOverlay;
+            self.layerList = global.plugins.extLayerlist;
             self.service = service;
-            self.layer = [];
+            self.layer = null;
             self.selectedFeatures = [];
 
             self.init = function () {
@@ -43,11 +43,8 @@ define(["resource/KML2GraphicsLayer", "plugins/ViewUtilities"],
 
             self.remove = function () {
                 console.log("... removed layer: " + self.service.text);
-
                 /*
-                // for each layer, remove the layer
                 self.map.removeLayer(self.layer);
-
                 // need to remove any nodes created by the layer
                 $.each(self.selectedFeatures, function (index, feature) {
                     self.message.sendMessage("map.feature.deselected",
@@ -69,7 +66,7 @@ define(["resource/KML2GraphicsLayer", "plugins/ViewUtilities"],
                 if (layer.hasOwnProperty("data")) {
                     parseKml(layer.properties.data);
                 } else {
-                    // process the local (kml or kmz)
+                    // process the intranet url (kml or kmz)
                     if (layer.properties.hasOwnProperty("url")) {
                         let request = {
                             "url": layer.properties.url,
@@ -93,17 +90,30 @@ define(["resource/KML2GraphicsLayer", "plugins/ViewUtilities"],
                         if (layer.params.serviceType === "kml") {
                             // retrieve kml and set it to "data" property
                             if (layer.properties.hasOwnProperty("url")) {
-                                $.ajax(request)
-                                    .done(function (data, textStatus, xhr) {
-                                        console.log(data, textStatus);
-                                        processKml(data);
-                                    })
-                                    .fail(function (xhr, textStatus, error) {
-                                        console.log(textStatus, error);
-                                    });
+                                if (layer.properties.hasOwnProperty("intranet")) {
+                                    if (ViewUtilities.getBoolean(layer.properties.intranet)) {
+                                        $.ajax(request)
+                                            .done(function (data, textStatus, xhr) {
+                                                console.log(data, textStatus);
+                                                processKml(data);
+                                            })
+                                            .fail(function (xhr, textStatus, error) {
+                                                console.log(textStatus, error);
+                                            });
+                                    }
+                                } else {
+
+                                }
+                            }
+                        } else {
+                            // retrieve kmz; parse it and store it with "data" property
+                            if (layer.properties.hasOwnProperty("url")) {
+                                if (layer.properties.hasOwnProperty("intranet")) {
+                                } else {
+
+                                }
                             }
                         }
-
                     }
                 }
             };
@@ -159,15 +169,14 @@ define(["resource/KML2GraphicsLayer", "plugins/ViewUtilities"],
                             if (subLayer.hasOwnProperty("folderId")) {
                                 folders = subLayer.folderId.split("/");
 
-                                // add new items as serviceType = kml-ready
                                 if (folders.length === 1) {
-                                    self.overlay.handleAddOverlay({
+                                    self.layerList.handleAddOverlay({
                                         "name": subLayer.name,
                                         "overlayId": folders[0],
                                         "parentId": service.id
                                     });
                                 } else {
-                                    self.overlay.handleAddOverlay({
+                                    self.layerList.handleAddOverlay({
                                         "name": subLayer.name,
                                         "overlayId": folders[folders.length - 1],
                                         "parentId": folders[folders.length - 2]
