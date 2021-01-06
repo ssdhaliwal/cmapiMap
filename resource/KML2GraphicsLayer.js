@@ -1,13 +1,15 @@
 define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
     "esri/symbols/SimpleFillSymbol",
-    "plugins/ViewUtilities"],
+    "esri/graphic", "esri/SpatialReference", "esri/geometry/Point", "esri/geometry/Polyline", "esri/geometry/Polygon",
+    "esri/layers/GraphicsLayer", "esri/InfoTemplate",
+    "plugins/ViewUtilities", "milsymbol"],
     function (SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol,
-        ViewUtilities) {
+        Graphic, SpatialReference, Point, Polyline, Polygon, GraphicsLayer, InfoTemplate,
+        ViewUtilities, mil2525) {
 
         let KML2GraphicsLayer = function (name, document) {
             let self = this;
             self.document = document;
-            self.graphicsLayer = null;
             self.kml = {
                 name: name,
                 count: 0
@@ -21,6 +23,8 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
                 parse(self.document);
 
                 loadPlacemarks();
+                loadOverlays();
+                loadNetworkLinks();
             };
 
             initializeDefaultStyles = function () {
@@ -90,8 +94,8 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
                         }
                     }
 
-                    console.log(level, node.nodeName.padStart((node.nodeName.length + level), '-'),
-                        "doc:" + docId, "folder:" + folderId);
+                    //console.log(level, node.nodeName.padStart((node.nodeName.length + level), '-'),
+                    //    "doc:" + docId, "folder:" + folderId);
                 } else {
                     if ((node.nodeName !== "#document") && (node.nodeName !== "kml")) {
                         if (level === undefined) {
@@ -100,8 +104,7 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
                             level++;
                         }
 
-                        console.log(level, node.nodeName.padStart((node.nodeName.length + level), '-'));
-
+                        //console.log(level, node.nodeName.padStart((node.nodeName.length + level), '-'));
                         switch (node.nodeName) {
                             case "Style":
                                 if (!self.kml[currentId].hasOwnProperty("Style")) {
@@ -145,7 +148,8 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
 
                 node = node.firstChild;
                 while (node) {
-                    if (node.nodeType == 1) {
+                    // process element nodes only, not text nodes
+                    if (node.nodeType === 1) {
                         parse(node, level, document, folder, docId, folderId, currentId);
                     }
 
@@ -222,7 +226,96 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
 
             // process all features objects (Placemarks)
             loadPlacemarks = function () {
+                $.each(self.kml, function (index, subLayer) {
+                    console.log(subLayer);
+                    self.kml[subLayer]["graphicsLayer"] = new GraphicsLayer({ id: subLayer.id });
 
+                    // check the placemark type - MultiGeometry, Point, LineString, Polygon
+                    $.each(subLayer.Placemark, function (pIndex, placemark) {
+                        console.log(placemark, placemark.nodeName);
+                        processPlacemark(subLayer, placemark);
+                    });
+                });
+            };
+
+            processPlacemark = function (layer, placemark) {
+                let len = placemark.childNodes.length;
+                let child = placemark.firstChild;
+
+                let attributes = {};
+                // process the attributes
+                $.each(placemark.attributes, function (index, attribute) {
+                    attributes[attribute.name] = attribute.textContent;
+                });
+
+                for (let i = 0; i < len; i++) {
+                    // process element nodes only, not text nodes
+                    if (child.nodeType === 1) {
+                        console.log(".. " + child.nodeName, child.nodeType, child.textContent);
+
+                        switch (child.nodeName) {
+                            case "id":
+                            case "name":
+                            case "address":
+                            case "phoneNumber":
+                                attributes[child.nodeName] = child.textContent;
+                                break;
+
+                            case "styleUrl":
+                            case "Style":
+                            case "StyleMap":
+                                break;
+
+                            case "MultiGeometry":
+                                break;
+                            case "Point":
+                                processPlacemarkPoint(layer, placemark, attributes);
+                                break;
+                            case "LineString":
+                                break;
+                            case "Polygon":
+                                break;
+                        };
+                    }
+
+                    child = child.nextSibling;
+                }
+            };
+
+            processPlacemarkPoint = function (layer, placemark, attributes) {
+                let len = placemark.childNodes.length;
+                let child = placemark.firstChild;
+
+                console.log(placemark, attributes);
+                let coordinates;
+
+                // process the elements
+                for (let i = 0; i < len; i++) {
+                    // process element nodes only, not text nodes
+                    if (child.nodeType === 1) {
+                        switch (child.nodeName) {
+                            case "Point":
+                                coordinates = child.getElementsByTagName("coordinates");
+
+                                if (coordinates && coordinates.length > 0) {
+                                    let coords = coordinates[0].textContent.replace(/\s+/g, ' ').replace(/, /g, ',').split(",");
+                                    if (coords.length > 1) {
+                                        let point = new Point(coords[0], coords[1], new SpatialReference({
+                                            wkid: 4326
+                                        }));
+
+                                        let graphic = new Graphic(point);
+                                        layer.graphicsLayer.add(graphic);
+                                        console.log(coords, attributes);
+                                    }
+                                }
+
+                                break;
+                        };
+                    }
+
+                    child = child.nextSibling;
+                }
             };
 
             loadOverlays = function () {

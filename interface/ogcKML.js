@@ -145,7 +145,6 @@ define(["resource/KML2GraphicsLayer", "plugins/ViewUtilities"],
                     // send the data
                     resolve(document);
                 }).then(function (document) {
-                    console.log(document);
                     processKml(document);
                 }, function (error) {
                     console.log(error);
