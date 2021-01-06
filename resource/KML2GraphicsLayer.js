@@ -227,14 +227,18 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
             // process all features objects (Placemarks)
             loadPlacemarks = function () {
                 $.each(self.kml, function (index, subLayer) {
-                    console.log(subLayer);
-                    self.kml[subLayer]["graphicsLayer"] = new GraphicsLayer({ id: subLayer.id });
+                    if ((index === "name") || (index === "count")) {
 
-                    // check the placemark type - MultiGeometry, Point, LineString, Polygon
-                    $.each(subLayer.Placemark, function (pIndex, placemark) {
-                        console.log(placemark, placemark.nodeName);
-                        processPlacemark(subLayer, placemark);
-                    });
+                    } else {
+                        console.log(subLayer);
+                        subLayer["graphicsLayer"] = new GraphicsLayer({ id: subLayer.id });
+
+                        // check the placemark type - MultiGeometry, Point, LineString, Polygon
+                        $.each(subLayer.Placemark, function (pIndex, placemark) {
+                            console.log(placemark, placemark.nodeName);
+                            processPlacemark(subLayer, placemark);
+                        });
+                    }
                 });
             };
 
