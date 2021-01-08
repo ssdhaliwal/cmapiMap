@@ -1,7 +1,7 @@
-define(["vendor/js/jstree/jstree", 
+define(["vendor/js/jstree/jstree",
     "interface/esriDynamicMapService", "interface/esriFeatureService", "interface/ogcKML",
     "plugins/ViewUtilities"],
-    function (JSTree, 
+    function (JSTree,
         esriDynamicMapService, esriFeatureService, ogcKML,
         ViewUtilities) {
 
@@ -238,7 +238,8 @@ define(["vendor/js/jstree/jstree",
                                 // if properties has data or property has local = true with url
                                 if (service.layer.hasOwnProperty("properties")) {
                                     if (service.layer.properties.hasOwnProperty("data") ||
-                                        service.layer.properties.hasOwnProperty("url")) {
+                                        (service.layer.properties.hasOwnProperty("url") &&
+                                            service.layer.properties.hasOwnProperty("intranet"))) {
                                         service.perspective = new ogcKML(global, service);
                                     } else {
                                         // service.perspective = new esriKMLervice(global, service);
