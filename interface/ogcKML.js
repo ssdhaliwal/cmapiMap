@@ -153,14 +153,24 @@ define(["resource/KML2GraphicsLayer", "plugins/ViewUtilities"],
 
             processKml = function (document) {
                 new Promise(function (resolve, reject) {
-                    let layer = new KML2GraphicsLayer(self.service.text, document);
+                    let layer = new KML2GraphicsLayer(self.service.text, document, 
+                        self.service.layer.properties, self.service.layer.params);
                     resolve(layer);
                 }).then(function (layer) {
+                    console.log(layer.kml);
+
                     // if zero layer, then error
                     // if one layer, then attach it to map and link events
                     if (layer.kml.count === 0) {
                     } else if (layer.kml.count === 1) {
-
+                        $.each(layer.kml, function (index, subLayer) {
+                            if (subLayer.graphicsLayer) {
+                                console.log(subLayer.graphicsLayer, subLayer.graphicsLayer.visible);
+                                self.map.addLayer(subLayer.graphicsLayer);
+                            }
+                        });
+                        
+                        // self.registerEvents();
                     } else {
                         // if more than one layer; then we need to create node for each layer
                         let folders = undefined;
@@ -187,6 +197,10 @@ define(["resource/KML2GraphicsLayer", "plugins/ViewUtilities"],
                 }, function (error) {
                     console.log(error);
                 });
+            };
+
+            addLayerToMap = function(layer) {
+                map.addLayer(newLayer);
             };
 
             self.init();

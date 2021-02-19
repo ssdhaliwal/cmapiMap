@@ -3,7 +3,6 @@
     <Document id="1000-00">
         <name>Placemark Points</name>
         <Placemark id="1001">
-            <id>1001-01</id>
             <name>Zürich</name>
             <Point>
                 <coordinates>8.543240928407617,47.36695287673603,0</coordinates>

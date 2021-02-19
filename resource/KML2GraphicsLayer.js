@@ -1,15 +1,22 @@
 define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
     "esri/symbols/SimpleFillSymbol",
-    "esri/graphic", "esri/SpatialReference", "esri/geometry/Point", "esri/geometry/Polyline", "esri/geometry/Polygon",
+    "esri/graphic", "esri/SpatialReference", "esri/geometry/webMercatorUtils",
+    "esri/geometry/Point", "esri/geometry/Polyline", "esri/geometry/Polygon",
     "esri/layers/GraphicsLayer", "esri/InfoTemplate",
+    "esri/Color",
     "plugins/ViewUtilities", "milsymbol"],
     function (SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol,
-        Graphic, SpatialReference, Point, Polyline, Polygon, GraphicsLayer, InfoTemplate,
+        Graphic, SpatialReference, webMercatorUtils, 
+        Point, Polyline, Polygon, GraphicsLayer, InfoTemplate,
+        Color,
         ViewUtilities, mil2525) {
 
-        let KML2GraphicsLayer = function (name, document) {
+        let KML2GraphicsLayer = function (name, document, properties, params) {
             let self = this;
             self.document = document;
+            self.properties = properties;
+            self.params = params;
+
             self.kml = {
                 name: name,
                 count: 0
@@ -220,8 +227,19 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
             };
 
             // retrieve document style/map and merge with local style
-            resolveStyle = function (docId, styleId, style) {
+            resolvePointStyle = function (layer, placemark) {
+                let style = {
+                    normal: self.defaults.PointSymbol,
+                    highlighted: self.defaults.PointSymbol
+                };
 
+                // see if styleUrl specified
+
+                // see if style specified
+
+                // fix for missing normal or high-lighed style
+
+                return style;
             };
 
             // process all features objects (Placemarks)
@@ -231,7 +249,7 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
 
                     } else {
                         console.log(subLayer);
-                        subLayer["graphicsLayer"] = new GraphicsLayer({ id: subLayer.id });
+                        subLayer["graphicsLayer"] = new GraphicsLayer({ id: subLayer.folderId });
 
                         // check the placemark type - MultiGeometry, Point, LineString, Polygon
                         $.each(subLayer.Placemark, function (pIndex, placemark) {
@@ -265,15 +283,11 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
                                 attributes[child.nodeName] = child.textContent;
                                 break;
 
-                            case "styleUrl":
-                            case "Style":
-                            case "StyleMap":
-                                break;
-
                             case "MultiGeometry":
                                 break;
                             case "Point":
-                                processPlacemarkPoint(layer, placemark, attributes);
+                                let style = this.resolvePointStyle(layer, placemark);
+                                this.processPlacemarkPoint(layer, placemark, attributes, style);
                                 break;
                             case "LineString":
                                 break;
@@ -286,7 +300,7 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
                 }
             };
 
-            processPlacemarkPoint = function (layer, placemark, attributes) {
+            processPlacemarkPoint = function (layer, placemark, attributes, style) {
                 let len = placemark.childNodes.length;
                 let child = placemark.firstChild;
 
@@ -304,13 +318,15 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
                                 if (coordinates && coordinates.length > 0) {
                                     let coords = coordinates[0].textContent.replace(/\s+/g, ' ').replace(/, /g, ',').split(",");
                                     if (coords.length > 1) {
-                                        let point = new Point(coords[0], coords[1], new SpatialReference({
-                                            wkid: 4326
-                                        }));
+                                        let point = new Point(parseFloat(coords[0]), parseFloat(coords[1]));
+                                        // point = webMercatorUtils.project(point, new SpatialReference(4326));
 
-                                        let graphic = new Graphic(point);
+                                        let popupTemplate = this.updatePopupTemplate(params.popupTemplate, attributes);
+                                        let graphic = new Graphic(point, style.normal, attributes, popupTemplate);
+                                        graphic.normalSymbol = style.normal;
+                                        graphic.highlightSymbol = style.highlighted;
+
                                         layer.graphicsLayer.add(graphic);
-                                        console.log(coords, attributes);
                                     }
                                 }
 
@@ -321,6 +337,31 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
                     child = child.nextSibling;
                 }
             };
+
+            updatePopupTemplate = function (popupTemplate, attributes) {
+                let newPopupTemplate = null;
+                if (!popupTemplate || !popupTemplate.content) {
+                    newPopupTemplate = new InfoTemplate();
+                    newPopupTemplate.setTitle("${Name}");
+                    var description = attributes.Description ? (attributes.Description + "<hr>") : "";
+                    description +=
+                        "<div class=\"esriViewPopup\"><div class=\"mainSection\"><table class=\"attrTable\" cellpadding=\"2px\" cellspacing=\"0px\"> " +
+                        "<tbody> ";
+                    for (var field in attributes) {
+                        if (field !== "Description") {
+                            description += "	<tr valign=\"top\"><td class=\"attrName\">" + field + "</td><td class=\"attrValue\">" + attributes[field] + "</td></tr> ";
+                        }
+                    };
+                    description +=
+                        "</tbody> " +
+                        "</table></div></div>";
+                    newPopupTemplate.setContent(description);
+                } else {
+                    newPopupTemplate = new InfoTemplate(attributes.name, this.popupTemplate.content);
+                }
+
+                return newPopupTemplate;
+            }
 
             loadOverlays = function () {
 
