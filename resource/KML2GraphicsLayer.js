@@ -51,6 +51,36 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
                     new SimpleLineSymbol(self.defaults.LineSymbol), ViewUtilities.getColor(self.defaults.FillColor)).toJson();
             };
 
+            getNodeValues = function (node, elements, payload, recurse) {
+                if (node.hasAttributes()) {
+                    for (var attribute of node.attributes) {
+                        payload[attribute.name] = attribute.value;
+                    }
+                }
+
+                for (var child of node.childNodes) {
+                    if (elements.indexOf(child.nodeName) >= 0) {
+                        var value = (child.innerText || child.text || child.textContent);
+
+                        payload[child.nodeName] = {};
+                        if (value.trim()) {
+                            payload[child.nodeName] = value.trim();
+                        }
+                        if (child.hasAttributes()) {
+                            for (var attribute of child.attributes) {
+                                payload[child.nodeName][attribute.name] = attribute.value;
+                            }
+                        }
+                    }
+
+                    if (recurse && child.hasChildNodes()) {
+                        payload = this.getNodeValues(child, elements, payload[child.nodeName], recurse);
+                    }
+                }
+
+                return payload;
+            };
+
             parse = function (node, level, document, folder, docId, folderId, currentId) {
                 let newId = undefined;
 
@@ -112,19 +142,24 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
                         }
 
                         //console.log(level, node.nodeName.padStart((node.nodeName.length + level), '-'));
+                        let style = null, id = null;
                         switch (node.nodeName) {
                             case "Style":
+                                style = (this.getNodeValues(node, ["id"], {}, false));
+                                id = style.id;
                                 if (!self.kml[currentId].hasOwnProperty("Style")) {
-                                    self.kml[currentId].Style = [node];
+                                    self.kml[currentId].Style = [{id: node}];
                                 } else {
-                                    self.kml[currentId].Style.push(node);
+                                    self.kml[currentId].Style.push({id: node});
                                 }
                                 break;
                             case "StyleMap":
+                                style = (this.getNodeValues(node, ["id"], {}, false));
+                                id = style.id;
                                 if (!self.kml[currentId].hasOwnProperty("StyleMap")) {
-                                    self.kml[currentId].StyleMap = [node];
+                                    self.kml[currentId].StyleMap = [{id: node}];
                                 } else {
-                                    self.kml[currentId].StyleMap.push(node);
+                                    self.kml[currentId].StyleMap.push({id: node});
                                 }
                                 break;
                             case "Placemark":
@@ -226,6 +261,23 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
                 return { name: name, id: newId };
             };
 
+            _findStyleMap = function (layer, url) {
+                var styleMaps = this.styleMaps;
+                var styleMap;
+
+                //If we have a style map then search for the styleUrl in that map
+                if (styleMaps && styleMaps.length > 0) {
+                    for (var i = 0; i < styleMaps.length; i++) {
+                        if ("#" + styleMaps[i].id === url) {
+                            styleMap = styleMaps[i];
+                            break;
+                        }
+                    }
+                }
+
+                return styleMap;
+            };
+
             // retrieve document style/map and merge with local style
             resolvePointStyle = function (layer, placemark) {
                 let style = {
@@ -234,6 +286,7 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
                 };
 
                 // see if styleUrl specified
+                console.log(layer, placemark);
 
                 // see if style specified
 
