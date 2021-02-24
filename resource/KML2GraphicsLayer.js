@@ -148,19 +148,17 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
                                 style = (this.getNodeValues(node, ["id"], {}, false));
                                 id = style.id;
                                 if (!self.kml[currentId].hasOwnProperty("Style")) {
-                                    self.kml[currentId].Style = [{id: node}];
-                                } else {
-                                    self.kml[currentId].Style.push({id: node});
+                                    self.kml[currentId].Style = {};
                                 }
+                                self.kml[currentId].Style[id] = node;
                                 break;
                             case "StyleMap":
                                 style = (this.getNodeValues(node, ["id"], {}, false));
                                 id = style.id;
                                 if (!self.kml[currentId].hasOwnProperty("StyleMap")) {
-                                    self.kml[currentId].StyleMap = [{id: node}];
-                                } else {
-                                    self.kml[currentId].StyleMap.push({id: node});
+                                    self.kml[currentId].StyleMap = {};
                                 }
+                                self.kml[currentId].StyleMap[id] = node;
                                 break;
                             case "Placemark":
                                 if (!self.kml[currentId].hasOwnProperty("Placemark")) {
