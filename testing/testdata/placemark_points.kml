@@ -36,10 +36,17 @@
         </StyleMap>
         <name>Placemark Points</name>
         <Placemark id="1001">
-            <styleUrl>#styleMapExample</styleUrl>
+            <styleUrl>#normalState</styleUrl>
             <name>Zürich</name>
             <Point>
                 <coordinates>8.543240928407617,47.36695287673603,0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="1002">
+            <styleUrl>#normalState</styleUrl>
+            <name>Zürich</name>
+            <Point>
+                <coordinates>9.543240928407617,47.36695287673603,0</coordinates>
             </Point>
         </Placemark>
     </Document>

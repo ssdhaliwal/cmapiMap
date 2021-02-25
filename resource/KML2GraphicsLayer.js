@@ -1,12 +1,15 @@
 define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
-    "esri/symbols/SimpleFillSymbol",
+    "esri/symbols/SimpleFillSymbol", "esri/symbols/PictureMarkerSymbol",
+    "esri/symbols/PictureFillSymbol", "esri/symbols/TextSymbol",
+    "esri/symbols/Font",
     "esri/graphic", "esri/SpatialReference", "esri/geometry/webMercatorUtils",
     "esri/geometry/Point", "esri/geometry/Polyline", "esri/geometry/Polygon",
     "esri/layers/GraphicsLayer", "esri/InfoTemplate",
     "esri/Color",
     "plugins/ViewUtilities", "milsymbol"],
     function (SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol,
-        Graphic, SpatialReference, webMercatorUtils, 
+        PictureMarkerSymbol, PictureFillSymbol, TextSymbol, Font,
+        Graphic, SpatialReference, webMercatorUtils,
         Point, Polyline, Polygon, GraphicsLayer, InfoTemplate,
         Color,
         ViewUtilities, mil2525) {
@@ -52,29 +55,35 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
             };
 
             getNodeValues = function (node, elements, payload, recurse) {
-                if (node.hasAttributes()) {
-                    for (var attribute of node.attributes) {
-                        payload[attribute.name] = attribute.value;
+                if (node.attributes) {
+                    for (let attribute of node.attributes) {
+                        if (!elements || (elements.indexOf(attribute.name) >= 0)) {
+                            console.log(attribute.name, attribute.value);
+                            payload[attribute.name] = attribute.value;
+                        }
                     }
                 }
 
-                for (var child of node.childNodes) {
-                    if (elements.indexOf(child.nodeName) >= 0) {
-                        var value = (child.innerText || child.text || child.textContent);
+                for (let child of node.childNodes) {
+                    if (!elements || (elements.indexOf(child.nodeName) >= 0)) {
+                        let value = (child.innerText || child.text || child.textContent || "").trim();
 
-                        payload[child.nodeName] = {};
-                        if (value.trim()) {
-                            payload[child.nodeName] = value.trim();
+                        if (value) {
+                            console.log(child.nodeName, value);
+                            payload[child.nodeName] = value;
                         }
-                        if (child.hasAttributes()) {
-                            for (var attribute of child.attributes) {
-                                payload[child.nodeName][attribute.name] = attribute.value;
+                        if (child.attributes) {
+                            for (let attribute of child.attributes) {
+                                if (!elements || (elements.indexOf(attribute.name) >= 0)) {
+                                    console.log(attribute.name, attribute.value);
+                                    payload[attribute.name] = attribute.value;
+                                }
                             }
                         }
                     }
 
                     if (recurse && child.hasChildNodes()) {
-                        payload = this.getNodeValues(child, elements, payload[child.nodeName], recurse);
+                        payload = getNodeValues(child, elements, payload, recurse);
                     }
                 }
 
@@ -145,18 +154,20 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
                         let style = null, id = null;
                         switch (node.nodeName) {
                             case "Style":
-                                style = (this.getNodeValues(node, ["id"], {}, false));
+                                style = (getNodeValues(node, ["id"], {}, false));
                                 id = style.id;
                                 if (!self.kml[currentId].hasOwnProperty("Style")) {
                                     self.kml[currentId].Style = {};
+                                    self.kml[currentId].Style_Cache = {};
                                 }
                                 self.kml[currentId].Style[id] = node;
                                 break;
                             case "StyleMap":
-                                style = (this.getNodeValues(node, ["id"], {}, false));
+                                style = (getNodeValues(node, ["id"], {}, false));
                                 id = style.id;
                                 if (!self.kml[currentId].hasOwnProperty("StyleMap")) {
                                     self.kml[currentId].StyleMap = {};
+                                    self.kml[currentId].StyleMap_Cache = {};
                                 }
                                 self.kml[currentId].StyleMap[id] = node;
                                 break;
@@ -259,38 +270,229 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
                 return { name: name, id: newId };
             };
 
-            _findStyleMap = function (layer, url) {
-                var styleMaps = this.styleMaps;
-                var styleMap;
+            getColor = function (color, opacity, colorMode) {
+                if ((opacity === null) || (opacity === undefined)) {
+                    if (self.properties && self.properties.opacity) {
+                        opacity = self.properties.opacity * 255;
+                    }
+                } else {
+                    opacity = opacity * 255;
+                }
+
+                if (color) {
+                    let featureColor;
+
+                    if (Array.isArray(color)) {
+                        if (color.length === 4) {
+                            featureColor = new Color([color[0], color[1], color[2], (opacity || color[3] || 100)]);
+                        } else if (color.length === 3) {
+                            featureColor = new Color([color[0], color[1], color[2], (opacity || 100)]);
+                        }
+                    } else if (typeof color === "object") {
+                        if (('r' in color) && ('g' in color) && ('b' in color) && !('a' in color)) {
+                            featureColor = new Color([color.r, color.g, color.b, (opacity || 100)]);
+                        } else if (('r' in color) && ('g' in color) && ('b' in color) && ('a' in color)) {
+                            featureColor = new Color([color.r, color.g, color.b, (opacity || color.a || 100)]);
+                        }
+                    } else {
+                        if (!color.startsWith("#")) {
+                            color = "#" + color;
+                        }
+
+                        if ((opacity === null) || (opacity === undefined)) {
+                            if (color.length > 8) {
+                                opacity = parseInt(color.substring(7, 9), 16);
+                            } else {
+                                opacity = 100;
+                            }
+                        }
+
+                        featureColor = new Color([parseInt(color.substring(1, 3), 16),
+                        parseInt(color.substring(3, 5), 16),
+                        parseInt(color.substring(5, 7), 16), opacity]);
+                    }
+
+                    if (featureColor) {
+                        if (colorMode && colorMode === "random") {
+                            featureColor = JSUtils.getRandomColor(featureColor);
+                        }
+                        return featureColor;
+                    }
+                }
+
+                return getColor(self.defaultFillColor);
+            };
+
+            getStyleMap = function (docId, style) {
+                let styleMaps = self.kml[docId].StyleMap_Cache;
+                let styleMap;
 
                 //If we have a style map then search for the styleUrl in that map
-                if (styleMaps && styleMaps.length > 0) {
-                    for (var i = 0; i < styleMaps.length; i++) {
-                        if ("#" + styleMaps[i].id === url) {
-                            styleMap = styleMaps[i];
-                            break;
+                
+                if (styleMaps && styleMaps[style.url]) {
+                    styleMap = styleMaps[style.url];
+                }
+
+                // if not previously defined; then check if map exists?
+                if (!styleMap) {
+                    // update the map for style pairs
+                    let node = self.kml[docId].StyleMap[style.url];
+                    if (node) {
+                        let pairs = node.getElementsByTagName("Pair"),
+                            key = "", url = "", pLength = 0;
+
+                        pLength = pairs.length;
+                        if (pLength > 0) {
+                            for (let j = 0; j < pLength; j++) {
+                                pair = pairs[j];
+                                key = pair.getElementsByTagName("key")[0];
+                                url = pair.getElementsByTagName("styleUrl")[0];
+
+                                if (key.textContent.trim() === "normal") {
+                                    style.url = url.textContent.trim();
+                                } else if (key.textContent.trim() === "highlight") {
+                                    style.urlHighlighted = url.textContent.trim();
+                                    style.hasHighlight = true;
+                                }
+                            }
                         }
                     }
                 }
 
-                return styleMap;
+                return style;
+            };
+
+            getStyle = function (docId, style) {
+                let styles = self.kml[docId].Style_Cache;
+
+                if (styles && styles[style.url]) {
+                    return styles[style.url];
+                }
+
+                return null;
+            };
+
+            createIconSymbol = function (iconStyle, baseStyle) {
+                let nodeElements = ["href", "color", "scale", "heading", "hotspot", "colorMode"];
+
+                let style;
+                let styleObject = getNodeValues(iconStyle[0], nodeElements, {}, true);
+
+                if (styleObject.href || (baseStyle && baseStyle.url)) {
+                    style = new PictureMarkerSymbol();
+
+                    if (baseStyle) {
+                        style.angle = baseStyle.angle;
+                        style.color = baseStyle.color;
+                        //style.height = baseStyle.height;
+                        //style.type = baseStyle.type;
+                        style.url = baseStyle.url;
+                        //style.width = baseStyle.width;
+                        style.xoffset = baseStyle.xoffset;
+                        style.xoffset = baseStyle.xoffset;
+                    }
+
+                    let hrefUrl = styleObject.href || style.url;
+                    if (hrefUrl.startsWith("milstd:")) {
+                        let milstdSymbol = new ms.Symbol(hrefUrl.split(":")[1]);
+                        style.setUrl(milstdSymbol.toDataURL());
+                    } else {
+                        style.setUrl(hrefUrl);
+                    }
+                    if (styleObject.color) {
+                        style.setColor(getColor(styleObject.color, null, styleObject.colorMode));
+                    }
+                    if (styleObject.scale) {
+                        let size = style.width * styleObject.scale;
+                        style.setHeight(size);
+                        style.setWidth(size);
+                    } else {
+                        if (baseStyle) {
+                            style.height = baseStyle.height;
+                            style.width = baseStyle.width;
+                        }
+                    }
+                    if (styleObject.heading) {
+                        let angle = styleObject.heading;
+                        style.setAngle(angle);
+                    }
+                } else if (styleObject.color || styleObject.colorMode) {
+                    style = new SimpleMarkerSymbol();
+
+                    if (baseStyle) {
+                        style.angle = baseStyle.angle;
+                        style.color = baseStyle.color;
+                        //style.type = baseStyle.type;
+                        style.size = baseStyle.size;
+                        //style.style = baseStyle.style;
+                        style.xoffset = baseStyle.xoffset;
+                        style.xoffset = baseStyle.xoffset;
+                    }
+
+                    if (!styleObject.color) {
+                        styleObject.color = style.color;
+                    }
+                    style.setColor(getColor(styleObject.color, null, styleObject.colorMode));
+                    if (styleObject.scale) {
+                        var size = 10 * styleObject.scale;
+                        style.setSize(size);
+                    }
+                }
+
+                return style;
             };
 
             // retrieve document style/map and merge with local style
             resolvePointStyle = function (layer, placemark) {
-                let style = {
+                let returnStyle = {};
+
+                // get the docId for the layer
+                let docId = layer.docId;
+                let document = self.kml[docId];
+                let styleMaps = self.kml[docId].StyleMap;
+                let styleMapCache = self.kml[docId].StyleMap_Cache;
+                let styles = self.kml[docId].Style;
+                let styleCache = self.kml[docId].Style_Cache;
+                console.log(layer, document, placemark);
+
+                let styleObject = {
                     normal: self.defaults.PointSymbol,
-                    highlighted: self.defaults.PointSymbol
+                    highlighted: self.defaults.PointSymbol,
+                    hasHighlight: false
                 };
 
-                // see if styleUrl specified
-                console.log(layer, placemark);
+                // process the style for placemark
+                let styleUrl = placemark.getElementsByTagName("styleUrl");
+                styleObject.url = styleUrl[0].textContent.trim().replace("#", "");
 
-                // see if style specified
+                // if map style; validate and check style normal
+                let normalStyle = getStyle(docId, styleObject);
+                if (normalStyle) {
+                    returnStyle.normal = normalStyle;
+                } else {
+                    normalStyle = styles[styleObject.url];
+                    let iconStyle = normalStyle.getElementsByTagName("IconStyle");
+                    if (iconStyle && iconStyle.length > 0) {
+                        if (!styleCache[styleObject.url]) {
+                            returnStyle.normal = createIconSymbol(iconStyle);
+                            styleCache[styleObject.url] = returnStyle.normal;
+                        } else {
+                            returnStyle.normal = styleCache[styleObject.url];
+                        }
+                    }
+                }
 
-                // fix for missing normal or high-lighed style
+                //If no style is specified for normal use the default symbol
+                if (!returnStyle.normal) {
+                    returnStyle.normal = new SimpleMarkerSymbol(self.defaults.PointSymbol);
+                }
 
-                return style;
+                //If no style is specified for highlighed use the normal symbol
+                if (!styleObject.hasHighlight) {
+                    returnStyle.highlighted = returnStyle.normal;
+                }
+
+                return returnStyle;
             };
 
             // process all features objects (Placemarks)
@@ -337,8 +539,8 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
                             case "MultiGeometry":
                                 break;
                             case "Point":
-                                let style = this.resolvePointStyle(layer, placemark);
-                                this.processPlacemarkPoint(layer, placemark, attributes, style);
+                                let style = resolvePointStyle(layer, placemark);
+                                processPlacemarkPoint(layer, placemark, attributes, style);
                                 break;
                             case "LineString":
                                 break;
@@ -372,7 +574,7 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
                                         let point = new Point(parseFloat(coords[0]), parseFloat(coords[1]));
                                         // point = webMercatorUtils.project(point, new SpatialReference(4326));
 
-                                        let popupTemplate = this.updatePopupTemplate(params.popupTemplate, attributes);
+                                        let popupTemplate = updatePopupTemplate(params.popupTemplate, attributes);
                                         let graphic = new Graphic(point, style.normal, attributes, popupTemplate);
                                         graphic.normalSymbol = style.normal;
                                         graphic.highlightSymbol = style.highlighted;
@@ -408,7 +610,7 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
                         "</table></div></div>";
                     newPopupTemplate.setContent(description);
                 } else {
-                    newPopupTemplate = new InfoTemplate(attributes.name, this.popupTemplate.content);
+                    newPopupTemplate = new InfoTemplate(attributes.name, self.popupTemplate.content);
                 }
 
                 return newPopupTemplate;
