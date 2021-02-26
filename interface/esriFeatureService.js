@@ -85,7 +85,7 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                 //}
                 if (params.renderer) {
                     // only json constructors supported
-                    var renderer = null;
+                    let renderer = null;
                     switch (params.rendererType) {
                         case "classBreaks":
                             renderer = new ClassBreaksRenderer(params.renderer);
@@ -106,7 +106,7 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                     self.layer.setScaleRange(params.scaleRange.minScale, params.scaleRange.maxRange);
                 }
                 if (params.selectionSymbol) {
-                    var symbol = null;
+                    let symbol = null;
                     switch (params.selectionSymbolType) {
                         case "Point":
                             symbol = new SimpleMarkerSymbol(params.selectionSymbol);
@@ -125,7 +125,7 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                 }
 
                 if (params.showLabels && ViewUtilities.getBoolean(params.showLabels)) {
-                    var lblSymbol = null, lblClass = null;
+                    let lblSymbol = null, lblClass = null;
 
                     if (params.lblClass) {
                         lblClass = new LabelClass(params.lblClass);
@@ -156,23 +156,23 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                 // added for query/selection
                 if (params.hasOwnProperty("_querySelect")) {
                     // create graphic layer for adding
-                    var bufferLayer = new GraphicsLayer({
+                    let bufferLayer = new GraphicsLayer({
                         id: self.service.id + "_buffer"
                     });
 
                     params._querySelect.graphic = [];
                     params._querySelect.filters.forEach(filter => {
-                        var graphic = null;
+                        let graphic = null;
                         if (filter.type === "buffer") {
                             filter.geometry.forEach(marker => {
-                                var point = new Point(marker.x, marker.y,
+                                let point = new Point(marker.x, marker.y,
                                     new SpatialReference({
                                         wkid: filter.wkid || 4326
                                     }));
 
                                 if (filter.hasOwnProperty("range")) {
                                     if (!filter.range.hasOwnProperty("1") && !filter.range.hasOwnProperty("2")) {
-                                        var buffer = new Circle({
+                                        let buffer = new Circle({
                                             center: point,
                                             geodesic: filter.geodesic || true,
                                             radius: filter.range,
@@ -191,7 +191,7 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                                         bufferLayer.add(graphic);
                                     } else {
                                         if (filter.range.hasOwnProperty("1")) {
-                                            var buffer = new Circle({
+                                            let buffer = new Circle({
                                                 center: point,
                                                 geodesic: filter.geodesic || true,
                                                 radius: filter.range["1"],
@@ -212,7 +212,7 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                                         }
 
                                         if (filter.range.hasOwnProperty("2")) {
-                                            var buffer = new Circle({
+                                            let buffer = new Circle({
                                                 center: point,
                                                 geodesic: filter.geodesic || true,
                                                 radius: filter.range["2"],
@@ -233,7 +233,7 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                                         }
                                     }
                                 } else {
-                                    var buffer = new Circle({
+                                    let buffer = new Circle({
                                         center: point,
                                         geodesic: filter.geodesic || true,
                                         radius: 20,
@@ -258,7 +258,7 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                         }
                         if (filter.type === "area") {
                             filter.geometry.forEach(ring => {
-                                var buffer = new Polygon({
+                                let buffer = new Polygon({
                                     "rings": ring.rings,
                                     "spatialReference": { "wkid": filter.wkid || 4326 }
                                 });
@@ -281,12 +281,16 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                     //  self.layer.layer.bufferLayer.setMinScale(9244648.868618);
 
                     // get extent of all graphics for query limitation
-                    var layerExtent = graphicsUtils.graphicsExtent(bufferLayer.graphics);
+                    let layerExtent = graphicsUtils.graphicsExtent(bufferLayer.graphics);
                     params.definitionExpression = params.definitionExpression || {};
                     params.definitionExpression.geometry = layerExtent;
                     params.definitionExpression.geometryType = "esriGeometryPolygon";
                     params.definitionExpression.spatialRel = "esriSpatialRelIntersects";
                 }
+
+				if (params.definitionExpression) {
+					self.layer.setDefinitionExpression(params.definitionExpression);
+				}
 
                 self.map.addLayers([self.layer]);
 
@@ -339,7 +343,7 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
 
                 self.layer.on("refresh-tick", function ($event) {
                     if (params.hasOwnProperty("_querySelect")) {
-                        var tmpGraphicsLayer = new GraphicsLayer({
+                        let tmpGraphicsLayer = new GraphicsLayer({
                             id: "tmp_" + self.layer.id
                         });
                         let tGraphic;

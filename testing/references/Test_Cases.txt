@@ -78,6 +78,32 @@ map.feature.plot.url
 	}
 }
 {
+	"overlayId": "TEST-01",
+	"featureId": "Test Url-02FS",
+	"url": "https://nowcoast.noaa.gov/arcgis/rest/services/nowcoast/forecast_meteoceanhydro_pts_zones_geolinks/MapServer/1/",
+	"params": {
+		"serviceType": "feature"
+	}
+}
+{
+	"overlayId": "TEST-01",
+	"featureId": "Test Url-50FS",
+	"url": "https://sampleserver3.arcgisonline.com/ArcGIS/rest/services/Petroleum/KSPetro/MapServer/1/",
+	"params": {
+		"serviceType": "feature",
+		"definitionExpression": "PROD_GAS='Yes'"
+	}
+}
+{
+	"overlayId": "TEST-01",
+	"featureId": "Test Url-51FS",
+	"url": "https://sampleserver3.arcgisonline.com/ArcGIS/rest/services/Petroleum/KSPetro/MapServer/1/",
+	"params": {
+		"serviceType": "feature",
+		"definitionExpression": "PROD_GAS='No'"
+	}
+}
+{
 	"overlayId": "TEST",
 	"featureId": "USER1001-01",
 	"name": "Air Quality Index",
@@ -98,4 +124,14 @@ map.feature.plot.url
 		"useProxy": "false"
 	},
 	"zoom": "false"
+}
+
+
+{
+	"overlayId": "TEST-01",
+	"featureId": "Test Url-01FS",
+	"url": "https://nowcoast.noaa.gov/arcgis/rest/services/nowcoast/forecast_meteoceanhydro_pts_zones_geolinks/MapServer/1/query?where=FID%20IN%20(74,400)&outFields=*&returnGeometry=true&returnTrueCurves=false&returnIdsOnly=false&returnCountOnly=false&returnZ=false&returnM=false&returnDistinctValues=false&returnExtentsOnly=false&f=pjson",
+	"params": {
+		"serviceType": "feature"
+	}
 }

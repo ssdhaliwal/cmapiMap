@@ -6,13 +6,13 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
     "esri/geometry/Point", "esri/geometry/Polyline", "esri/geometry/Polygon",
     "esri/layers/GraphicsLayer", "esri/InfoTemplate",
     "esri/Color",
-    "plugins/ViewUtilities", "milsymbol"],
+    "plugins/ViewUtilities", "plugins/JSUtilities", "milsymbol"],
     function (SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol,
         PictureMarkerSymbol, PictureFillSymbol, TextSymbol, Font,
         Graphic, SpatialReference, webMercatorUtils,
         Point, Polyline, Polygon, GraphicsLayer, InfoTemplate,
         Color,
-        ViewUtilities, mil2525) {
+        ViewUtilities, JSUtilities, mil2525) {
 
         let KML2GraphicsLayer = function (name, document, properties, params) {
             let self = this;
@@ -151,11 +151,11 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
                         }
 
                         //console.log(level, node.nodeName.padStart((node.nodeName.length + level), '-'));
-                        let style = null, id = null;
+                        let nodeValues = null, id = null;
                         switch (node.nodeName) {
                             case "Style":
-                                style = (getNodeValues(node, ["id"], {}, false));
-                                id = style.id;
+                                nodeValues = (getNodeValues(node, ["id"], {}, false));
+                                id = nodeValues.id;
                                 if (!self.kml[currentId].hasOwnProperty("Style")) {
                                     self.kml[currentId].Style = {};
                                     self.kml[currentId].Style_Cache = {};
@@ -163,8 +163,8 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
                                 self.kml[currentId].Style[id] = node;
                                 break;
                             case "StyleMap":
-                                style = (getNodeValues(node, ["id"], {}, false));
-                                id = style.id;
+                                nodeValues = (getNodeValues(node, ["id"], {}, false));
+                                id = nodeValues.id;
                                 if (!self.kml[currentId].hasOwnProperty("StyleMap")) {
                                     self.kml[currentId].StyleMap = {};
                                     self.kml[currentId].StyleMap_Cache = {};
@@ -180,16 +180,16 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
                                 break;
                             case "Overlay":
                                 if (!self.kml[currentId].hasOwnProperty("Overlay")) {
-                                    self.kml[currentId].Placemark = [node];
+                                    self.kml[currentId].Overlay = [node];
                                 } else {
-                                    self.kml[currentId].Placemark.push(node);
+                                    self.kml[currentId].Overlay.push(node);
                                 }
                                 break;
                             case "NetworkLink":
                                 if (!self.kml[currentId].hasOwnProperty("NetworkLink")) {
-                                    self.kml[currentId].Placemark = [node];
+                                    self.kml[currentId].NetworkLink = [node];
                                 } else {
-                                    self.kml[currentId].Placemark.push(node);
+                                    self.kml[currentId].NetworkLink.push(node);
                                 }
                                 break;
                         }
@@ -314,7 +314,7 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
 
                     if (featureColor) {
                         if (colorMode && colorMode === "random") {
-                            featureColor = JSUtils.getRandomColor(featureColor);
+                            featureColor = JSUtilities.getRandomColor(featureColor);
                         }
                         return featureColor;
                     }
@@ -325,17 +325,22 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
 
             getStyleMap = function (docId, styleObject) {
                 let styleMaps = self.kml[docId].StyleMap_Cache;
+                let cacheObject;
 
                 //If we have a style map then search for the styleUrl in that map
                 if (styleMaps.hasOwnProperty(styleObject.url)) {
-                    styleObject = styleMaps[styleObject.url];
+                    cacheObject = styleMaps[styleObject.url];
+                    styleObject = cacheObject;
                 }
 
                 // if not previously defined; then check if map exists?
-                if (!styleObject) {
+                if (!cacheObject) {
                     // update the styleMap for style pairs
                     let node = self.kml[docId].StyleMap[styleObject.url];
                     if (node) {
+                        let jsonMap = JSUtilities.xmlToJson(node);
+                        console.log(jsonMap);
+                        /*
                         let pairs = node.getElementsByTagName("Pair"),
                             key = "", url = "", pLength = 0;
 
@@ -354,6 +359,7 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
                                 }
                             }
                         }
+                        */
                     }
                 }
 

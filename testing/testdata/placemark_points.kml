@@ -72,5 +72,12 @@
                 <coordinates>9.543240928407617,43.36695287673603,0</coordinates>
             </Point>
         </Placemark>
+        <Placemark id="1005">
+            <styleUrl>#highlightState</styleUrl>
+            <name>Zürich</name>
+            <Point>
+                <coordinates>7.543240928407617,46.36695287673603,0</coordinates>
+            </Point>
+        </Placemark>
     </Document>
 </kml>
