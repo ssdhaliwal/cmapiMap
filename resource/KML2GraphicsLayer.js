@@ -323,20 +323,19 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
                 return getColor(self.defaultFillColor);
             };
 
-            getStyleMap = function (docId, style) {
+            getStyleMap = function (docId, styleUrl) {
                 let styleMaps = self.kml[docId].StyleMap_Cache;
                 let styleMap;
 
                 //If we have a style map then search for the styleUrl in that map
-                
-                if (styleMaps && styleMaps[style.url]) {
+                if (styleMaps.hasOwnProperty(styleUrl)) {
                     styleMap = styleMaps[style.url];
                 }
 
                 // if not previously defined; then check if map exists?
                 if (!styleMap) {
                     // update the map for style pairs
-                    let node = self.kml[docId].StyleMap[style.url];
+                    let node = self.kml[docId].StyleMap[styleUrl];
                     if (node) {
                         let pairs = node.getElementsByTagName("Pair"),
                             key = "", url = "", pLength = 0;
@@ -349,24 +348,24 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
                                 url = pair.getElementsByTagName("styleUrl")[0];
 
                                 if (key.textContent.trim() === "normal") {
-                                    style.url = url.textContent.trim();
+                                    styleMap.url = url.textContent.trim();
                                 } else if (key.textContent.trim() === "highlight") {
-                                    style.urlHighlighted = url.textContent.trim();
-                                    style.hasHighlight = true;
+                                    styleMap.urlHighlighted = url.textContent.trim();
+                                    styleMap.hasHighlight = true;
                                 }
                             }
                         }
                     }
                 }
 
-                return style;
+                return styleMap;
             };
 
-            getStyle = function (docId, style) {
+            getStyle = function (docId, styleUrl) {
                 let styles = self.kml[docId].Style_Cache;
 
-                if (styles && styles[style.url]) {
-                    return styles[style.url];
+                if (styles && styles[styleUrl]) {
+                    return styles[styleUrl];
                 }
 
                 return null;
@@ -461,24 +460,31 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
                     hasHighlight: false
                 };
 
-                // process the style for placemark
+                // process the document style for placemark
                 let styleUrl = placemark.getElementsByTagName("styleUrl");
-                styleObject.url = styleUrl[0].textContent.trim().replace("#", "");
+                if (styleUrl && (styleUrl.length > 0)) {
+                    styleObject.url = styleUrl[0].textContent.trim().replace("#", "");
 
-                // if map style; validate and check style normal
-                let normalStyle = getStyle(docId, styleObject);
-                if (normalStyle) {
-                    returnStyle.normal = normalStyle;
-                } else {
-                    normalStyle = styles[styleObject.url];
-                    let iconStyle = normalStyle.getElementsByTagName("IconStyle");
-                    if (iconStyle && iconStyle.length > 0) {
-                        if (!styleCache[styleObject.url]) {
-                            returnStyle.normal = createIconSymbol(iconStyle);
-                            styleCache[styleObject.url] = returnStyle.normal;
+                    // if style; validate and check style normal
+                    if (styleObject.url) {
+                        let normalStyle = getStyle(docId, styleObject.url + "_PointStyle");
+                        if (normalStyle) {
+                            returnStyle.normal = normalStyle;
                         } else {
-                            returnStyle.normal = styleCache[styleObject.url];
+                            normalStyle = styles[styleObject.url];
+                            let iconStyle = normalStyle.getElementsByTagName("IconStyle");
+                            returnStyle.normal = createIconSymbol(iconStyle, returnStyle.normal);
+                            styleCache[styleObject.url + "_PointStyle"] = returnStyle.normal;
                         }
+                    }
+                }
+
+                // process local style in placemark
+                let style = placemark.getElementsByTagName("Style");
+                if (style && (style.length > 0)) {
+                    let iconStyle = style[0].getElementsByTagName("IconStyle");
+                    if (iconStyle && iconStyle.length > 0) {
+                        returnStyle.normal = createIconSymbol(iconStyle, returnStyle.normal);
                     }
                 }
 
@@ -492,6 +498,7 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
                     returnStyle.highlighted = returnStyle.normal;
                 }
 
+                console.log(returnStyle);
                 return returnStyle;
             };
 
