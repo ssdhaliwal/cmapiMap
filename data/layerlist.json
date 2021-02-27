@@ -213,7 +213,7 @@
                 "properties": {
                     "dateCreated": "20180521",
                     "dateVerified": "20201208",
-                    "url": "/esri-cmapi/testing/testdata/placemark_points.kml",
+                    "url": "/esri-cmapi/testing/testdata/placemark.kml",
                     "intranet": true,
                     "credentials": {
                         "required": false,

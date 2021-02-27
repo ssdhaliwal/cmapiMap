@@ -39,12 +39,13 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
 
             initializeDefaultStyles = function () {
                 self.defaults = {};
+                self.defaults.Opacity = ViewUtilities.DEFAULT_OPACITY;
                 self.defaults.MarkerColor = ViewUtilities.DEFAULT_COLOR;
                 self.defaults.LineWidth = ViewUtilities.DEFAULT_LINEWIDTH;
                 self.defaults.LineColor = ViewUtilities.DEFAULT_LINECOLOR;
                 self.defaults.LineStyle = ViewUtilities.DEFAULT_LINESTYLE;
                 self.defaults.FillColor = ViewUtilities.DEFAULT_FILLCOLOR;
-                self.defaults.FillStyle = SimpleFillSymbol.DEFAULT_FILLSTYLE;
+                self.defaults.FillStyle = ViewUtilities.DEFAULT_FILLSTYLE;
 
                 self.defaults.PointSymbol = new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_CIRCLE, 10,
                     new SimpleLineSymbol(self.defaults.LineSymbol), ViewUtilities.getColor(self.defaults.MarkerColor)).toJson();
@@ -270,59 +271,6 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
                 return { name: name, id: newId };
             };
 
-            getColor = function (color, opacity, colorMode) {
-                if ((opacity === null) || (opacity === undefined)) {
-                    if (self.properties && self.properties.opacity) {
-                        opacity = self.properties.opacity * 255;
-                    }
-                } else {
-                    opacity = opacity * 255;
-                }
-
-                if (color) {
-                    let featureColor;
-
-                    if (Array.isArray(color)) {
-                        if (color.length === 4) {
-                            featureColor = new Color([color[0], color[1], color[2], (opacity || color[3] || 100)]);
-                        } else if (color.length === 3) {
-                            featureColor = new Color([color[0], color[1], color[2], (opacity || 100)]);
-                        }
-                    } else if (typeof color === "object") {
-                        if (('r' in color) && ('g' in color) && ('b' in color) && !('a' in color)) {
-                            featureColor = new Color([color.r, color.g, color.b, (opacity || 100)]);
-                        } else if (('r' in color) && ('g' in color) && ('b' in color) && ('a' in color)) {
-                            featureColor = new Color([color.r, color.g, color.b, (opacity || color.a || 100)]);
-                        }
-                    } else {
-                        if (!color.startsWith("#")) {
-                            color = "#" + color;
-                        }
-
-                        if ((opacity === null) || (opacity === undefined)) {
-                            if (color.length > 8) {
-                                opacity = parseInt(color.substring(7, 9), 16);
-                            } else {
-                                opacity = 100;
-                            }
-                        }
-
-                        featureColor = new Color([parseInt(color.substring(1, 3), 16),
-                        parseInt(color.substring(3, 5), 16),
-                        parseInt(color.substring(5, 7), 16), opacity]);
-                    }
-
-                    if (featureColor) {
-                        if (colorMode && colorMode === "random") {
-                            featureColor = JSUtilities.getRandomColor(featureColor);
-                        }
-                        return featureColor;
-                    }
-                }
-
-                return getColor(self.defaultFillColor);
-            };
-
             getStyleMap = function (docId, styleObject) {
                 let styleMaps = self.kml[docId].StyleMap_Cache;
                 let cacheObject;
@@ -336,110 +284,137 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
                 // if not previously defined; then check if map exists?
                 if (!cacheObject) {
                     // update the styleMap for style pairs
-                    let node = self.kml[docId].StyleMap[styleObject.url];
-                    if (node) {
-                        let jsonMap = JSUtilities.xmlToJson(node);
-                        console.log(jsonMap);
-                        /*
-                        let pairs = node.getElementsByTagName("Pair"),
-                            key = "", url = "", pLength = 0;
+                    let styleMapNode = self.kml[docId].StyleMap[styleObject.url];
+                    if (styleMapNode) {
+                        let jsonMap = JSUtilities.xmlToJson(styleMapNode);
 
-                        pLength = pairs.length;
+                        let pLength = jsonMap.Pair.length, pair;
                         if (pLength > 0) {
                             for (let j = 0; j < pLength; j++) {
-                                pair = pairs[j];
-                                key = pair.getElementsByTagName("key")[0];
-                                url = pair.getElementsByTagName("styleUrl")[0];
+                                pair = jsonMap.Pair[j];
 
-                                if (key.textContent.trim() === "normal") {
-                                    styleObject.url = url.textContent.trim();
-                                } else if (key.textContent.trim() === "highlight") {
-                                    styleObject.urlHighlight = url.textContent.trim();
+                                if (pair.key === "normal") {
+                                    styleObject.url = pair.styleUrl.replace("#", "");
+                                } else if (pair.key === "highlight") {
+                                    styleObject.urlHighlight = pair.styleUrl.replace("#", "");
                                     styleObject.hasHighlight = true;
                                 }
                             }
+
+                            styleMaps[styleObject.url] = styleObject;
                         }
-                        */
                     }
                 }
 
                 return styleObject;
             };
 
-            getStyle = function (docId, styleUrl) {
+            getStyle = function (docId, styleObject, type, highlight) {
                 let styles = self.kml[docId].Style_Cache;
+                let url, resultStyle;
 
-                if (styles && styles[styleUrl]) {
-                    return styles[styleUrl];
+                // fix the url for highlight
+                if (highlight) {
+                    url = styleObject.urlHighlight;
+                } else {
+                    url = styleObject.url;
                 }
 
-                return null;
+                if (styles && styles[url + "_" + type]) {
+                    console.log("cached style/" + url + "_" + type);
+                    resultStyle = styles[url + "_" + type];
+                }
+
+                // if no style found; then we create and cache it
+                if (!resultStyle) {
+                    console.log("non-cached style/" + url + "_" + type);
+                    let styleNode = self.kml[docId].Style[url];
+
+                    if (styleNode) {
+                        // create highlight style if ok
+                        if (type === "Point") {
+                            resultStyle = createIconSymbol(styleNode);
+                        } else if (type === "LineString") {
+                            resultStyle = createLineStringSymbol(styleNode);
+                        } else if (type === "Polygon") {
+                            resultStyle = createPolygonSymbol(styleNode);
+                        }
+
+                        // cache the style
+                        styles[url + "_" + type] = resultStyle;
+                    }
+                }
+
+                return resultStyle;
             };
 
-            createIconSymbol = function (iconStyle, baseStyle) {
-                let nodeElements = ["href", "color", "scale", "heading", "hotspot", "colorMode"];
-
+            createIconSymbol = function (styleNode, baseStyle) {
                 let style;
-                let styleObject = getNodeValues(iconStyle[0], nodeElements, {}, true);
 
-                if (styleObject.href || (baseStyle && baseStyle.url)) {
-                    style = new PictureMarkerSymbol();
+                let iconStyle = styleNode.getElementsByTagName("IconStyle");
+                if (iconStyle && iconStyle.length > 0) {
+                    let jsonMap = JSUtilities.xmlToJson(iconStyle[0]);
 
-                    if (baseStyle) {
-                        style.angle = baseStyle.angle;
-                        style.color = baseStyle.color;
-                        //style.height = baseStyle.height;
-                        //style.type = baseStyle.type;
-                        style.url = baseStyle.url;
-                        //style.width = baseStyle.width;
-                        style.xoffset = baseStyle.xoffset;
-                        style.xoffset = baseStyle.xoffset;
-                    }
+                    if ((jsonMap.Icon && jsonMap.Icon.href) || (baseStyle && baseStyle.url)) {
+                        style = new PictureMarkerSymbol();
 
-                    let hrefUrl = styleObject.href || style.url;
-                    if (hrefUrl.startsWith("milstd:")) {
-                        let milstdSymbol = new ms.Symbol(hrefUrl.split(":")[1]);
-                        style.setUrl(milstdSymbol.toDataURL());
-                    } else {
-                        style.setUrl(hrefUrl);
-                    }
-                    if (styleObject.color) {
-                        style.setColor(getColor(styleObject.color, null, styleObject.colorMode));
-                    }
-                    if (styleObject.scale) {
-                        let size = style.width * styleObject.scale;
-                        style.setHeight(size);
-                        style.setWidth(size);
-                    } else {
+                        // copy base style to override from local style
                         if (baseStyle) {
-                            style.height = baseStyle.height;
-                            style.width = baseStyle.width;
+                            style.angle = baseStyle.angle;
+                            style.color = baseStyle.color;
+                            //style.height = baseStyle.height;
+                            //style.type = baseStyle.type;
+                            style.url = baseStyle.url;
+                            //style.width = baseStyle.width;
+                            style.xoffset = baseStyle.xoffset;
+                            style.xoffset = baseStyle.xoffset;
                         }
-                    }
-                    if (styleObject.heading) {
-                        let angle = styleObject.heading;
-                        style.setAngle(angle);
-                    }
-                } else if (styleObject.color || styleObject.colorMode) {
-                    style = new SimpleMarkerSymbol();
 
-                    if (baseStyle) {
-                        style.angle = baseStyle.angle;
-                        style.color = baseStyle.color;
-                        //style.type = baseStyle.type;
-                        style.size = baseStyle.size;
-                        //style.style = baseStyle.style;
-                        style.xoffset = baseStyle.xoffset;
-                        style.xoffset = baseStyle.xoffset;
-                    }
+                        let hrefUrl = ((jsonMap.Icon && jsonMap.Icon.href) ? jsonMap.Icon.href : style.url);
+                        if (hrefUrl.startsWith("milstd:")) {
+                            let milstdSymbol = new ms.Symbol(hrefUrl.split(":")[1]);
+                            style.setUrl(milstdSymbol.toDataURL());
+                        } else {
+                            style.setUrl(hrefUrl);
+                        }
+                        if (jsonMap.color) {
+                            style.setColor(ViewUtilities.getColor(jsonMap.color, null, jsonMap.colorMode));
+                        }
+                        if (jsonMap.scale) {
+                            let size = style.width * jsonMap.scale;
+                            style.setHeight(size);
+                            style.setWidth(size);
+                        } else {
+                            if (baseStyle) {
+                                style.height = baseStyle.height;
+                                style.width = baseStyle.width;
+                            }
+                        }
+                        if (jsonMap.heading) {
+                            let angle = jsonMap.heading;
+                            style.setAngle(angle);
+                        }
+                    } else if (jsonMap.color || jsonMap.colorMode) {
+                        style = new SimpleMarkerSymbol(self.defaults.PointSymbol);
 
-                    if (!styleObject.color) {
-                        styleObject.color = style.color;
-                    }
-                    style.setColor(getColor(styleObject.color, null, styleObject.colorMode));
-                    if (styleObject.scale) {
-                        var size = 10 * styleObject.scale;
-                        style.setSize(size);
+                        if (baseStyle) {
+                            style.angle = baseStyle.angle;
+                            style.color = baseStyle.color;
+                            //style.type = baseStyle.type;
+                            style.size = baseStyle.size;
+                            //style.style = baseStyle.style;
+                            style.xoffset = baseStyle.xoffset;
+                            style.xoffset = baseStyle.xoffset;
+                        }
+
+                        if (!jsonMap.color) {
+                            jsonMap.color = style.color;
+                        }
+                        style.setColor(ViewUtilities.getColor(jsonMap.color, null, jsonMap.colorMode));
+                        if (jsonMap.scale) {
+                            let size = 10 * jsonMap.scale;
+                            style.setSize(size);
+                        }
                     }
                 }
 
@@ -447,23 +422,101 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
             };
 
             // retrieve document style/map and merge with local style
-            resolvePointStyle = function (layer, placemark) {
+            createLineStringSymbol = function (styleNode, baseStyle) {
+                let style;
+
+                let lineStyle = styleNode.getElementsByTagName("LineStyle");
+                if (lineStyle && lineStyle.length > 0) {
+                    let jsonMap = JSUtilities.xmlToJson(lineStyle[0]);
+                    style = new SimpleLineSymbol(self.defaults.LineSymbol);
+
+                    let width = self.defaults.LineWidth;
+                    if (baseStyle && baseStyle.width) {
+                        width = baseStyle.width;
+                    } else if (jsonMap.width) {
+                        width = jsonMap.width;
+                    }
+                    style.setWidth(width);
+
+                    let color = self.defaults.LineColor;
+                    if (baseStyle && baseStyle.color) {
+                        color = baseStyle.color;
+                    } else if (jsonMap.color) {
+                        color = jsonMap.color;
+                    }
+                    if (jsonMap.colorMode && (jsonMap.colorMode === "random")) {
+                        color = ViewUtilities.getColor(color, null, jsonMap.colorMode)
+                    }
+                    style.setColor(color);
+                }
+
+                return style;
+            };
+
+            // retrieve document style/map and merge with local style
+            createPolygonSymbol = function (styleNode, baseStyle) {
+                let style;
+
+                let polyStyle = styleNode.getElementsByTagName("PolyStyle");
+                if (polyStyle && polyStyle.length > 0) {
+                    let jsonMap = JSUtilities.xmlToJson(polyStyle[0]);
+                    style = new SimpleFillSymbol(self.defaults.FillSymbol);
+
+                    // create fill style
+                    let opacity = self.defaults.Opacity;
+                    if (jsonMap.fill || (jsonMap.fill === 0)) {
+                        opacity = 0;
+                    }
+                    if (self.params.opacity) {
+                        opacity = self.params.opacity;
+                    }
+
+                    let color = self.defaults.FillColor;
+                    if (baseStyle && baseStyle.color) {
+                        color = baseStyle.color;
+                    } else if (jsonMap.color) {
+                        color = jsonMap.color;
+                    }
+                    if (jsonMap.colorMode && (jsonMap.colorMode === "random")) {
+                        color = ViewUtilities.getColor(color, opacity, jsonMap.colorMode)
+                    }
+                    style.setColor(color);
+
+                    // create ouline style based on line style
+                    if (jsonMap.outline && (jsonMap.outline === 1)) {
+                        let outline = createLineStringSymbol(styleNode, baseStyle.outline);
+                        if (!outline) {
+                            outline = new SimpleLineSymbol(self.defaults.LineSymbol);
+                        }
+                        style.setOutline(outline);
+                    }
+                }
+
+                return style;
+            };
+
+            // retrieve document style/map and merge with local style
+            resolveStyle = function (layer, placemark, type) {
                 let returnStyle = {};
 
                 // get the docId for the layer
                 let docId = layer.docId;
                 let document = self.kml[docId];
-                let styleMaps = self.kml[docId].StyleMap;
-                let styleMapCache = self.kml[docId].StyleMap_Cache;
-                let styles = self.kml[docId].Style;
-                let styleCache = self.kml[docId].Style_Cache;
                 console.log(layer, document, placemark);
 
+                // create base styleObject which is updated
                 let styleObject = {
                     normal: self.defaults.PointSymbol,
                     highlight: self.defaults.PointSymbol,
                     hasHighlight: false
                 };
+                if (type === "LineString") {
+                    styleObject.normal = self.defaults.LineSymbol;
+                    styleObject.highlight = self.defaults.LineSymbol;
+                } else if (type === "Polygon") {
+                    styleObject.normal = self.defaults.FillSymbol;
+                    styleObject.highlight = self.defaults.FillSymbol;
+                }
 
                 // process the document style for placemark
                 let styleUrl = placemark.getElementsByTagName("styleUrl");
@@ -476,51 +529,46 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
 
                         // if highlight specified
                         if (styleObject.hasHighlight) {
-                            let hightlightStyle = getStyle(docId, styleObject.urlHighlight + "_PointStyle");
-                            if (hightlightStyle) {
-                                returnStyle.highlight = hightlightStyle;
-                            } else {
-                                hightlightStyle = styles[styleObject.urlHighlight];
-                                let iconStyle = hightlightStyle.getElementsByTagName("IconStyle");
-                                if (iconStyle && (iconStyle.length > 0)) {
-                                    returnStyle.highlight = createIconSymbol(iconStyle);
-                                    styleCache[styleObject.urlHighlight + "_PointStyle"] = returnStyle.highlight;
-                                } else {
-                                    styleObject.hasHighlight = false;
-                                }
-                            }
+                            returnStyle.highlight = getStyle(docId, styleObject, type, true);
                         }
 
                         // create Style (append if required)
-                        let normalStyle = getStyle(docId, styleObject.url + "_PointStyle");
-                        if (normalStyle) {
-                            returnStyle.normal = normalStyle;
-                        } else {
-                            normalStyle = styles[styleObject.url];
-                            let iconStyle = normalStyle.getElementsByTagName("IconStyle");
-                            returnStyle.normal = createIconSymbol(iconStyle);
-                            styleCache[styleObject.url + "_PointStyle"] = returnStyle.normal;
-                        }
+                        returnStyle.normal = getStyle(docId, styleObject, type);
                     }
                 }
 
                 // process local style in placemark
                 let style = placemark.getElementsByTagName("Style");
                 if (style && (style.length > 0)) {
-                    let iconStyle = style[0].getElementsByTagName("IconStyle");
-                    if (iconStyle && iconStyle.length > 0) {
-                        returnStyle.normal = createIconSymbol(iconStyle, returnStyle.normal);
+                    if (type === "Point") {
+                        returnStyle.normal = createIconSymbol(style[0], returnStyle.normal);
+                    } else if (type === "LineString") {
+                        returnStyle.normal = createLineStringSymbol(style[0], returnStyle.normal);
+                    } else if (type === "Polygon") {
+                        returnStyle.normal = createPolygonSymbol(style[0], returnStyle.normal);
                     }
 
                     // if there is a highlight symbol, then we need to clone and update
                     if (returnStyle.highlight) {
-                        returnStyle.highlight = createIconSymbol(iconStyle, returnStyle.highlight);
+                        if (type === "Point") {
+                            returnStyle.highlight = createIconSymbol(style[0], returnStyle.highlight);
+                        } else if (type === "LineString") {
+                            returnStyle.highlight = createLineStringSymbol(style[0], returnStyle.highlight);
+                        } else if (type === "Polygon") {
+                            returnStyle.highlight = createPolygonSymbol(style[0], returnStyle.highlight);
+                        }
                     }
                 }
 
                 // if no style is specified for normal use the default symbol
                 if (!returnStyle.normal) {
-                    returnStyle.normal = new SimpleMarkerSymbol(self.defaults.PointSymbol);
+                    if (type === "Point") {
+                        returnStyle.normal = new SimpleMarkerSymbol(self.defaults.PointSymbol);
+                    } else if (type === "LineString") {
+                        returnStyle.normal = new SimpleLineSymbol(self.defaults.LineSymbol);
+                    } else if (type === "Polygon") {
+                        returnStyle.normal = new SimpleFillSymbol(self.defaults.FillSymbol);
+                    }
                 }
 
                 // if no style is specified for highlighed use the normal symbol
@@ -546,6 +594,8 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
                             console.log(placemark, placemark.nodeName);
                             processPlacemark(subLayer, placemark);
                         });
+
+                        registerEvents(subLayer["graphicsLayer"]);
                     }
                 });
             };
@@ -565,6 +615,7 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
                     if (child.nodeType === 1) {
                         console.log(".. " + child.nodeName, child.nodeType, child.textContent);
 
+                        let style;
                         switch (child.nodeName) {
                             case "id":
                             case "name":
@@ -576,12 +627,16 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
                             case "MultiGeometry":
                                 break;
                             case "Point":
-                                let style = resolvePointStyle(layer, placemark);
+                                style = resolveStyle(layer, placemark, child.nodeName);
                                 processPlacemarkPoint(layer, placemark, attributes, style);
                                 break;
                             case "LineString":
+                                style = resolveStyle(layer, placemark, child.nodeName);
+                                processPlacemarkLine(layer, placemark, attributes, style);
                                 break;
                             case "Polygon":
+                                style = resolveStyle(layer, placemark, child.nodeName);
+                                processPlacemarkPolygon(layer, placemark, attributes, style);
                                 break;
                         };
                     }
@@ -616,8 +671,113 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
                                         graphic.normalSymbol = style.normal;
                                         graphic.highlightSymbol = style.highlight;
 
+                                        console.log(JSON.stringify(graphic));
                                         layer.graphicsLayer.add(graphic);
                                     }
+                                }
+
+                                break;
+                        };
+                    }
+
+                    child = child.nextSibling;
+                }
+            };
+
+            getRingsGeometry = function (placemark) {
+                let coordinates = placemark.getElementsByTagName("coordinates");
+                let rings = [];
+
+                if (coordinates && coordinates.length > 0) {
+                    $.each(coordinates, function (index, coordinate) {
+                        let iRings = [], pRings = [];
+                        let coordinatesArray = coordinate.textContent.replace(/\s+/g, ' ').replace(/, /g, ',').split(' ');
+                        $.each(coordinatesArray, function (caIndex, pCoordinates) {
+                            pCoordinates = pCoordinates.split(',');
+
+                            pRings.push([pCoordinates[0], pCoordinates[1]]);
+                        });
+
+                        // fix rings due to spaces
+                        for (let i = 0; i < pRings.length; i++) {
+                            if (pRings[i][1] !== undefined) {
+                                if (pRings[i][1] !== "") {
+                                    iRings.push(pRings[i]);
+                                } else if (pRings[i][1] === "") {
+                                    iRings.push([pRings[i][0], pRings[i + 1][0]]);
+                                    i++;
+                                }
+                            }
+                        }
+
+                        rings.push(iRings);
+                    });
+                }
+
+                return rings;
+            };
+
+            processPlacemarkLine = function (layer, placemark, attributes, style) {
+                let len = placemark.childNodes.length;
+                let child = placemark.firstChild;
+
+                console.log(placemark, attributes);
+
+                // process the elements
+                for (let i = 0; i < len; i++) {
+                    // process element nodes only, not text nodes
+                    if (child.nodeType === 1) {
+                        switch (child.nodeName) {
+                            case "LineString":
+                                let rings = getRingsGeometry(placemark);
+
+                                if (rings) {
+                                    let polyline = new Polyline({
+                                        "paths": rings
+                                    });
+
+                                    let popupTemplate = updatePopupTemplate(params.popupTemplate, attributes);
+                                    let graphic = new Graphic(polyline, style.normal, attributes, popupTemplate);
+                                    graphic.normalSymbol = style.normal;
+                                    graphic.highlightSymbol = style.highlight;
+
+                                    console.log(JSON.stringify(graphic));
+                                    layer.graphicsLayer.add(graphic);
+                                }
+
+                                break;
+                        };
+                    }
+
+                    child = child.nextSibling;
+                }
+            };
+
+            processPlacemarkPolygon = function (layer, placemark, attributes, style) {
+                let len = placemark.childNodes.length;
+                let child = placemark.firstChild;
+
+                console.log(placemark, attributes);
+
+                // process the elements
+                for (let i = 0; i < len; i++) {
+                    // process element nodes only, not text nodes
+                    if (child.nodeType === 1) {
+                        switch (child.nodeName) {
+                            case "Polygon":
+                                let rings = getRingsGeometry(placemark);
+
+                                if (rings) {
+                                    let polygon = new Polygon({
+                                        "rings": rings
+                                    });
+
+                                    let popupTemplate = updatePopupTemplate(params.popupTemplate, attributes);
+                                    let graphic = new Graphic(polygon, style.normal, attributes, popupTemplate);
+                                    graphic.normalSymbol = style.normal;
+                                    graphic.highlightSymbol = style.highlight;
+
+                                    layer.graphicsLayer.add(graphic);
                                 }
 
                                 break;
@@ -659,6 +819,23 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
 
             loadNetworkLinks = function () {
 
+            };
+
+            // layer events
+            registerEvents = function (layer) {
+                layer.on("mouse-over", function ($event) {
+                    onMouseOver($event);
+                });
+                layer.on("mouse-out", function ($event) {
+                    onMouseOut($event);
+                });
+            };
+
+            onMouseOver = function ($event) {
+                $event.graphic.setSymbol($event.graphic.highlightSymbol);
+            };
+            onMouseOut = function ($event) {
+                $event.graphic.setSymbol($event.graphic.normalSymbol);
             };
 
             self.init();

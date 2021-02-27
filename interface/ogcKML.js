@@ -1,5 +1,5 @@
-define(["resource/KML2GraphicsLayer", "plugins/ViewUtilities"],
-    function (KML2GraphicsLayer, ViewUtilities) {
+define(["dojo/_base/lang", "resource/KML2GraphicsLayer", "plugins/ViewUtilities"],
+    function (lang, KML2GraphicsLayer, ViewUtilities) {
 
         let ogcKML = function (global, service) {
             let self = this;
@@ -38,7 +38,7 @@ define(["resource/KML2GraphicsLayer", "plugins/ViewUtilities"],
             self.handleClick = function () {
             };
 
-            self.registerEvents = function () {
+            self.registerEvents = function (layer) {
             };
 
             self.remove = function () {
@@ -158,6 +158,7 @@ define(["resource/KML2GraphicsLayer", "plugins/ViewUtilities"],
                     resolve(layer);
                 }).then(function (layer) {
                     console.log(layer.kml);
+                    self.layer = layer;
 
                     // if zero layer, then error
                     // if one layer, then attach it to map and link events
@@ -169,8 +170,6 @@ define(["resource/KML2GraphicsLayer", "plugins/ViewUtilities"],
                                 self.map.addLayer(subLayer.graphicsLayer);
                             }
                         });
-                        
-                        // self.registerEvents();
                     } else {
                         // if more than one layer; then we need to create node for each layer
                         let folders = undefined;
@@ -197,10 +196,6 @@ define(["resource/KML2GraphicsLayer", "plugins/ViewUtilities"],
                 }, function (error) {
                     console.log(error);
                 });
-            };
-
-            addLayerToMap = function(layer) {
-                map.addLayer(newLayer);
             };
 
             self.init();

@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd http://www.google.com/kml/ext/2.2 http://code.google.com/apis/kml/schema/kml22gx.xsd">
+    <Document id="1000-00">
+        <Style id="colorState">
+            <IconStyle id="icon2001">
+                <color>ffffffff</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <hotSpot x="0.5" y="0.5" xunits="fraction" yunits="fraction"/>
+            </IconStyle>
+            <LineStyle id="line2001">
+                <color>ffffffff</color>
+                <colorMode>normal</colorMode>
+                <width>1</width>
+            </LineStyle>
+            <PolyStyle id="poly2001">
+                <color>ffffffff</color>
+                <colorMode>normal</colorMode>
+                <fill>1</fill>
+                <outline>0</outline>
+            </PolyStyle>
+            <LabelStyle id="labl2001">
+                <color>ffffffff</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="normalState">
+            <IconStyle id="icon1001">
+                <color>ffffffff</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+                <heading>0</heading>
+                <Icon>
+                    <href>http://maps.google.com/mapfiles/kml/pal3/icon55.png</href>
+                </Icon>
+                <hotSpot x="0.5" y="0.5" xunits="fraction" yunits="fraction"/>
+            </IconStyle>
+            <LineStyle id="line1001">
+                <color>ffffffff</color>
+                <colorMode>normal</colorMode>
+                <width>1</width>
+            </LineStyle>
+            <PolyStyle id="poly1001">
+                <color>ffffffff</color>
+                <colorMode>normal</colorMode>
+                <fill>1</fill>
+                <outline>0</outline>
+            </PolyStyle>
+            <LabelStyle id="labl1001">
+                <color>ffffffff</color>
+                <colorMode>normal</colorMode>
+                <scale>1.0</scale>
+            </LabelStyle>
+        </Style>
+        <Style id="highlightState">
+            <IconStyle>
+                <Icon>
+                    <href>http://maps.google.com/mapfiles/kml/pal3/icon60.png</href>
+                </Icon>
+                <scale>1.1</scale>
+            </IconStyle>
+            <LabelStyle>
+                <scale>1.1</scale>
+                <color>ff0000c0</color>
+            </LabelStyle>
+        </Style>
+        <StyleMap id="styleMapExample">
+            <Pair>
+                <key>normal</key>
+                <styleUrl>#normalState</styleUrl>
+            </Pair>
+            <Pair>
+                <key>highlight</key>
+                <styleUrl>#highlightState</styleUrl>
+            </Pair>
+        </StyleMap>
+        <name>Placemark Points</name>
+        <Placemark id="1001">
+            <name>Zürich</name>
+            <Point>
+                <coordinates>8.543240928407617,47.36695287673603,0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="1002-1">
+            <name>Zürich</name>
+            <Style>
+                <IconStyle id="icon1001-1">
+                    <color>1fa2D5ff</color>
+                    <colorMode>normal</colorMode>
+                    <scale>1.0</scale>
+                    <heading>79</heading>
+                    <hotSpot x="0.5" y="0.5" xunits="fraction" yunits="fraction"/>
+                </IconStyle>
+            </Style>
+            <Point>
+                <coordinates>9.733340928407617,43.36695287673603,0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="1002-2">
+            <name>Zürich</name>
+            <Style>
+                <IconStyle id="icon1001-2">
+                    <scale>1.0</scale>
+                    <heading>79</heading>
+                    <Icon>
+                        <href>http://maps.google.com/mapfiles/kml/pal3/icon55.png</href>
+                    </Icon>
+                    <hotSpot x="0.5" y="0.5" xunits="fraction" yunits="fraction"/>
+                </IconStyle>
+            </Style>
+            <Point>
+                <coordinates>9.833340928407617,43.36695287673603,0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="1002-3">
+            <name>Zürich</name>
+            <Style>
+                <IconStyle id="icon1001-3">
+                    <color>1fa2D5ff</color>
+                    <colorMode>random</colorMode>
+                    <scale>1.0</scale>
+                    <heading>79</heading>
+                    <hotSpot x="0.5" y="0.5" xunits="fraction" yunits="fraction"/>
+                </IconStyle>
+            </Style>
+            <Point>
+                <coordinates>9.633340928407617,43.36695287673603,0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="1003">
+            <styleUrl>#normalState</styleUrl>
+            <name>Zürich</name>
+            <Point>
+                <coordinates>9.543240928407617,46.43335287673603,0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="1004">
+            <styleUrl>#normalState</styleUrl>
+            <name>Zürich</name>
+            <Point>
+                <coordinates>9.543240928407617,46.53335287673603,0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="1005">
+            <styleUrl>#highlightState</styleUrl>
+            <name>Zürich</name>
+            <Point>
+                <coordinates>7.543240928407617,46.53335287673603,0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="1006">
+            <styleUrl>#highlightState</styleUrl>
+            <name>Zürich</name>
+            <Point>
+                <coordinates>7.543240928407617,46.43335287673603,0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="1007">
+            <styleUrl>#styleMapExample</styleUrl>
+            <name>Zürich</name>
+            <Point>
+                <coordinates>6.543240928407617,46.43335287673603,0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="2001">
+            <styleUrl>#colorState</styleUrl>
+            <name>Zürich</name>
+            <LineString>
+                <coordinates>
+                6.543240928407617,46.43335287673603,0 
+                6.543240928407617,46.43335287673603,0
+                7.543240928407617,46.43335287673603,0
+                7.543240928407617,46.53335287673603,0
+                9.543240928407617,46.53335287673603,0
+                9.543240928407617,46.43335287673603,0
+                9.633340928407617,43.36695287673603,0
+                9.833340928407617,43.36695287673603,0
+                9.733340928407617,43.36695287673603,0
+                8.543240928407617,47.36695287673603,0
+                </coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark>
+            <name>hollow box</name>
+            <Polygon>
+            <extrude>1</extrude>
+            <altitudeMode>relativeToGround</altitudeMode>
+            <outerBoundaryIs>
+                <LinearRing>
+                <coordinates>
+                    -122.366278,37.818844,0
+                    -122.365248,37.819267,0
+                    -122.365640,37.819861,0
+                    -122.366669,37.819429,0
+                    -122.366278,37.818844,0
+                </coordinates>
+                </LinearRing>
+            </outerBoundaryIs>
+            <innerBoundaryIs>
+                <LinearRing>
+                <coordinates>
+                    -122.366212,37.818977,0
+                    -122.365424,37.819294,0
+                    -122.365704,37.819731,0
+                    -122.366488,37.819402,0
+                    -122.366212,37.818977,0
+                </coordinates>
+                </LinearRing>
+            </innerBoundaryIs>
+            </Polygon>
+        </Placemark>
+    </Document>
+</kml>

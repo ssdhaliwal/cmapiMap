@@ -305,7 +305,7 @@ define([],
                     obj = xml.nodeValue;
                 }
 
-                if (xml.hasChildNodes()) {
+                if (xml && xml.hasChildNodes()) {
                     let cLength = xml.childNodes.length;
                     for (let i = 0; i < cLength; i++) {
                         let item = xml.childNodes.item(i);
@@ -314,10 +314,13 @@ define([],
                         if (typeof (obj[nodeName]) === "undefined") {
                             let value = this.xmlToJson(item);
                             if (typeof value === "string") {
-                                if (value && value.trim()) {
-                                    obj.text = value;
+                                value = value.trim();
+                            } 
+
+                            if (value) {
+                                if (value.hasOwnProperty("#text")) {
+                                    value = value["#text"];
                                 }
-                            } else {
                                 obj[nodeName] = value;
                             }
                         } else {
@@ -327,8 +330,8 @@ define([],
                                 obj[nodeName].push(old);
                             }
 
-                            obj[nodeName].push(this.xmlToJson(item));
-                            console.log(nodeName, obj[nodeName]);
+                            let value = this.xmlToJson(item);
+                            obj[nodeName].push(value);
                         }
                     }
                 }
