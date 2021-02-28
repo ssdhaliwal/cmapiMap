@@ -94,7 +94,6 @@ define(["dojo/_base/lang", "resource/KML2GraphicsLayer", "plugins/ViewUtilities"
                                     if (ViewUtilities.getBoolean(layer.properties.intranet)) {
                                         $.ajax(request)
                                             .done(function (data, textStatus, xhr) {
-                                                console.log(data, textStatus);
                                                 processKml(data);
                                             })
                                             .fail(function (xhr, textStatus, error) {
@@ -157,7 +156,6 @@ define(["dojo/_base/lang", "resource/KML2GraphicsLayer", "plugins/ViewUtilities"
                         self.service.layer.properties, self.service.layer.params);
                     resolve(layer);
                 }).then(function (layer) {
-                    console.log(layer.kml);
                     self.layer = layer;
 
                     // if zero layer, then error
@@ -166,7 +164,6 @@ define(["dojo/_base/lang", "resource/KML2GraphicsLayer", "plugins/ViewUtilities"
                     } else if (layer.kml.count === 1) {
                         $.each(layer.kml, function (index, subLayer) {
                             if (subLayer.graphicsLayer) {
-                                console.log(subLayer.graphicsLayer, subLayer.graphicsLayer.visible);
                                 self.map.addLayer(subLayer.graphicsLayer);
                             }
                         });

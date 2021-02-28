@@ -59,7 +59,6 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
                 if (node.attributes) {
                     for (let attribute of node.attributes) {
                         if (!elements || (elements.indexOf(attribute.name) >= 0)) {
-                            console.log(attribute.name, attribute.value);
                             payload[attribute.name] = attribute.value;
                         }
                     }
@@ -70,13 +69,11 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
                         let value = (child.innerText || child.text || child.textContent || "").trim();
 
                         if (value) {
-                            console.log(child.nodeName, value);
                             payload[child.nodeName] = value;
                         }
                         if (child.attributes) {
                             for (let attribute of child.attributes) {
                                 if (!elements || (elements.indexOf(attribute.name) >= 0)) {
-                                    console.log(attribute.name, attribute.value);
                                     payload[attribute.name] = attribute.value;
                                 }
                             }
@@ -321,13 +318,11 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
                 }
 
                 if (styles && styles[url + "_" + type]) {
-                    console.log("cached style/" + url + "_" + type);
                     resultStyle = styles[url + "_" + type];
                 }
 
                 // if no style found; then we create and cache it
                 if (!resultStyle) {
-                    console.log("non-cached style/" + url + "_" + type);
                     let styleNode = self.kml[docId].Style[url];
 
                     if (styleNode) {
@@ -502,7 +497,6 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
                 // get the docId for the layer
                 let docId = layer.docId;
                 let document = self.kml[docId];
-                console.log(layer, document, placemark);
 
                 // create base styleObject which is updated
                 let styleObject = {
@@ -576,7 +570,6 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
                     returnStyle.highlight = returnStyle.normal;
                 }
 
-                console.log(returnStyle);
                 return returnStyle;
             };
 
@@ -586,12 +579,10 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
                     if ((index === "name") || (index === "count")) {
 
                     } else {
-                        console.log(subLayer);
                         subLayer["graphicsLayer"] = new GraphicsLayer({ id: subLayer.folderId });
 
                         // check the placemark type - MultiGeometry, Point, LineString, Polygon
                         $.each(subLayer.Placemark, function (pIndex, placemark) {
-                            console.log(placemark, placemark.nodeName);
                             processPlacemark(subLayer, placemark);
                         });
 
@@ -604,8 +595,8 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
                 let len = placemark.childNodes.length;
                 let child = placemark.firstChild;
 
-                let attributes = {};
                 // process the attributes
+                let attributes = {};
                 $.each(placemark.attributes, function (index, attribute) {
                     attributes[attribute.name] = attribute.textContent;
                 });
@@ -613,8 +604,6 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
                 for (let i = 0; i < len; i++) {
                     // process element nodes only, not text nodes
                     if (child.nodeType === 1) {
-                        console.log(".. " + child.nodeName, child.nodeType, child.textContent);
-
                         let style;
                         switch (child.nodeName) {
                             case "id":
@@ -625,6 +614,12 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
                                 break;
 
                             case "MultiGeometry":
+                                style = resolveStyle(layer, placemark, "Point");
+                                processPlacemarkPoint(layer, child, attributes, style);
+                                style = resolveStyle(layer, placemark, "LineString");
+                                processPlacemarkLine(layer, child, attributes, style);
+                                style = resolveStyle(layer, placemark, "Polygon");
+                                processPlacemarkPolygon(layer, child, attributes, style);
                                 break;
                             case "Point":
                                 style = resolveStyle(layer, placemark, child.nodeName);
@@ -649,7 +644,6 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
                 let len = placemark.childNodes.length;
                 let child = placemark.firstChild;
 
-                console.log(placemark, attributes);
                 let coordinates;
 
                 // process the elements
@@ -671,7 +665,6 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
                                         graphic.normalSymbol = style.normal;
                                         graphic.highlightSymbol = style.highlight;
 
-                                        console.log(JSON.stringify(graphic));
                                         layer.graphicsLayer.add(graphic);
                                     }
                                 }
@@ -721,8 +714,6 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
                 let len = placemark.childNodes.length;
                 let child = placemark.firstChild;
 
-                console.log(placemark, attributes);
-
                 // process the elements
                 for (let i = 0; i < len; i++) {
                     // process element nodes only, not text nodes
@@ -741,7 +732,6 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
                                     graphic.normalSymbol = style.normal;
                                     graphic.highlightSymbol = style.highlight;
 
-                                    console.log(JSON.stringify(graphic));
                                     layer.graphicsLayer.add(graphic);
                                 }
 
@@ -756,8 +746,6 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
             processPlacemarkPolygon = function (layer, placemark, attributes, style) {
                 let len = placemark.childNodes.length;
                 let child = placemark.firstChild;
-
-                console.log(placemark, attributes);
 
                 // process the elements
                 for (let i = 0; i < len; i++) {
