@@ -1,9 +1,9 @@
 define(["vendor/js/jstree/jstree",
     "interface/esriDynamicMapService", "interface/esriFeatureService", "interface/ogcKML",
-    "plugins/ViewUtilities"],
+    "plugins/ViewUtilities", "plugins/JSUtilities"],
     function (JSTree,
         esriDynamicMapService, esriFeatureService, ogcKML,
-        ViewUtilities) {
+        ViewUtilities, JSUtilities) {
 
         let extLayerlist = function (global) {
             let self = this;
@@ -46,6 +46,7 @@ define(["vendor/js/jstree/jstree",
             };
 
             self.handleClick = function () {
+                console.log("Layerlist - handleClick" );
                 global.plugins.extToolbar.toggleOptions("#layerlist");
 
                 if ($("#layerlist").hasClass("selected")) {
@@ -54,17 +55,24 @@ define(["vendor/js/jstree/jstree",
             };
 
             self.registerEvents = function () {
-                $("#layerlist").on("click", self.handleClick);
+                console.log("Layerlist - registerEvents" );
+                $("#layerlist").on("click", function($event) {
+                    console.log("Layerlist - registerEvents/click");
+                    self.handleClick()
+                });
 
-                self.layerlist.on('check_node.jstree', function (e, data) {
+                self.layerlist.on('check_node.jstree', function ($event, data) {
+                    console.log("Layerlist - registerEvents/check_node.jstree");
                     self.handleShowOverlay({ overlayId: data.node });
                 });
 
-                self.layerlist.on('uncheck_node.jstree', function (e, data) {
+                self.layerlist.on('uncheck_node.jstree', function ($event, data) {
+                    console.log("Layerlist - registerEvents/uncheck_node.jstree");
                     self.handleHideOverlay({ overlayId: data.node });
                 });
 
-                self.layerlist.on('select_node.jstree', function (e, data) {
+                self.layerlist.on('select_node.jstree', function ($event, data) {
+                    console.log("Layerlist - registerEvents/select_node.jstree");
                     let length = data.selected.length;
                     for (i = 0, j = length; i < j; i++) {
                         let node = self.instance.get_node(data.selected[i]);
@@ -73,7 +81,7 @@ define(["vendor/js/jstree/jstree",
                         let original = node.original;
                         if (original.hasOwnProperty("layer")) {
                             if (original.layer.hasOwnProperty("query") &&
-                                ViewUtilities.getBoolean(original.layer.query)) {
+                                JSUtilities.getBoolean(original.layer.query)) {
                                 if (original.hasOwnProperty("perspective")) {
                                     original.perspective.remove();
                                     delete original.perspective;
@@ -86,7 +94,8 @@ define(["vendor/js/jstree/jstree",
                     }
                 });
 
-                self.layerlist.on('deselect_node.jstree', function (e, data) {
+                self.layerlist.on('deselect_node.jstree', function ($event, data) {
+                    console.log("Layerlist - registerEvents/deselect_node.jstree");
                     let length = data.selected.length;
                     for (i = 0, j = length; i < j; i++) {
                         let node = self.instance.get_node(data.selected[i]);
@@ -96,6 +105,7 @@ define(["vendor/js/jstree/jstree",
             };
 
             self.discoverLayers = function (node, parent) {
+                console.log("Layerlist - discoverLayers" );
                 let original = node.original;
                 let pnode = (parent || node);
 
@@ -114,7 +124,7 @@ define(["vendor/js/jstree/jstree",
                     }
                     if (original.layer.properties.hasOwnProperty("credentials")) {
                         if (original.layer.properties.credentials.hasOwnProperty("required")) {
-                            if (ViewUtilities.getBoolean(original.layer.properties.credentials.required)) {
+                            if (JSUtilities.getBoolean(original.layer.properties.credentials.required)) {
                                 request.xhrFields.withCredentials = true;
                             }
                         } else if (original.layer.properties.credentials.hasOwnProperty("token")) {
@@ -124,7 +134,7 @@ define(["vendor/js/jstree/jstree",
 
                     $.ajax(request).done(function (data) {
                         // try to parse json if not parsed (some types json is returned as a string?)
-                        data = ViewUtilities.tryJSONParse(data);
+                        data = JSUtilities.tryJSONParse(data);
 
                         // is multiple layers; check if sub-layers is present
                         // if yes, then add them as dynamic layers
@@ -214,6 +224,7 @@ define(["vendor/js/jstree/jstree",
             };
 
             self.handleRenderService = function (parentId, parentText, service) {
+                console.log("Layerlist - handleRenderService" );
                 console.log("... render service!!", parentId, parentText, service);
 
                 service.parentId = parentId;
@@ -264,16 +275,19 @@ define(["vendor/js/jstree/jstree",
             };
 
             checkSelected = function (nodeId) {
+                console.log("Layerlist - checkSelected" );
                 let node = self.instance.get_node(nodeId);
                 self.instance.check_node(node);
             };
 
             uncheckSelected = function (nodeId) {
+                console.log("Layerlist - uncheckSelected" );
                 let node = self.instance.get_node(nodeId);
                 self.instance.uncheck_node(node);
             };
 
             changeNodeStatus = function (nodeId, status) {
+                console.log("Layerlist - changeNodeStatus" );
                 let node = self.instance.get_node(nodeId);
                 let cnode, original;
                 node.children.forEach(function (child_id) {
@@ -298,18 +312,19 @@ define(["vendor/js/jstree/jstree",
             };
 
             self.handleAddOverlay = function (request) {
+                console.log("Layerlist - handleAddOverlay" );
                 // get USER FAVORITES node and add new items as child nodes
                 let pNode = self.instance.get_node(self.defaultOverlayId);
                 if (request.hasOwnProperty("parentId")) {
                     let cNode = self.instance.get_node(request.parentId);
-                    if (ViewUtilities.getBoolean(cNode)) {
+                    if (JSUtilities.getBoolean(cNode)) {
                         pNode = cNode;
                     }
                 }
 
                 // check if node already exists; if yes - ignore
                 let oNode = self.instance.get_node(request.overlayId);
-                if (!ViewUtilities.getBoolean(oNode)) {
+                if (!JSUtilities.getBoolean(oNode)) {
                     let nNode = {
                         "id": request.overlayId,
                         "text": request.name,
@@ -320,6 +335,12 @@ define(["vendor/js/jstree/jstree",
                             "selected": false
                         }
                     };
+
+                    if (request.perspective) {
+                        nNode.original = {
+                            perspective: request.perspective
+                        };
+                    }
 
                     let nId = $('#layerlistDiv').jstree('create_node', pNode.id, nNode, 'last', false);
                 } else {
@@ -332,6 +353,15 @@ define(["vendor/js/jstree/jstree",
                             $('#layerlistDiv').jstree('rename_node', oNode.id, oNode.text);
                         }
 
+                        if (request.perspective) {
+                            if (!oNode.original) {
+                                oNode.original = {};
+                            }
+                            oNode.original = {
+                                perspective: request.perspective
+                            };
+                        }
+    
                         // if parent id is provided; move the node
                         if (request.hasOwnProperty("parentId")) {
                             $('#layerlistDiv').jstree('move_node', oNode, pNode.id, 'last', false);
@@ -344,9 +374,10 @@ define(["vendor/js/jstree/jstree",
             };
 
             self.handleRemoveOverlay = function (request) {
+                console.log("Layerlist - handleRemoveOverlay" );
                 // get USER FAVORITES node and remove items from child nodes
                 let oNode = $("#layerlistDiv").jstree().get_node(request.overlayId);
-                if (ViewUtilities.getBoolean(oNode)) {
+                if (JSUtilities.getBoolean(oNode)) {
                     let pId = oNode.id;
 
                     // uncheck and remove the layers from map
@@ -356,9 +387,10 @@ define(["vendor/js/jstree/jstree",
             };
 
             self.handleHideOverlay = function (request) {
+                console.log("Layerlist - handleHideOverlay" );
                 // get USER FAVORITES node and remove items from child nodes
                 let node = self.instance.get_node(request.overlayId);
-                if (ViewUtilities.getBoolean(node)) {
+                if (JSUtilities.getBoolean(node)) {
                     let pId = node.id;
 
                     // uncheck and remove the layers from map
@@ -368,7 +400,7 @@ define(["vendor/js/jstree/jstree",
                     console.log("^ unchecked..." + node.text, original);
                     changeNodeStatus(node, "enable");
 
-                    console.log("^ clearing..." + node.text, node.original);
+                    console.log("^ clearing..." + node.text, node, original.perspective);
                     if (original.hasOwnProperty("perspective")) {
                         original.perspective.remove();
                         delete original.perspective;
@@ -377,9 +409,10 @@ define(["vendor/js/jstree/jstree",
             };
 
             self.handleShowOverlay = function (request) {
+                console.log("Layerlist - handleShowOverlay" );
                 // get USER FAVORITES node and remove items from child nodes
                 let node = self.instance.get_node(request.overlayId);
-                if (ViewUtilities.getBoolean(node)) {
+                if (JSUtilities.getBoolean(node)) {
                     let original = node.original;
 
                     let parentId, parentNode, parentText;
@@ -411,14 +444,15 @@ define(["vendor/js/jstree/jstree",
             };
 
             self.handlePlotFeatureUrl = function (request) {
+                console.log("Layerlist - handlePlotFeatureUrl" );
                 // create the overlay if not existing
-                if (request.hasOwnProperty("overlayId") && !ViewUtilities.isEmpty(request.overlayId)) {
+                if (request.hasOwnProperty("overlayId") && !JSUtilities.isEmpty(request.overlayId)) {
                     global.interfaces.messageService.cmapiAdapter.onMapOverlayCreateUpdate({ overlayId: request.overlayId });
                 }
 
                 // check if feature id already exists
                 let oNode = self.instance.get_node(request.featureId);
-                if (!ViewUtilities.getBoolean(oNode)) {
+                if (!JSUtilities.getBoolean(oNode)) {
                     // create layer payload
                     let layerCopy = {
                         "id": request.featureId,
@@ -450,7 +484,7 @@ define(["vendor/js/jstree/jstree",
                     switch (layerCopy.layer.params.serviceType) {
                         case "dynamic":
                             layerCopy.icon = "/esri-cmapi/plugins/layerlist/icons/DMS.png";
-                            if (layerCopy.layer.hasOwnProperty("query") && ViewUtilities.getBoolean(layerCopy.layer.query)) {
+                            if (layerCopy.layer.hasOwnProperty("query") && JSUtilities.getBoolean(layerCopy.layer.query)) {
                                 layerCopy.icon = "/esri-cmapi/plugins/layerlist/icons/DMS-Query.png";
                             }
                             layerCopy.layer.params.serviceType = "dynamic";

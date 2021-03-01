@@ -27,6 +27,7 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
             self.searchOptions = null;
 
             self.init = function () {
+                console.log("esriFeatureService - init");
                 console.log("... creating layer: " + self.service.text);
                 let params = self.service.layer.params || {};
                 if (!params.hasOwnProperty("mode")) {
@@ -299,16 +300,18 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
             };
 
             self.registerEvents = function () {
+                console.log("esriFeatureService - registerEvents");
                 let params = self.service.layer.params || {};
 
                 // syncSearchOptions();
 
                 /*
                 layer.on("visibility-change", (visibility) => {
-                    console.log("visibility-change", visibility);
+                    console.log("esriFeatureService - registerEvents/visibility-change", visibility);
                 });
                 */
                 self.layer.on("graphic-add", (feature) => {
+                    console.log("esriFeatureService - registerEvents/graphic-add", feature);
                     if (params.hasOwnProperty("_querySelect")) {
                         let qsLen = params._querySelect.graphic.length;
                         let found = false;
@@ -326,22 +329,23 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
 
                 /*
                 self.layer.on("graphic-draw", function ($event) {
-                    console.log("graphic-draw", $event);
+                    console.log("esriFeatureService - registerEvents/graphic-draw", $event);
                 });
                 self.layer.on("query-count-complete", function ($event) {
-                    console.log("query-count-complete", $event);
+                    console.log("esriFeatureService - registerEvents/query-count-complete", $event);
                 });
                 self.layer.on("query-extent-complete", function ($event) {
-                    console.log("query-extent-complete", $event);
+                    console.log("esriFeatureService - registerEvents/query-extent-complete", $event);
                 });
                 self.layer.on("query-ids-complete", function ($event) {
-                    console.log("query-ids-complete", $event);
+                    console.log("esriFeatureService - registerEvents/query-ids-complete", $event);
                 });
                 self.layer.on("query-features-complete", function ($event) {
-                    console.log("query-features-complete", $event);
+                    console.log("esriFeatureService - registerEvents/query-features-complete", $event);
                 });
 
                 self.layer.on("refresh-tick", function ($event) {
+                    console.log("esriFeatureService - registerEvents/refresh-tick", $event);
                     if (params.hasOwnProperty("_querySelect")) {
                         let tmpGraphicsLayer = new GraphicsLayer({
                             id: "tmp_" + self.layer.id
@@ -363,6 +367,7 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                 });
 
                 self.layer.on("update-end", function ($event) {
+                    console.log("esriFeatureService - registerEvents/update-end", $event);
                     if (params.hasOwnProperty("_querySelect")) {
                         if (self.layer.hasOwnProperty("tmpGraphicsLayer")) {
                             map.removeLayer(self.layer.tmpGraphicsLayer);
@@ -373,6 +378,7 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                 */
 
                 self.layer.on("load", function ($event) {
+                    console.log("esriFeatureService - registerEvents/load", $event);
                     // set font color if needed
                     if ($event.layer.hasOwnProperty("labelingInfo")) {
                         if ($event.layer.labelingInfo.length > 0) {
@@ -481,11 +487,12 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                 });
 
                 let selectQuery = new Query();
-                self.layer.on('click', function (e) {
+                self.layer.on('click', function ($event) {
+                    console.log("esriFeatureService - registerEvents/click", $event);
 
                     // update popup dynamically
-                    let gLayer = e.graphic.getLayer();
-                    if (e.ctrlKey === true) {
+                    let gLayer = $event.graphic.getLayer();
+                    if ($event.ctrlKey === true) {
                         let template = new esri.InfoTemplate();
                         // Flag icons are from http://twitter.com/thefella, released under creative commons.
                         template.setTitle("<b>${NAME}</b>");
@@ -498,16 +505,16 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                     // click actions
                     self.selectedFeatures = [];
                     self.selectedFeatures.push({
-                        deselectedId: e.graphic.getLayer().id,
-                        deselectedName: e.graphic.getLayer().name
+                        deselectedId: $event.graphic.getLayer().id,
+                        deselectedName: $event.graphic.getLayer().name
                     });
 
                     self.message.sendMessage("map.feature.clicked",
                         JSON.stringify({
                             overlayId: self.service.parentId,
                             featureId: self.service.id,
-                            lat: e.mapPoint.y,
-                            lon: e.mapPoint.x,
+                            lat: $event.mapPoint.y,
+                            lon: $event.mapPoint.x,
                             button: "left",
                             type: "single",
                             keys: []
@@ -518,14 +525,14 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                             overlayId: self.service.parentId,
                             selectedFeatures: [{
                                 featureId: self.service.id,
-                                selectedId: e.graphic.attributes.id
+                                selectedId: $event.graphic.attributes.id
                             }]
                         }));
 
-                    if (e.graphic.geometry.type === "point") {
-                        selectQuery.geometry = ViewUtilities.pointToExtent(self.map, e.graphic.geometry, 10);
+                    if ($event.graphic.geometry.type === "point") {
+                        selectQuery.geometry = ViewUtilities.pointToExtent(self.map, $event.graphic.geometry, 10);
                     } else {
-                        selectQuery.geometry = e.graphic.geometry;
+                        selectQuery.geometry = $event.graphic.geometry;
                     }
 
                     self.layer.selectFeatures(selectQuery, FeatureLayer.SELECTION_NEW, function (features) {
@@ -544,8 +551,8 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                                 JSON.stringify({
                                     overlayId: self.service.parentId,
                                     featureId: self.service.id,
-                                    selectedId: e.graphic.getLayer().id,
-                                    selectedName: e.graphic.getLayer().name,
+                                    selectedId: $event.graphic.getLayer().id,
+                                    selectedName: $event.graphic.getLayer().name,
                                     features: featureItems
                                 }));
                         } else {
@@ -553,46 +560,49 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                                 JSON.stringify({
                                     overlayId: self.service.parentId,
                                     featureId: self.service.id,
-                                    selectedId: e.graphic.getLayer().id,
-                                    selectedName: e.graphic.getLayer().name
+                                    selectedId: $event.graphic.getLayer().id,
+                                    selectedName: $event.graphic.getLayer().name
                                 }));
                         }
                     });
                 });
 
-                self.layer.on('mouse-down', function (e) {
+                self.layer.on('mouse-down', function ($event) {
+                    console.log("esriFeatureService - registerEvents/mouse-down", $event);
                     self.message.sendMessage("map.feature.mousedown",
                         JSON.stringify({
                             overlayId: self.service.parentId,
                             featureId: self.service.id,
-                            lat: e.mapPoint.y,
-                            lon: e.mapPoint.x,
+                            lat: $event.mapPoint.y,
+                            lon: $event.mapPoint.x,
                             button: "left",
                             type: "single",
                             keys: []
                         }));
                 });
 
-                self.layer.on('mouse-up', function (e) {
+                self.layer.on('mouse-up', function ($event) {
+                    console.log("esriFeatureService - registerEvents/mouse-up", $event);
                     self.message.sendMessage("map.feature.mouseup",
                         JSON.stringify({
                             overlayId: self.service.parentId,
                             featureId: self.service.id,
-                            lat: e.mapPoint.y,
-                            lon: e.mapPoint.x,
+                            lat: $event.mapPoint.y,
+                            lon: $event.mapPoint.x,
                             button: "left",
                             type: "single",
                             keys: []
                         }));
                 });
 
-                self.layer.on("error", function (e) {
+                self.layer.on("error", function ($event) {
+                    console.log("esriFeatureService - registerEvents/error", $event);
                     /*
-                    if (e.hasOwnProperty("error")) {
-                        console.log(e.error);
+                    if ($event.hasOwnProperty("error")) {
+                        console.log($event.error);
 
-                        if (e.error.hasOwnProperty("code")) {
-                            if ((e.error.code >= 400) && (e.error.code < 600)) {
+                        if ($event.error.hasOwnProperty("code")) {
+                            if (($event.error.code >= 400) && ($event.error.code < 600)) {
                                 _layerErrorHandler(caller, overlayId, featureId, layer, e);
                             }
                         }
@@ -602,6 +612,7 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
             };
 
             self.remove = function () {
+                console.log("esriFeatureService - remove");
                 console.log("... removed layer: " + self.service.text);
                 if (self.layer.hasOwnProperty("searchOptions")) {
                     self.search.removeSource(self.layer.searchOptions);
@@ -623,6 +634,7 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
 
             // layer specific functions
             self.registerSearch = function () {
+                console.log("esriFeatureService - registerSearch");
                 let params = self.service.layer.params || {};
 
                 if (params.hasOwnProperty("searchOptions")) {
@@ -641,12 +653,14 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
             };
 
             self.deregisterSearch = function () {
+                console.log("esriFeatureService - deregisterSearch");
                 if (self.searchOptions !== null) {
                     self.search.removeSource(self.searchOptions);
                 }
             }
 
             self.getLayerControlInfoTemplate = function (graphic) {
+                console.log("esriFeatureService - getLayerControlInfoTemplate");
                 // Display attribute information.
                 let message = {
                     overlayId: self.service.parentId,

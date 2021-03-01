@@ -11,6 +11,7 @@ define(["esri/layers/ArcGISDynamicMapServiceLayer", "plugins/ViewUtilities"],
             self.layer = null;
 
             self.init = function () {
+                console.log("esriDynamicMapService - init");
                 console.log("... creating layer: " + self.service.text);
                 let params = self.service.layer.params || {};
                 let properties = self.service.layer.properties || {};
@@ -87,27 +88,32 @@ define(["esri/layers/ArcGISDynamicMapServiceLayer", "plugins/ViewUtilities"],
 			};
 
 			self.registerEvents = function() {
+                console.log("esriDynamicMapService - registerEvents");
 				self.layer.on("load", function () {
+					console.log("esriDynamicMapService - registerEvents/load");
 					if (ViewUtilities.getBoolean(params.zoom)) {
 						ViewUtilities.zoomToLayer(self.map, self.layer);
 					}
 				});
 
-				self.layer.on("error", function (e) {
-                    if (e.error.hasOwnProperty("code")) {
-                        if ((e.error.code >= 400) && (e.error.code < 600)) {
-                            let msg = 'Unable to apply layer - ' + e.error;
+				self.layer.on("error", function ($event) {
+					console.log("esriDynamicMapService - registerEvents/error");
+                    if ($event.error.hasOwnProperty("code")) {
+                        if (($event.error.code >= 400) && ($event.error.code < 600)) {
+                            let msg = 'Unable to apply layer - ' + $event.error;
                             self.notify.errorNotifier(msg);
                         }
                     }
                 });
 
-                self.layer.on('visible-layers-change', function(e) {
+                self.layer.on('visible-layers-change', function($event) {
+					console.log("esriDynamicMapService - registerEvents/visible-layers-change");
                     self.remove();
                 });
 			};
 
             self.remove = function() {
+                console.log("esriDynamicMapService - remove");
                 console.log("... removed layer: " + self.service.text);
                 if (self.layer.hasOwnProperty("searchOptions")) {
                     self.search.removeSource(self.layer.searchOptions);

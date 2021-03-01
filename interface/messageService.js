@@ -6,15 +6,19 @@ define(["interface/cmapiAdapter", "plugins/ViewUtilities"],
             self.cmapiAdapter = new cmapiAdapter(global);
 
             self.init = function () {
+                console.log("messageService - init");
                 self.registerEvents();
             };
 
             self.handleClick = function () {
+                console.log("messageService - handleClick");
             };
 
             self.registerEvents = function () {
-                window.addEventListener("message", function (event) {
-                    let data = ViewUtilities.tryJSONParse(event.data);
+                console.log("messageService - registerEvents");
+                window.addEventListener("message", function ($event) {
+                    console.log("messageService - registerEvents/message", $event);
+                    let data = ViewUtilities.tryJSONParse($event.data);
                     console.log(data);
 
                     if (data.hasOwnProperty("channel") && data.hasOwnProperty("payload")) {
@@ -74,6 +78,7 @@ define(["interface/cmapiAdapter", "plugins/ViewUtilities"],
                 });
 
                 window.GlobalNotify = function (channel, payload) {
+                    console.log("messageService - registerEvents/GlobalNotify");
                     // payload.mapId = window.cmwapiMapId;
                     // OWF.Eventing.publish(channel, JSON.stringify(payload));
                     window.parent.postMessage(JSON.stringify({ channel: channel, payload: ViewUtilities.fromHex(payload) }), "*");
@@ -81,6 +86,7 @@ define(["interface/cmapiAdapter", "plugins/ViewUtilities"],
             };
 
             self.sendMessage = function (channel, message) {
+                console.log("messageService - sendMessage");
                 // send message back using event.source.postMessage(...)
                 // or window.top.postMessage('hello', '*')
                 // or window.parent.postMessage("Hello From IFrame", "*");

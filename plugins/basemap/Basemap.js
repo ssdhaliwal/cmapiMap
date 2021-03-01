@@ -1,5 +1,6 @@
-define(["esri/dijit/BasemapGallery", "esri/dijit/BasemapLayer", "esri/dijit/Basemap", "plugins/ViewUtilities"],
-    function (esriBasemapGallery, esriBasemapLayer, esriBasemap, ViewUtilties) {
+define(["esri/dijit/BasemapGallery", "esri/dijit/BasemapLayer", "esri/dijit/Basemap", 
+    "plugins/ViewUtilities", "plugins/JSUtilities"],
+    function (esriBasemapGallery, esriBasemapLayer, esriBasemap, ViewUtilties, JSUtilities) {
 
         let extBasemap = function (global) {
             let self = this;
@@ -7,6 +8,7 @@ define(["esri/dijit/BasemapGallery", "esri/dijit/BasemapLayer", "esri/dijit/Base
             self.instance = null;
 
             self.init = function () {
+                console.log("extBasemap = init");
                 self.instance = new esriBasemapGallery({
                     showArcGISBasemaps: true,
                     /* 20191029 - depreciated due to no license key
@@ -101,7 +103,7 @@ define(["esri/dijit/BasemapGallery", "esri/dijit/BasemapLayer", "esri/dijit/Base
                       }));
                 */
                 // added site verification
-                ViewUtilties.isSiteOnline("https://www.arcgis.com", function (found) {
+                JSUtilities.isSiteOnline("https://www.arcgis.com", function (found) {
                     if (found) {
                         map.setBasemap("streets");
                     } else {
@@ -128,6 +130,7 @@ define(["esri/dijit/BasemapGallery", "esri/dijit/BasemapLayer", "esri/dijit/Base
             };
 
             self.handleClick = function () {
+                console.log("extBasemap = handleClick");
                 global.plugins.extToolbar.toggleOptions("#basemaps");
 
                 if ($("#basemaps").hasClass("selected")) {
@@ -136,7 +139,11 @@ define(["esri/dijit/BasemapGallery", "esri/dijit/BasemapLayer", "esri/dijit/Base
             };
 
             self.registerEvents = function() {
-                $("#basemaps").on("click", self.handleClick);
+                console.log("extBasemap = registerEvents");
+                $("#basemaps").on("click", function($event) {
+                    console.log("extBasemap = registerEvents/click", $event);
+                    self.handleClick();
+                });
             };
 
             self.init();
