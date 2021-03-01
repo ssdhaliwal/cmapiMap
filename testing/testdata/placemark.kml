@@ -231,5 +231,14 @@
                 </LineString>
             </MultiGeometry>
         </Placemark>
+        <Folder>
+            <Placemark id="F001">
+                <styleUrl>#styleMapExample</styleUrl>
+                <name>Zürich</name>
+                <Point>
+                    <coordinates>6.844340928407617,46.84435287673603,0</coordinates>
+                </Point>
+            </Placemark>
+        </Folder>
     </Document>
 </kml>
