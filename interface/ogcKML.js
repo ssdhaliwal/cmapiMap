@@ -43,8 +43,8 @@ define(["dojo/_base/lang", "resource/KML2GraphicsLayer", "plugins/ViewUtilities"
 
             self.remove = function () {
                 console.log("... removed layer: " + self.service.text);
-                /*
                 self.map.removeLayer(self.layer);
+                /*
                 // need to remove any nodes created by the layer
                 $.each(self.selectedFeatures, function (index, feature) {
                     self.message.sendMessage("map.feature.deselected",
