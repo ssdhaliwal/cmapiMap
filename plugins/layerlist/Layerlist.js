@@ -8,6 +8,7 @@ define(["vendor/js/jstree/jstree",
         let extLayerlist = function (global) {
             let self = this;
             self.message = global.interfaces.messageService;
+            self.datagrid = global.plugins.extDatagrid;
             self.layerlist = null;
             self.instance = null;
             self.layers = [];
@@ -84,6 +85,7 @@ define(["vendor/js/jstree/jstree",
                                 JSUtilities.getBoolean(original.layer.query)) {
                                 if (original.hasOwnProperty("perspective")) {
                                     original.perspective.remove();
+                                    self.datagrid.removeTab(original.perspective);
                                     delete original.perspective;
                                 }
 
@@ -244,6 +246,7 @@ define(["vendor/js/jstree/jstree",
                                 service.perspective = new esriDynamicMapService(global, service);
                             } else if (service.layer.params.serviceType === "feature") {
                                 service.perspective = new esriFeatureService(global, service);
+                                self.datagrid.addTab(service);
                             } else if ((service.layer.params.serviceType === "kml") ||
                                 (service.layer.params.serviceType === "kmz")) {
                                 // if properties has data or property has local = true with url
@@ -302,6 +305,7 @@ define(["vendor/js/jstree/jstree",
                     console.log("^ clearing..." + cnode.text, cnode.original);
                     if (original.hasOwnProperty("perspective")) {
                         original.perspective.remove();
+                        self.datagrid.removeTab(original.perspective);
                         delete original.perspective;
                     }
 
@@ -403,6 +407,7 @@ define(["vendor/js/jstree/jstree",
                     console.log("^ clearing..." + node.text, node, original.perspective);
                     if (original.hasOwnProperty("perspective")) {
                         original.perspective.remove();
+                        self.datagrid.removeTab(original.perspective);
                         delete original.perspective;
                     }
                 }

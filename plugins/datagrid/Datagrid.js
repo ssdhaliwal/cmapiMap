@@ -23,6 +23,8 @@ define(["dijit/layout/TabContainer", "dijit/layout/ContentPane"],
                 } else {
                     $("#datagrid_wrapper").css("display", "none");
                 }
+
+                $("#datagrid").toggleClass("selected");
             };
 
             self.registerEvents = function() {
@@ -31,6 +33,21 @@ define(["dijit/layout/TabContainer", "dijit/layout/ContentPane"],
                     console.log("extDatagrid - registerEvents/click");
                     self.handleClick();
                 });
+            };
+
+            self.addTab = function(service) {
+                console.log("extDatagrid - addTab");
+
+                // auto add if feature or local kml layer type
+                // currently supported; feature layers and kml - push filters to layer
+                console.log(service);
+            };
+
+            self.removeTab = function(service) {
+                console.log("extDatagrid - removeTab");
+
+                // only via layer remove
+                console.log(service);
             };
 
             self.init();

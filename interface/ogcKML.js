@@ -9,6 +9,7 @@ define(["dojo/_base/lang", "resource/KML2GraphicsLayer",
             self.notify = global.plugins.extNotify;
             self.message = global.interfaces.messageService;
             self.layerList = global.plugins.extLayerlist;
+            self.datagrid = global.plugins.extDatagrid;
             self.service = service;
             self.layer = null;
             self.selectedFeatures = [];
@@ -48,7 +49,16 @@ define(["dojo/_base/lang", "resource/KML2GraphicsLayer",
             self.remove = function () {
                 console.log("ogcKML - remove" );
                 console.log("... removed layer: " + self.service.text);
-                self.map.removeLayer(self.layer);
+
+                // remove all associated graphics layers
+                if (self.layer.kml.count === 0) {
+                } else {
+                    $.each(self.layer.kml, function (index, subLayer) {
+                        if (subLayer.graphicsLayer) {
+                            self.map.removeLayer(subLayer.graphicsLayer);
+                        }
+                    });
+                }
                 /*
                 // need to remove any nodes created by the layer
                 $.each(self.selectedFeatures, function (index, feature) {
@@ -169,13 +179,20 @@ define(["dojo/_base/lang", "resource/KML2GraphicsLayer",
                     // if zero layer, then error
                     // activate all the graphics; user can toggle them via the data grid
                     if (layer.kml.count === 0) {
-                    } else if (layer.kml.count === 1) {
+                    } else {
                         $.each(layer.kml, function (index, subLayer) {
                             if (subLayer.graphicsLayer) {
                                 self.map.addLayer(subLayer.graphicsLayer);
                             }
                         });
-                    } else {
+
+                        // add to grid via promise
+                        new Promise(function (resolve, reject) {
+                            self.datagrid.addTab(self);
+                        });
+                    }
+                    /*
+                      else {
                         // if more than one layer; then we need to create node for each layer
                         let folders = undefined;
                         $.each(layer.kml, function (index, subLayer) {
@@ -206,6 +223,7 @@ define(["dojo/_base/lang", "resource/KML2GraphicsLayer",
                             }
                         });
                     }
+                    */
                 }, function (error) {
                     console.log(error);
                 });

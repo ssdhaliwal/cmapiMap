@@ -5,7 +5,7 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
     "esri/symbols/TextSymbol",
     "esri/InfoTemplate", "esri/dijit/PopupTemplate",
     "esri/tasks/query", "dojo/_base/array", "dojo/dom-construct",
-    "esri/graphicsUtils", "plugins/ViewUtilities"],
+    "esri/graphicsUtils", "plugins/ViewUtilities", "plugins/JSUtilities"],
     function (FeatureLayer, GraphicsLayer,
         LabelClass, graphic, Point, Circle, Polygon,
         ClassBreaksRenderer, SimpleRenderer, UniqueValueRenderer,
@@ -13,7 +13,7 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
         TextSymbol,
         InfoTemplate, PopupTemplate,
         Query, array, domConstruct,
-        graphicsUtils, ViewUtilities) {
+        graphicsUtils, ViewUtilities, JSUtilities) {
 
         let esriFeatureService = function (global, service) {
             let self = this;
@@ -21,6 +21,7 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
             self.search = global.plugins.extSearch;
             self.notify = global.plugins.extNotify;
             self.message = global.interfaces.messageService;
+            self.datagrid = global.plugins.extDatagrid;
             self.service = service;
             self.layer = null;
             self.selectedFeatures = [];
@@ -125,7 +126,7 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                     }
                 }
 
-                if (params.showLabels && ViewUtilities.getBoolean(params.showLabels)) {
+                if (params.showLabels && JSUtilities.getBoolean(params.showLabels)) {
                     let lblSymbol = null, lblClass = null;
 
                     if (params.lblClass) {
@@ -295,6 +296,11 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
 
                 self.map.addLayers([self.layer]);
 
+                // add to grid via promise
+                new Promise(function (resolve, reject) {
+                    self.datagrid.addTab(self);
+                });
+
                 self.registerEvents();
                 self.registerSearch();
             };
@@ -420,7 +426,7 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                                 template.setTitle(params.infoTemplateClass.standard.title);
                                 let description = (params.infoTemplateClass.standard.description ? (params.infoTemplateClass.standard.description + "<hr>") : "");
                                 if (params.infoTemplateClass.standard.showAttributes &&
-                                    ViewUtilities.getBoolean(params.infoTemplateClass.standard.showAttributes)) {
+                                    JSUtilities.getBoolean(params.infoTemplateClass.standard.showAttributes)) {
                                     description +=
                                         "<div class=\"esriViewPopup\"><div class=\"mainSection\"><table class=\"attrTable\" cellpadding=\"2px\" cellspacing=\"0px\"> " +
                                         "<tbody> ";
@@ -481,7 +487,7 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                         }
                     }
 
-                    if (ViewUtilities.getBoolean(params.zoom)) {
+                    if (JSUtilities.getBoolean(params.zoom)) {
                         ViewUtilities.zoomToLayer(self.map, self.layer);
                     }
                 });
@@ -670,7 +676,7 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
 
                 let node = domConstruct.toDom("<div>I'm a Node {" + graphic.attributes.FID + "}<br>" +
                     "<a href='javascript:window.GlobalNotify(\"ctrl-message\",\"" +
-                    ViewUtilities.toHex(JSON.stringify(message)) + "\");'>click here</a></div>");
+                    JSUtilities.toHex(JSON.stringify(message)) + "\");'>click here</a></div>");
                 return node;
             };
 
