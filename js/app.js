@@ -8,7 +8,7 @@ require([
   "esri/geometry/projection",
   "plugins/notify/Notify", "plugins/toolbar/Toolbar", "plugins/config/Config", "plugins/popup/Popup", "plugins/map/Map", "plugins/scalebar/Scalebar",
   "plugins/home/Home", "plugins/search/Search", "plugins/basemap/Basemap", "plugins/legend/Legend", "plugins/bookmarks/Bookmarks",
-  "plugins/layerlist/Layerlist",
+  "plugins/datagrid/Datagrid", "plugins/layerlist/Layerlist",
   "interface/geometryService", "interface/messageService",
   "dojo/domReady!"
 ], function (
@@ -16,7 +16,7 @@ require([
   projection,
   extNotify, extToolbar, extConfig, extPopup, extMap, extScalebar,
   extHome, extSearch, extBasemap, extLegend, extBookmarks,
-  extLayerlist,
+  extDatagrid, extLayerlist,
   geometryService, messageService
 ) {
   var global = {};
@@ -60,6 +60,7 @@ require([
     global.plugins.extBasemap = new extBasemap(global);
     global.plugins.extLegend = new extLegend(global);
     global.plugins.extBookmarks = new extBookmarks(global);
+    global.plugins.extDatagrid = new extDatagrid(global);
 
     window.setTimeout(() => {
       global.plugins.extLayerlist = new extLayerlist(global);

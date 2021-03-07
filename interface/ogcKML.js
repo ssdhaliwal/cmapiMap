@@ -167,7 +167,7 @@ define(["dojo/_base/lang", "resource/KML2GraphicsLayer",
                     self.layer = layer;
 
                     // if zero layer, then error
-                    // if one layer, then attach it to map and link events
+                    // activate all the graphics; user can toggle them via the data grid
                     if (layer.kml.count === 0) {
                     } else if (layer.kml.count === 1) {
                         $.each(layer.kml, function (index, subLayer) {
