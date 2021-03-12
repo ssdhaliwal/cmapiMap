@@ -68,45 +68,35 @@ img {
 }
 
 .esriSimpleSliderIncrementButton {
-    background-image: url("../images/icons/Zoom_In_Default.png");
+    background-image: url("../images/icons/zoomin.svg");
+    background-color: gray;
     background-position: center center;
-    background-repeat: no-repeat;
     border: 1.5px solid #928F8F;
+    opacity: 50%;
 }
 
 .esriSimpleSliderDecrementButton {
-    background-image: url("../images/icons/Zoom_Out_Default.png");
+    background-image: url("../images/icons/zoomout.svg");
+    background-color: gray;
     background-position: center center;
-    background-repeat: no-repeat;
     border: 1.5px solid #928F8F;
+    opacity: 50%;
 }
 
 .esriSimpleSliderDecrementButton:hover {
-    background-color: transparent;
-    background-image: url("../images/icons/Zoom_Out_Hover.png");
-    background-position: center center;
-    background-color: transparent;
+    background-color: silver;
 }
 
 .esriSimpleSliderIncrementButton:hover {
-    background-color: transparent;
-    background-image: url("../images/icons/Zoom_In_Hover.png");
-    background-position: center center;
-    background-repeat: no-repeat;
+    background-color: silver;
 }
 
 .esriSimpleSliderDecrementButton:active {
-    background-color: transparent;
-    background-image: url("../images/icons/Zoom_Out_Selected.png");
-    background-position: center center;
-    background-color: transparent;
+    background-color: white;
 }
 
 .esriSimpleSliderIncrementButton:active {
-    background-color: transparent;
-    background-image: url("../images/icons/Zoom_In_Selected.png");
-    background-position: center center;
-    background-repeat: no-repeat;
+    background-color: white;
 }
 
 .esriSimpleSlider {
@@ -198,26 +188,23 @@ img {
     margin-left: 2px;
     width: 30px;
     height: 30px;
-    background-image: url("../images/icons/home_Default.png");
+    background-image: url("../images/icons/home.svg");
     background-position: center center;
-    background-repeat: no-repeat;
+    background-color: gray;
     border-radius: 5px;
     border: 1.5px solid #928F8F;
     position: absolute;
     z-index: 30;
     top: 100px;
+    opacity: 50%;
 }
 
 #home:hover {
-    background-image: url("../images/icons/home_Hover.png");
-    background-position: center center;
-    background-repeat: no-repeat;
+    background-color: silver;
 }
 
 #home.selected {
-    background-image: url("../images/icons/home_Selected.png");
-    background-position: center center;
-    background-repeat: no-repeat;
+    background-color: white;
 }
 
 #search {
@@ -231,8 +218,9 @@ img {
 }
 
 .arcgisSearch .esri-icon-search {
-    background-image: url("../images/icons/finding.png");
-    background-size: 20px 20px;
+    background-image: url("../images/icons/search.svg");
+    background-position: center center;
+    background-size: 24px 24px;
 }
 
 .esri-icon-search:before {
@@ -258,25 +246,22 @@ img {
     margin-right: 5px;
     width: 30px;
     height: 30px;
-    background-image: url("../images/icons/baseMaps_Default.png");
+    background-image: url("../images/icons/basemaps.svg");
     background-position: center center;
-    background-repeat: no-repeat;
+    background-color: gray;
     border: 1.5px solid #928F8F;
     border-radius: 5px;
     float: right;
     z-index: 3;
+    opacity: 50%;
 }
 
 #basemaps:hover {
-    background-image: url("../images/icons/baseMaps_Hover.png");
-    background-position: center center;
-    background-repeat: no-repeat;
+    background-color: silver;
 }
 
 #basemaps.selected {
-    background-image: url("../images/icons/baseMaps_Selected.png");
-    background-position: center center;
-    background-repeat: no-repeat;
+    background-color: white;
 }
 
 #basemaps_wrapper {
@@ -336,25 +321,22 @@ img {
     margin-right: 5px;
     width: 30px;
     height: 30px;
-    background-image: url("../images/icons/layerlist_Default.png");
+    background-image: url("../images/icons/layerlist.svg");
     background-position: center center;
-    background-repeat: no-repeat;
+    background-color: gray;
     border-radius: 5px;
     border: 1.5px solid #928F8F;
     float: right;
     z-index: 3;
+    opacity: 50%;
 }
 
 #layerlist:hover {
-    background-image: url("../images/icons/layerlist_Hover.png");
-    background-position: center center;
-    background-repeat: no-repeat;
+    background-color: silver;
 }
 
 #layerlist.selected {
-    background-image: url("../images/icons/layerlist_Selected.png");
-    background-position: center center;
-    background-repeat: no-repeat;
+    background-color: white;
 }
 
 #layerlist_wrapper {
@@ -385,25 +367,22 @@ img {
     margin-right: 5px;
     width: 30px;
     height: 30px;
-    background-image: url("../images/icons/legend_Default.png");
+    background-image: url("../images/icons/legend.svg");
     background-position: center center;
-    background-repeat: no-repeat;
+    background-color: gray;
     border-radius: 5px;
     border: 1.5px solid #928F8F;
     float: right;
     z-index: 3;
+    opacity: 50%;
 }
 
 #legend:hover {
-    background-image: url("../images/icons/legend_Hover.png");
-    background-position: center center;
-    background-repeat: no-repeat;
+    background-color: silver;
 }
 
 #legend.selected {
-    background-image: url("../images/icons/legend_Selected.png");
-    background-position: center center;
-    background-repeat: no-repeat;
+    background-color: white;
 }
 
 #legendDiv {
@@ -416,25 +395,22 @@ img {
     margin-right: 5px;
     width: 30px;
     height: 30px;
-    background-image: url("../images/icons/bookmark_Default.png");
+    background-image: url("../images/icons/bookmark.svg");
     background-position: center center;
-    background-repeat: no-repeat;
+    background-color: gray;
     border-radius: 5px;
     border: 1.5px solid #928F8F;
     float: right;
     z-index: 3;
+    opacity: 50%;
 }
 
 #bookmark:hover {
-    background-image: url("../images/icons/bookmark_Hover.png");
-    background-position: center center;
-    background-repeat: no-repeat;
+    background-color: silver;
 }
 
 #bookmark.selected {
-    background-image: url("../images/icons/bookmark_Selected.png");
-    background-position: center center;
-    background-repeat: no-repeat;
+    background-color: white;
 }
 
 #bookmarkDiv {
@@ -447,30 +423,68 @@ img {
     margin-right: 5px;
     width: 30px;
     height: 30px;
-    background-image: url("../images/icons/config_Default.png");
+    background-image: url("../images/icons/config.svg");
     background-position: center center;
-    background-repeat: no-repeat;
+    background-color: gray;
     border-radius: 5px;
     border: 1.5px solid #928F8F;
     float: right;
     z-index: 3;
+    opacity: 50%;
 }
 
 #config:hover {
-    background-image: url("../images/icons/config_Hover.png");
-    background-position: center center;
-    background-repeat: no-repeat;
+    background-color: silver;
 }
 
 #config.selected {
-    background-image: url("../images/icons/config_Selected.png");
-    background-position: center center;
-    background-repeat: no-repeat;
+    background-color: white;
 }
 
 #configDiv {
     height: calc(100vh - 250px);
     width: 100%;
+    overflow-y: scroll;
+}
+
+#datagrid {
+    margin-right: 5px;
+    width: 30px;
+    height: 30px;
+    background-image: url("../images/icons/datagrid.svg");
+    background-position: center center;
+    background-color: gray;
+    border-radius: 5px;
+    border: 1.5px solid #928F8F;
+    float: right;
+    opacity: 50%;
+}
+
+#datagrid:hover {
+    background-color: silver;
+}
+
+#datagrid.selected {
+    background-color: white;
+}
+
+#datagrid_wrapper {
+    position: absolute;
+    right: 0;
+    width: 50%;
+    height: 250px;
+    bottom: 0px;
+    opacity: 0.85;
+    display: none;
+    overflow-y: scroll;
+    opacity: 80%;
+    z-index: 99;
+}
+
+#datagridDiv {
+    background: white;
+    width: 100%;
+    overflow-x: scroll;
     overflow-y: scroll;
 }
 
@@ -482,9 +496,9 @@ img {
     width: 18px; 
     height: 30px;
     background-color: rgb(138, 148, 161);
-    background-image: url("../images/icons/control_Default.png");
+    background-image: url("../images/icons/control.svg");
     background-position: center center;
-    background-repeat: repeat-y;
+    background-color: gray;
     border-radius: 2px;
     border: 1px solid #928F8F;
     float: right;
@@ -493,10 +507,7 @@ img {
 }
 
 #control-slider.selected {
-    background-color: rgb(245, 230, 220);
-    background-image: url("../images/icons/control_Default.png");
-    background-position: center center;
-    background-repeat: repeat-y;
+    background-color: white;
 }
 
 #map-controls1 {

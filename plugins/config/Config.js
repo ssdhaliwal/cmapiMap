@@ -7,6 +7,7 @@ define(["dojo/html", "dojo/dom", "dojo/on"],
             self.fontColorName = global.data.fontColorName || "YellowGreen;#9ACD32";
 
             self.init = function () {
+                console.log("extConfig - init");
                 html.set(dom.byId("configDiv"),
                     "<span id='configFontStyle'>Select font style: \
                     <select id='configFontSelect'> \
@@ -167,6 +168,7 @@ define(["dojo/html", "dojo/dom", "dojo/on"],
             };
 
             self.handleClick = function () {
+                console.log("extConfig - handleClick");
                 global.plugins.extToolbar.toggleOptions("#config");
 
                 if ($("#config").hasClass("selected")) {
@@ -178,7 +180,11 @@ define(["dojo/html", "dojo/dom", "dojo/on"],
             };
 
             self.registerEvents = function () {
-                $("#config").on("click", self.handleClick);
+                console.log("extConfig - registerEvents");
+                $("#config").on("click", function($event) {
+                    console.log("extConfig - registerEvents/click");
+                    self.handleClick()
+                });
 
                 $("#configFontSelect option[value='" + self.fontColorName + "']").attr("selected", "selected");
                 $("#configFontSelect").on("change", function () {

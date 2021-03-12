@@ -1,9 +1,9 @@
 define(["esri/map", "esri/geometry/Extent",
     "esri/geometry/webMercatorUtils", "dojo/Deferred",
-    "plugins/ViewUtilities"],
+    "plugins/ViewUtilities", "plugins/JSUtilities"],
     function (esriMap, Extent, 
         webMercatorUtils, Deferred,
-        ViewUtilities) {
+        ViewUtilities, JSUtilities) {
 
         let extMap = function (global) {
             let self = this;
@@ -18,6 +18,7 @@ define(["esri/map", "esri/geometry/Extent",
             self.lastY = 0;
 
             self.init = function () {
+                console.log("extMap - init");
                 self.instance = new esriMap("map", {
                     basemap: "streets",
                     extent: new Extent({
@@ -40,23 +41,26 @@ define(["esri/map", "esri/geometry/Extent",
             };
 
             self.handleClick = function () {
+                console.log("extMap - handleClick");
             };
 
             self.regiserEvents = function () {
+                console.log("extMap - regiserEvents");
                 self.instance.on("extent-change", function (evt) {
+                    console.log("extMap - extent-change");
                     self.redrawGraphics();
                 });
 
                 self.instance.on("resize", function (evt) {
+                    console.log("extMap - resize");
                     self.redrawGraphics();
                 });
 
                 self.instance.on("load", function (evt) {
+                    console.log("extMap - load");
                     global.initialize();
                     self.redrawGraphics();
-                });
 
-                self.instance.on("load", function () {
                     let payload = {};
                     payload.status = "init";
 
@@ -64,6 +68,7 @@ define(["esri/map", "esri/geometry/Extent",
                         JSON.stringify(payload));
 
                     self.instance.on("update-end", function (error) {
+                        console.log("extMap - update-end");
                         payload.status = "ready";
                         self.message.sendMessage("map.status.initialization",
                             JSON.stringify(payload));
@@ -106,6 +111,7 @@ define(["esri/map", "esri/geometry/Extent",
             };
 
             self.handleShowCoordinates = function (event) {
+                console.log("extMap - handleShowCoordinates");
                 // Debounce some request to prevent unnecessary dom refreshing.... But also make it responsive
                 clearTimeout(self.timerTimeout);
                 clearTimeout(self.mgrsTimeout);
@@ -123,13 +129,13 @@ define(["esri/map", "esri/geometry/Extent",
                     switch (self.coordinateFormat) {
                         case "DMM":
                             self.cooordinateElement.text("(z" + self.instance.getZoom() + ") [ lat: " +
-                                ViewUtilities.convertDDLatitudeToDMM(self.lastY) + ", lon: " +
-                                ViewUtilities.convertDDLongitudeToDMM(self.lastX) + " ]");
+                                JSUtilities.convertDDLatitudeToDMM(self.lastY) + ", lon: " +
+                                JSUtilities.convertDDLongitudeToDMM(self.lastX) + " ]");
                             break;
                         case "DMS":
                             self.cooordinateElement.text("(z" + self.instance.getZoom() + ") [ lat: " +
-                            ViewUtilities.convertDDLatitudeToDMS(self.lastY) + ", lon: " +
-                                ViewUtilities.convertDDLongitudeToDMS(self.lastX) + " ]");
+                            JSUtilities.convertDDLatitudeToDMS(self.lastY) + ", lon: " +
+                            JSUtilities.convertDDLongitudeToDMS(self.lastX) + " ]");
                             break;
                         case "MGRS":
                             self.cooordinateElement.text("(z" + self.instance.getZoom() + ") [ CALCULATING MGRS... ]");
@@ -167,6 +173,7 @@ define(["esri/map", "esri/geometry/Extent",
             };
 
             self.redrawGraphics = function () {
+                console.log("extMap - redrawGraphics");
                 let graphics = self.instance.graphicsLayerIds;
                 let graphicLayer = null;
                 for (let i = 0; i < graphics.length; i++) {

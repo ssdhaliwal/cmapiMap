@@ -8,6 +8,7 @@ define(["esri/dijit/Legend"],
             self.instance = null;
 
             self.init = function () {
+                console.log("extLegend - init");
                 self.instance = new esriLegend({
                     autoUpdate: true,
                     map: map,
@@ -20,6 +21,7 @@ define(["esri/dijit/Legend"],
             };
 
             self.handleClick = function () {
+                console.log("extLegend - handleClick");
                 global.plugins.extToolbar.toggleOptions("#legend");
 
                 if ($("#legend").hasClass("selected")) {
@@ -31,13 +33,15 @@ define(["esri/dijit/Legend"],
             };
 
             self.registerEvents = function () {
+                console.log("extLegend - registerEvents");
                 // wireup map events
-                map.on("layer-add-result", function (evt) {
-                    if (evt.layer.declaredClass === "esri.layers.ArcGISTiledMapServiceLayer") {
+                map.on("layer-add-result", function ($event) {
+                    console.log("extLegend - registerEvents/layer-add-result", $event);
+                    if ($event.layer.declaredClass === "esri.layers.ArcGISTiledMapServiceLayer") {
                         // basemap - noop
-                    } else if (evt.layer.declaredClass !== "esri.layers.KMLLayer") {
-                        evt.layer._titleForLegend = evt.layer.id;
-                        let layerInfo = { layer: evt.layer, name: evt.layer.id };
+                    } else if ($event.layer.declaredClass !== "esri.layers.KMLLayer") {
+                        $event.layer._titleForLegend = $event.layer.id;
+                        let layerInfo = { layer: $event.layer, name: $event.layer.id };
                         self.layers.push(layerInfo);
 
                         if (self.layers.length > 0) {
@@ -50,9 +54,10 @@ define(["esri/dijit/Legend"],
                 });
 
                 //clean up the legend when layers are removed from the map.
-                map.on('layer-remove', function (layer) {
+                map.on('layer-remove', function ($event) {
+                    console.log("extLegend - registerEvents/layer-remove", $event);
                     for (var i = 0; i < self.layers.length; i++) {
-                        if (self.layers[i].name === layer.layer.id) {
+                        if (self.layers[i].name === $event.layer.id) {
                             self.layers.splice(i, 1);
                             self.instance.refresh(self.layers);
                             return;
@@ -61,17 +66,21 @@ define(["esri/dijit/Legend"],
                 });
 
                 //update the name of layers in the legend when the layer is updated or moved in the overlay manager
-                map.on('layerUpdated', function (data) {
+                map.on('layerUpdated', function ($event) {
+                    console.log("extLegend - registerEvents/layerupdated", $event);
                     for (var i = 0; i < self.layers.length; i++) {
-                        if (self.layers[i].name === data.old_id) {
-                            self.layers[i] = { name: data.layer.id, layer: data.layer }
+                        if (self.layers[i].name === $event.old_id) {
+                            self.layers[i] = { name: $event.layer.id, layer: $event.layer }
                             self.instance.refresh(self.layers);
                             return;
                         }
                     }
                 });
 
-                $("#legend").on("click", self.handleClick);
+                $("#legend").on("click", function($event) {
+                    console.log("extLegend - registerEvents/click", $event);
+                    self.handleClick()
+                });
             };
 
             self.init();

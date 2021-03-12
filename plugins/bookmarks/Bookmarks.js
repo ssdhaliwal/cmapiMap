@@ -8,6 +8,7 @@ define(["esri/dijit/Bookmarks"],
             self.sources = [];
 
             self.init = function () {
+                console.log("extBookmark - init");
                 self.instance = new esriBookmarks({
                     map: map,
                     bookmarks: self.sources,
@@ -18,6 +19,7 @@ define(["esri/dijit/Bookmarks"],
             };
 
             self.handleClick = function () {
+                console.log("extBookmark - handleClick");
                 global.plugins.extToolbar.toggleOptions("#bookmark");
 
                 if ($("#bookmark").hasClass("selected")) {
@@ -29,7 +31,11 @@ define(["esri/dijit/Bookmarks"],
             };
 
             self.registerEvents = function() {
-                $("#bookmark").on("click", self.handleClick);
+                console.log("extBookmark - registerEvents");
+                $("#bookmark").on("click", function($event) {
+                    console.log("extBookmark - registerEvents/click");
+                    self.handleClick();
+                });
             };
 
             self.init();

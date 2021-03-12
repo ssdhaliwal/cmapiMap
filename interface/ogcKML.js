@@ -1,5 +1,6 @@
-define(["dojo/_base/lang", "resource/KML2GraphicsLayer", "plugins/ViewUtilities"],
-    function (lang, KML2GraphicsLayer, ViewUtilities) {
+define(["dojo/_base/lang", "resource/KML2GraphicsLayer", 
+    "plugins/ViewUtilities", "plugins/JSUtilities"],
+    function (lang, KML2GraphicsLayer, ViewUtilities, JSUtilities) {
 
         let ogcKML = function (global, service) {
             let self = this;
@@ -8,11 +9,13 @@ define(["dojo/_base/lang", "resource/KML2GraphicsLayer", "plugins/ViewUtilities"
             self.notify = global.plugins.extNotify;
             self.message = global.interfaces.messageService;
             self.layerList = global.plugins.extLayerlist;
+            self.datagrid = global.plugins.extDatagrid;
             self.service = service;
             self.layer = null;
             self.selectedFeatures = [];
 
             self.init = function () {
+                console.log("ogcKML - init" );
                 // parse dom
                 // collect root documents
                 // for each document
@@ -36,14 +39,26 @@ define(["dojo/_base/lang", "resource/KML2GraphicsLayer", "plugins/ViewUtilities"
             };
 
             self.handleClick = function () {
+                console.log("ogcKML - handleClick" );
             };
 
             self.registerEvents = function (layer) {
+                console.log("ogcKML - registerEvents" );
             };
 
             self.remove = function () {
+                console.log("ogcKML - remove" );
                 console.log("... removed layer: " + self.service.text);
-                self.map.removeLayer(self.layer);
+
+                // remove all associated graphics layers
+                if (self.layer.kml.count === 0) {
+                } else {
+                    $.each(self.layer.kml, function (index, subLayer) {
+                        if (subLayer.graphicsLayer) {
+                            self.map.removeLayer(subLayer.graphicsLayer);
+                        }
+                    });
+                }
                 /*
                 // need to remove any nodes created by the layer
                 $.each(self.selectedFeatures, function (index, feature) {
@@ -60,6 +75,7 @@ define(["dojo/_base/lang", "resource/KML2GraphicsLayer", "plugins/ViewUtilities"
             };
 
             getKML = function () {
+                console.log("ogcKML - handleClick" );
                 let layer = self.service.layer;
 
                 // reads kml from properties or url (if kmz, unzips it also)
@@ -79,7 +95,7 @@ define(["dojo/_base/lang", "resource/KML2GraphicsLayer", "plugins/ViewUtilities"
                         }
                         if (layer.properties.hasOwnProperty("credentials")) {
                             if (layer.properties.credentials.hasOwnProperty("required")) {
-                                if (ViewUtilities.getBoolean(layer.properties.credentials.required)) {
+                                if (JSUtilities.getBoolean(layer.properties.credentials.required)) {
                                     request.xhrFields.withCredentials = true;
                                 }
                             } else if (layer.properties.credentials.hasOwnProperty("token")) {
@@ -91,7 +107,7 @@ define(["dojo/_base/lang", "resource/KML2GraphicsLayer", "plugins/ViewUtilities"
                             // retrieve kml and set it to "data" property
                             if (layer.properties.hasOwnProperty("url")) {
                                 if (layer.properties.hasOwnProperty("intranet")) {
-                                    if (ViewUtilities.getBoolean(layer.properties.intranet)) {
+                                    if (JSUtilities.getBoolean(layer.properties.intranet)) {
                                         $.ajax(request)
                                             .done(function (data, textStatus, xhr) {
                                                 processKml(data);
@@ -118,6 +134,7 @@ define(["dojo/_base/lang", "resource/KML2GraphicsLayer", "plugins/ViewUtilities"
             };
 
             parseKml = function (kml) {
+                console.log("ogcKML - parseKml" );
                 new Promise(function (resolve, reject) {
                     // if kml string is empty; retreive it
                     // parse kml
@@ -151,6 +168,7 @@ define(["dojo/_base/lang", "resource/KML2GraphicsLayer", "plugins/ViewUtilities"
             };
 
             processKml = function (document) {
+                console.log("ogcKML - processKml" );
                 new Promise(function (resolve, reject) {
                     let layer = new KML2GraphicsLayer(self.service.text, document, 
                         self.service.layer.properties, self.service.layer.params);
@@ -159,37 +177,53 @@ define(["dojo/_base/lang", "resource/KML2GraphicsLayer", "plugins/ViewUtilities"
                     self.layer = layer;
 
                     // if zero layer, then error
-                    // if one layer, then attach it to map and link events
+                    // activate all the graphics; user can toggle them via the data grid
                     if (layer.kml.count === 0) {
-                    } else if (layer.kml.count === 1) {
+                    } else {
                         $.each(layer.kml, function (index, subLayer) {
                             if (subLayer.graphicsLayer) {
                                 self.map.addLayer(subLayer.graphicsLayer);
                             }
                         });
-                    } else {
+
+                        // add to grid via promise
+                        new Promise(function (resolve, reject) {
+                            self.datagrid.addTab(self);
+                        });
+                    }
+                    /*
+                      else {
                         // if more than one layer; then we need to create node for each layer
                         let folders = undefined;
                         $.each(layer.kml, function (index, subLayer) {
                             if (subLayer.hasOwnProperty("folderId")) {
                                 folders = subLayer.folderId.split("/");
 
+                                let prespective = null;
+                                if (subLayer.graphicsLayer) {
+                                    prespective = subLayer.graphicsLayer;
+                                    self.map.addLayer(prespective);
+                                }
+    
                                 if (folders.length === 1) {
                                     self.layerList.handleAddOverlay({
                                         "name": subLayer.name,
                                         "overlayId": folders[0],
-                                        "parentId": service.id
+                                        "parentId": service.id,
+                                        "perspective": prespective
                                     });
                                 } else {
                                     self.layerList.handleAddOverlay({
                                         "name": subLayer.name,
                                         "overlayId": folders[folders.length - 1],
-                                        "parentId": folders[folders.length - 2]
+                                        "parentId": folders[folders.length - 2],
+                                        "perspective": prespective
                                     });
                                 }
                             }
                         });
                     }
+                    */
                 }, function (error) {
                     console.log(error);
                 });

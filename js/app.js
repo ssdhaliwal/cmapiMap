@@ -6,38 +6,18 @@
 require([
   "dojo/parser",
   "esri/geometry/projection",
-  "plugins/notify/Notify",
-  "plugins/toolbar/Toolbar",
-  "plugins/config/Config",
-  "plugins/popup/Popup",
-  "plugins/map/Map",
-  "plugins/scalebar/Scalebar",
-  "plugins/home/Home",
-  "plugins/search/Search",
-  "plugins/basemap/Basemap",
-  "plugins/legend/Legend",
-  "plugins/bookmarks/Bookmarks",
-  "plugins/layerlist/Layerlist",
-  "interface/geometryService",
-  "interface/messageService",
+  "plugins/notify/Notify", "plugins/toolbar/Toolbar", "plugins/config/Config", "plugins/popup/Popup", "plugins/map/Map", "plugins/scalebar/Scalebar",
+  "plugins/home/Home", "plugins/search/Search", "plugins/basemap/Basemap", "plugins/legend/Legend", "plugins/bookmarks/Bookmarks",
+  "plugins/datagrid/Datagrid", "plugins/layerlist/Layerlist",
+  "interface/geometryService", "interface/messageService",
   "dojo/domReady!"
 ], function (
   parser,
   projection,
-  extNotify,
-  extToolbar,
-  extConfig,
-  extPopup,
-  extMap,
-  extScalebar,
-  extHome,
-  extSearch,
-  extBasemap,
-  extLegend,
-  extBookmarks,
-  extLayerlist,
-  geometryService,
-  messageService
+  extNotify, extToolbar, extConfig, extPopup, extMap, extScalebar,
+  extHome, extSearch, extBasemap, extLegend, extBookmarks,
+  extDatagrid, extLayerlist,
+  geometryService, messageService
 ) {
   var global = {};
   global.plugins = {};
@@ -58,6 +38,7 @@ require([
   // add projection load for global use
   const projectionPromise = projection.load();
 
+  console.log("app - startup");
   $("[rel=tooltip]").tooltip({
     placement: "bottom"
   });
@@ -72,12 +53,14 @@ require([
   global.plugins.extMap = new extMap(global);
 
   global.initialize = function () {
+    console.log("app - initialize");
     global.plugins.extScalebar = new extScalebar(global);
     global.plugins.extHome = new extHome(global);
     global.plugins.extSearch = new extSearch(global);
     global.plugins.extBasemap = new extBasemap(global);
     global.plugins.extLegend = new extLegend(global);
     global.plugins.extBookmarks = new extBookmarks(global);
+    global.plugins.extDatagrid = new extDatagrid(global);
 
     window.setTimeout(() => {
       global.plugins.extLayerlist = new extLayerlist(global);

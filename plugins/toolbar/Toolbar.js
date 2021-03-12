@@ -6,10 +6,12 @@ define([],
             let map = null; // global.plugins.extMap.map;
 
             self.init = function () {
+                console.log("extToolbar - init");
                 self.registerEvents();
             };
 
             self.handleClick = function () {
+                console.log("extToolbar - handleClick");
                 $("#map-controls1, #map-controls2").toggle();
                 $("#control-slider").toggleClass("selected");
 
@@ -19,10 +21,15 @@ define([],
             };
 
             self.registerEvents = function () {
-                $("#control-slider").on("click", self.handleClick);
+                console.log("extToolbar - registerEvents");
+                $("#control-slider").on("click", function($event) {
+                    console.log("extToolbar - registerEvents/click", $event);
+                    self.handleClick()
+                });
             };
 
             self.toggleOptions = function (elementId) {
+                console.log("extToolbar - toggleOptions");
                 let isSelected = false;
                 if (elementId !== undefined) {
                     isSelected = $(elementId).hasClass("selected");
