@@ -10,9 +10,10 @@ define([],
 
                 // match native value
                 if (typeof value === "number") {
-                    switch (value) {
-                        case 0: case false: return false;
-                        default: return true;
+                    if (value >= 0) {
+                        return true;
+                    } else {
+                        return false;
                     }
                 }
 
@@ -48,9 +49,11 @@ define([],
                         return false;
                     }
                 }
+
+                return false;
             },
 
-            _numberToHex: function (value) {
+            numberToHex: function (value) {
                 var hex = Number(value).toString(16);
                 return (hex.length < 2) ? "0" + hex : hex;
             },
@@ -63,15 +66,15 @@ define([],
 
                 if (Array.isArray(color)) {
                     if (color.length === 4) {
-                        color = this._numberToHex(color[0]) + this._numberToHex(color[1]) + this._numberToHex(color[2]) + this._numberToHex(color[3]);
+                        color = this.numberToHex(color[0]) + this.numberToHex(color[1]) + this.numberToHex(color[2]) + this.numberToHex(color[3]);
                     } else if (color.length === 3) {
-                        color = this._numberToHex(color[0]) + this._numberToHex(color[1]) + this._numberToHex(color[2]) + "ff";
+                        color = this.numberToHex(color[0]) + this.numberToHex(color[1]) + this.numberToHex(color[2]) + "ff";
                     }
                 } else if (typeof color === "object") {
                     if (('r' in color) && ('g' in color) && ('b' in color) && !('a' in color)) {
-                        color = this._numberToHex(color.r) + this._numberToHex(color.g) + this._numberToHex(color.b) + "ff";
+                        color = this.numberToHex(color.r) + this.numberToHex(color.g) + this.numberToHex(color.b) + "ff";
                     } else if (('r' in color) && ('g' in color) && ('b' in color) && ('a' in color)) {
-                        color = this._numberToHex(color.r) + this._numberToHex(color.g) + this._numberToHex(color.b) + this._numberToHex(color.a);
+                        color = this.numberToHex(color.r) + this.numberToHex(color.g) + this.numberToHex(color.b) + this.numberToHex(color.a);
                     }
                 }
 
