@@ -59,8 +59,11 @@
 			<span id="layerlistSpan"></span>
 		</div>
 	</div>
-	<div id="datagrid_wrapper">
-		<div id="datagridDiv"></div>
+	<div id="datagrid_wrapper" data-dojo-type="dijit/layout/ContentPane">
+		<div id="datagridDiv">
+			<div id="datagrid_container" data-dojo-type="dijit/layout/TabContainer" doLayout="false">
+			</div>
+		</div>
 	</div>
 
 	<div id="waitingImage" class="waitingImage" style="display: none;">

@@ -1,5 +1,7 @@
-define(["dojo/_base/lang", "dijit/layout/TabContainer", "dijit/layout/ContentPane", "dojox/grid/DataGrid", "dojo/data/ItemFileWriteStore"],
-    function (lang, TabContainer, ContentPane, DataGrid, ItemFileWriteStore) {
+define(["dojo/_base/lang", "dijit/registry", 
+    "dijit/layout/TabContainer", "dijit/layout/ContentPane", "dojox/grid/DataGrid", 
+    "dojo/data/ItemFileWriteStore"],
+    function (lang, registry, TabContainer, ContentPane, DataGrid, ItemFileWriteStore) {
 
         let extDatagrid = function (global) {
             let self = this;
@@ -7,21 +9,12 @@ define(["dojo/_base/lang", "dijit/layout/TabContainer", "dijit/layout/ContentPan
             self.instance = null;
             self.sources = [];
             self.showing = false;
-            self.contentPane = null;
             self.tabContainer = null;
 
             self.init = function () {
                 console.log("extDatagrid - init");
 
-                self.contentPane = new ContentPane({
-                }).placeAt("datagrid_wrapper");
-                self.contentPane.startup();
-
-                self.tabContainer = new TabContainer({
-                    style: "height: 100%; width: 100%;"
-                }, "datagridDiv");
-                self.tabContainer.startup();
-
+                self.tabContainer = registry.byId("datagrid_container");
                 self.registerEvents();
             };
 

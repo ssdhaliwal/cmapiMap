@@ -246,7 +246,6 @@ define(["vendor/js/jstree/jstree",
                                 service.perspective = new esriDynamicMapService(global, service);
                             } else if (service.layer.params.serviceType === "feature") {
                                 service.perspective = new esriFeatureService(global, service);
-                                self.datagrid.addTab(service);
                             } else if ((service.layer.params.serviceType === "kml") ||
                                 (service.layer.params.serviceType === "kmz")) {
                                 // if properties has data or property has local = true with url
