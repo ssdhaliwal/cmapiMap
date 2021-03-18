@@ -85,7 +85,6 @@ define(["vendor/js/jstree/jstree",
                                 JSUtilities.getBoolean(original.layer.query)) {
                                 if (original.hasOwnProperty("perspective")) {
                                     original.perspective.remove();
-                                    self.datagrid.removeTab(original.perspective);
                                     delete original.perspective;
                                 }
 
@@ -304,7 +303,6 @@ define(["vendor/js/jstree/jstree",
                     console.log("^ clearing..." + cnode.text, cnode.original);
                     if (original.hasOwnProperty("perspective")) {
                         original.perspective.remove();
-                        self.datagrid.removeTab(original.perspective);
                         delete original.perspective;
                     }
 
@@ -406,7 +404,6 @@ define(["vendor/js/jstree/jstree",
                     console.log("^ clearing..." + node.text, node, original.perspective);
                     if (original.hasOwnProperty("perspective")) {
                         original.perspective.remove();
-                        self.datagrid.removeTab(original.perspective);
                         delete original.perspective;
                     }
                 }

@@ -317,7 +317,7 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                 });
                 */
                 self.layer.on("graphic-add", (feature) => {
-                    console.log("esriFeatureService - registerEvents/graphic-add", feature);
+                    // console.log("esriFeatureService - registerEvents/graphic-add", feature);
                     if (params.hasOwnProperty("_querySelect")) {
                         let qsLen = params._querySelect.graphic.length;
                         let found = false;
@@ -624,6 +624,8 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                     self.search.removeSource(self.layer.searchOptions);
                 }
                 self.deregisterSearch();
+
+                self.datagrid.removeTab(self);
 
                 self.map.removeLayer(self.layer);
                 $.each(self.selectedFeatures, function (index, feature) {

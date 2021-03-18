@@ -10,6 +10,7 @@ define(["dojo/_base/lang", "dijit/registry",
             self.sources = [];
             self.showing = false;
             self.tabContainer = null;
+            self.tabs = {};
 
             self.init = function () {
                 console.log("extDatagrid - init");
@@ -39,11 +40,12 @@ define(["dojo/_base/lang", "dijit/registry",
                 });
             };
 
-            self.addTab = function (service) {
+            self.addTab = function (serviceObject) {
                 console.log("extDatagrid - addTab");
 
                 // auto add if feature or local kml layer type
                 // currently supported; feature layers and kml - push filters to layer
+                /*
                 console.log(service);
                 var cp1 = new ContentPane({
                     title: "Food",
@@ -56,9 +58,9 @@ define(["dojo/_base/lang", "dijit/registry",
                     content: "We are known for our drinks."
                 });
                 self.tabContainer.addChild(cp2);
-                /*
+
                 var cp = new ContentPane({
-                    title: service.text,
+                    title: serviceObject.service.text,
                     content: ,
                     closable: true,
                     onClose: function(){
@@ -70,52 +72,66 @@ define(["dojo/_base/lang", "dijit/registry",
                self.tabContainer.selectChild(cp);
                */
 
-                /*
-                var data = {
+                let data = {
                     identifier: "id",
                     items: []
                 };
-                var data_list = [
+                let data_list = [
                     { col1: "normal", col2: false, col3: 'But are not followed by two hexadecimal', col4: 29.91 },
                     { col1: "important", col2: false, col3: 'Because a % sign always indicates', col4: 9.33 },
                     { col1: "important", col2: false, col3: 'Signs can be selectively', col4: 19.34 }
                 ];
-                var rows = 60;
-                for (var i = 0, l = data_list.length; i < rows; i++) {
+                let rows = 60;
+                for (let i = 0, l = data_list.length; i < rows; i++) {
                     data.items.push(lang.mixin({ id: i + 1 }, data_list[i % l]));
                 }
-                var store = new ItemFileWriteStore({ data: data });
+                let store = new ItemFileWriteStore({ data: data });
 
-                var layout = [[
+                let layout = [[
                     { 'name': 'Column 1', 'field': 'id', 'width': '100px' },
                     { 'name': 'Column 2', 'field': 'col2', 'width': '100px' },
                     { 'name': 'Column 3', 'field': 'col3', 'width': '200px' },
                     { 'name': 'Column 4', 'field': 'col4', 'width': '150px' }
                 ]];
 
-                var grid = new DataGrid({
-                    id: 'grid_' + service.text,
+                let grid = new DataGrid({
+                    id: 'grid_' + serviceObject.service.text,
                     store: store,
                     structure: layout,
                     rowSelector: '20px'
                 });
-
-                // grid.placeAt("gridDiv");
-
-                var cp3 = new ContentPane({
-                    title: service.text,
+                let cp3 = new ContentPane({
+                    id: 'content_' + serviceObject.service.text,
+                    title: serviceObject.service.text,
                     content: grid
                 });
+
+                // grid.placeAt(cp3.containerNode);
                 grid.startup();
+
+                self.tabs['grid_' + serviceObject.service.text] = grid;
+                self.tabs['content_' + serviceObject.service.text] = cp3;
+
                 self.tabContainer.addChild(cp3);
-                */
             };
 
-            self.removeTab = function (service) {
+            self.removeTab = function (serviceObject) {
                 console.log("extDatagrid - removeTab");
 
                 // only via layer remove
-                console.log(service);
+                console.log(serviceObject.service);
+
+                let gridContainer = self.tabs['grid_' + serviceObject.service.text];
+                let tabContainer = self.tabs['content_' + serviceObject.service.text];
+
+                tabContainer.removeChild(gridContainer);
+                gridContainer.destroy();
+
+                self.tabContainer.removeChild(tabContainer);
+                tabContainer.destroy();
+
+                delete self.tabs['grid_' + serviceObject.service.text];
+                delete self.tabs['content_' + serviceObject.service.text];
             };
 
             self.init();
