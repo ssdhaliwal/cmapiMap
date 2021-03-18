@@ -1,5 +1,5 @@
-define(["dojo/_base/lang", "dijit/registry", 
-    "dijit/layout/TabContainer", "dijit/layout/ContentPane", "dojox/grid/DataGrid", 
+define(["dojo/_base/lang", "dijit/registry",
+    "dijit/layout/TabContainer", "dijit/layout/ContentPane", "dojox/grid/DataGrid",
     "dojo/data/ItemFileWriteStore"],
     function (lang, registry, TabContainer, ContentPane, DataGrid, ItemFileWriteStore) {
 
@@ -113,6 +113,13 @@ define(["dojo/_base/lang", "dijit/registry",
                 self.tabs['content_' + serviceObject.service.text] = cp3;
 
                 self.tabContainer.addChild(cp3);
+
+                new Promise(function (resolve, reject) {
+                    resolve(grid);
+                }).then(function (grid) {
+                    grid.height = "calc(100vh)";
+                    grid.resize();
+                });
             };
 
             self.removeTab = function (serviceObject) {

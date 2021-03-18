@@ -50,6 +50,8 @@ define(["dojo/_base/lang", "resource/KML2GraphicsLayer",
                 console.log("ogcKML - remove" );
                 console.log("... removed layer: " + self.service.text);
 
+                self.datagrid.removeTab(self);
+
                 // remove all associated graphics layers
                 if (self.layer.kml.count === 0) {
                 } else {
