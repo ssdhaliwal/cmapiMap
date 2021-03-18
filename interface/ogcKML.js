@@ -188,6 +188,8 @@ define(["dojo/_base/lang", "resource/KML2GraphicsLayer",
 
                         // add to grid via promise
                         new Promise(function (resolve, reject) {
+                            resolve(self.layer);
+                        }).then(function(layer) {
                             self.datagrid.addTab(self);
                         });
                     }

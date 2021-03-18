@@ -476,7 +476,6 @@ img {
     bottom: 0px;
     opacity: 0.85;
     display: none;
-    overflow-y: scroll;
     opacity: 80%;
     z-index: 99;
 }

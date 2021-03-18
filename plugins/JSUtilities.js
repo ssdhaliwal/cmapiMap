@@ -570,18 +570,28 @@ define([],
 
             tryJSONParse(str) {
                 console.log("JSUtilities - tryJSONParse");
-                let json = "";
+                let json = null;
 
                 try {
                     json = JSON.parse(str);
                 } catch (exception) {
-                    json = str;
+                    json = null;
                 }
                 return json;
             },
 
-            fromHex(hex) {
-                console.log("JSUtilities - fromHex");
+            hex2Int(hex) {
+                console.log("JSUtilities - hex2Int");
+                return parseInt(hex, 16);
+            },
+
+            int2Hex(number) {
+                console.log("JSUtilities - int2Hex");
+                return number.toString(16);
+            },
+
+            hex2Str(hex) {
+                console.log("JSUtilities - hex2Str");
                 let str = "";
 
                 try {
@@ -593,8 +603,8 @@ define([],
                 return str
             },
 
-            toHex: function (str) {
-                console.log("JSUtilities - toHex");
+            str2Hex: function (str) {
+                console.log("JSUtilities - str2Hex");
                 let hex = "";
 
                 try {
