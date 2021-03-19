@@ -290,14 +290,16 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                     params.definitionExpression.spatialRel = "esriSpatialRelIntersects";
                 }
 
-				if (params.definitionExpression) {
-					self.layer.setDefinitionExpression(params.definitionExpression);
-				}
+                if (params.definitionExpression) {
+                    self.layer.setDefinitionExpression(params.definitionExpression);
+                }
 
                 self.map.addLayers([self.layer]);
 
                 // add to grid via promise
                 new Promise(function (resolve, reject) {
+                    resolve(self);
+                }).then(function (layer) {
                     self.datagrid.addTab(self);
                 });
 

@@ -111,7 +111,7 @@ define(["esri/map", "esri/geometry/Extent",
             };
 
             self.handleShowCoordinates = function (event) {
-                console.log("extMap - handleShowCoordinates");
+                // console.log("extMap - handleShowCoordinates");
                 // Debounce some request to prevent unnecessary dom refreshing.... But also make it responsive
                 clearTimeout(self.timerTimeout);
                 clearTimeout(self.mgrsTimeout);
