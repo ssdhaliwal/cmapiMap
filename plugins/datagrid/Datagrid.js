@@ -2,7 +2,6 @@ define(["dojo/_base/lang", "dijit/registry",
     "dijit/layout/TabContainer", "dijit/layout/ContentPane", "dojox/grid/DataGrid",
     "dojo/data/ItemFileWriteStore", "dojo/data/ItemFileReadStore"],
     function (lang, registry, TabContainer, ContentPane, DataGrid, ItemFileWriteStore, ItemFileReadStore) {
-
         let extDatagrid = function (global) {
             let self = this;
             let map = global.plugins.extMap.instance;
@@ -45,28 +44,33 @@ define(["dojo/_base/lang", "dijit/registry",
 
                 // auto add if feature or local kml layer type
                 // currently supported; feature layers and kml - push filters to layer
-                console.log(service);
-                let gridTable = dojo.create('div', {
-                    id : 'div_' + serviceObject.service.text,
-                    class : "datagridDiv"
+                console.log(serviceObject);
+                let gridDiv = dojo.create('div', {
+                    id: 'div_' + serviceObject.service.text,
+                    class: "datagridDiv"
                 });
                 let cp3 = new ContentPane({
                     id: 'content_' + serviceObject.service.text,
                     title: serviceObject.service.text,
-                    content: gridTable
+                    content: gridDiv
                 });
 
+                let data = {
+                    identifier: "id",
+                    items: []
+                };
+                let data_list = [
+                    { col1: "normal", col2: false, col3: 'But are not followed by two hexadecimal', col4: 29.91 },
+                    { col1: "important", col2: false, col3: 'Because a % sign always indicates', col4: 9.33 },
+                    { col1: "important", col2: false, col3: 'Signs can be selectively', col4: 19.34 }
+                ];
+                let rows = 60;
+                for (let i = 0, l = data_list.length; i < rows; i++) {
+                    data.items.push(lang.mixin({ id: i + 1 }, data_list[i % l]));
+                }
+
                 let dataStore = new ItemFileWriteStore({
-                    data: {
-                        identifier: "id",
-                        items: [{
-                            id: Math.floor(Math.random() * 100),
-                            col1: "normal",
-                            col2: false,
-                            col3: "But are not followed by two hexadecimal",
-                            col4: 29.91
-                        }]
-                    }
+                    data: data
                 });
 
                 let layout = [[
@@ -78,24 +82,24 @@ define(["dojo/_base/lang", "dijit/registry",
 
                 let grid = new DataGrid({
                     id: 'grid_' + serviceObject.service.text,
-                    store : dataStore,
+                    store: dataStore,
                     structure: layout,
                     rowSelector: '20px'
-                }, 'div_' + serviceObject.service.text);
+                });
 
-                self.tabs['table_' + serviceObject.service.text] = gridTable;
+                self.tabs['div_' + serviceObject.service.text] = gridDiv;
                 self.tabs['grid_' + serviceObject.service.text] = grid;
                 self.tabs['content_' + serviceObject.service.text] = cp3;
 
                 self.tabContainer.addChild(cp3);
 
                 new Promise(function (resolve, reject) {
+                    grid.placeAt('div_' + serviceObject.service.text);
+                    grid.startup();
                     resolve(grid);
                 }).then(function (grid) {
                     // grid.placeAt(cp3.containerNode);
-                    grid.startup();
-
-                    grid.height = "calc(100vh)";
+                    grid.height = "calc(250px - 69px)";
                     grid.resize();
                 });
             };
@@ -106,7 +110,7 @@ define(["dojo/_base/lang", "dijit/registry",
                 // only via layer remove
                 console.log(serviceObject.service);
 
-                let tableContainer = self.tabs['table_' + serviceObject.service.text];
+                let tableContainer = self.tabs['div_' + serviceObject.service.text];
                 let gridContainer = self.tabs['grid_' + serviceObject.service.text];
                 let tabContainer = self.tabs['content_' + serviceObject.service.text];
 
@@ -117,9 +121,9 @@ define(["dojo/_base/lang", "dijit/registry",
                 tabContainer.destroy();
 
                 tabContainer.removeChild(tableContainer);
-                tableContainer.destroy();
+                //tableContainer.destroy();
 
-                delete self.tabs['table_' + serviceObject.service.text];
+                delete self.tabs['div_' + serviceObject.service.text];
                 delete self.tabs['grid_' + serviceObject.service.text];
                 delete self.tabs['content_' + serviceObject.service.text];
             };

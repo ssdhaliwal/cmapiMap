@@ -3,7 +3,7 @@ define([],
 
         var JSUtilities = {
             getBoolean: function (value) {
-                console.log("JSUtilities - getBoolean");
+                // console.log("JSUtilities - getBoolean");
                 // empty/null match
                 if ((value === null) || (value === undefined) || (value === NaN)) {
                     return false;
@@ -55,13 +55,13 @@ define([],
             },
 
             numberToHex: function (value) {
-                console.log("JSUtilities - numberToHex");
+                // console.log("JSUtilities - numberToHex");
                 var hex = Number(value).toString(16);
                 return (hex.length < 2) ? "0" + hex : hex;
             },
 
             getRandomColor: function (color) {
-                console.log("JSUtilities - getRandomColor");
+                // console.log("JSUtilities - getRandomColor");
                 let aa = "ff";
                 let bb = "ff";
                 let gg = "ff";
@@ -111,7 +111,7 @@ define([],
             // https://github.com/PimpTrizkit/PJs/wiki/12.-Shade,-Blend-and-Convert-a-Web-Color-(pSBC.js)
             // Version 4.0
             colorShadeBlendConvert: function (percent, fromColor, toColor, linear) {
-                console.log("JSUtilities - colorShadeBlendConvert");
+                // console.log("JSUtilities - colorShadeBlendConvert");
                 let r, g, b, P, f, t, h, i = parseInt, m = Math.round, a = typeof (toColor) == "string";
                 if (typeof (percent) != "number" || percent < -1 || percent > 1 || typeof (fromColor) != "string" || (fromColor[0] != 'r' && fromColor[0] != '#') || (toColor && !a)) return null;
                 if (!this.pSBCr) this.pSBCr = (d) => {
@@ -138,7 +138,7 @@ define([],
             },
 
             isSiteOnline: function (url, callback) {
-                console.log("JSUtilities - isSiteOnline");
+                // console.log("JSUtilities - isSiteOnline");
                 var timer = setTimeout(function () {
                     callback(false);
                 }, 15000);
@@ -158,13 +158,13 @@ define([],
             },
 
             convertDDToDMM: function (latitude, longitude) {
-                console.log("JSUtilities - convertDDToDMM" );
+                // console.log("JSUtilities - convertDDToDMM" );
                 return convertDDLatitudeToDMM(latitude) + ", " +
                     convertDDLongitudeToDMM(longitude);
             },
 
             convertDDLongitudeToDMM: function (longitude) {
-                console.log("JSUtilities - convertDDLongitudeToDMM" );
+                // console.log("JSUtilities - convertDDLongitudeToDMM" );
                 var lon = Number(longitude);
                 var dir = (lon >= 0 ? 'E' : 'W');
                 lon = Math.abs(lon);
@@ -174,7 +174,7 @@ define([],
             },
 
             convertDDLatitudeToDMM: function (latitude) {
-                console.log("JSUtilities - convertDDLatitudeToDMM" );
+                // console.log("JSUtilities - convertDDLatitudeToDMM" );
                 var lat = Number(latitude);
                 var dir = (lat >= 0 ? 'N' : 'S');
                 lat = Math.abs(lat);
@@ -184,13 +184,13 @@ define([],
             },
 
             convertDDToDMS: function (latitude, longitude) {
-                console.log("JSUtilities - convertDDToDMS" );
+                // console.log("JSUtilities - convertDDToDMS" );
                 return convertDDLatitudeToDMS(latitude) + ", " +
                     convertDDLongitudeToDMS(longitude);
             },
 
             convertDDLongitudeToDMS: function (longitude) {
-                console.log("JSUtilities - convertDDLongitudeToDMS" );
+                // console.log("JSUtilities - convertDDLongitudeToDMS" );
                 var lon = Number(longitude);
                 var dir = (lon >= 0 ? 'E' : 'W');
                 lon = Math.abs(lon);
@@ -201,7 +201,7 @@ define([],
             },
 
             convertDDLatitudeToDMS: function (latitude) {
-                console.log("JSUtilities - convertDDLatitudeToDMS" );
+                // console.log("JSUtilities - convertDDLatitudeToDMS" );
                 var lat = Number(latitude);
                 var dir = (lat >= 0 ? 'N' : 'S');
                 lat = Math.abs(lat);
@@ -212,19 +212,19 @@ define([],
             },
 
             convertDMSToDD: function (latitude, longitude) {
-                console.log("JSUtilities - convertDMSToDD" );
+                // console.log("JSUtilities - convertDMSToDD" );
                 return convertDMSLatitudeToDD(latitude) + ", " +
                     convertDMSLongitudeToDD(longitude);
             },
 
             convertDMSToDDM: function (latitude, longitude) {
-                console.log("JSUtilities - convertDMSToDDM" );
+                // console.log("JSUtilities - convertDMSToDDM" );
                 return convertDDLatitudeToDDM(convertDMSLatitudeToDD(latitude)) + ", " +
                     convertDDLongitudeToDDM(convertDMSLongitudeToDD(longitude))
             },
 
             convertDMSLongitudeToDD: function (longitude) {
-                console.log("JSUtilities - convertDMSLongitudeToDD" );
+                // console.log("JSUtilities - convertDMSLongitudeToDD" );
                 var dms = longitude.replace(/[^-\. 0-9a-z]/gi, '').split(" ");
                 var d = Number(dms[0]);
                 if (d < 0) d = d * -1;
@@ -243,7 +243,7 @@ define([],
             },
 
             convertDMSLatitudeToDD: function (latitude) {
-                console.log("JSUtilities - convertDMSLatitudeToDD" );
+                // console.log("JSUtilities - convertDMSLatitudeToDD" );
                 var dms = latitude.replace(/[^-\. 0-9a-z]/gi, '').split(" ");
                 var d = Number(dms[0]);
                 if (d < 0) d = d * -1;
@@ -262,19 +262,19 @@ define([],
             },
 
             convertDDMToDD: function (latitude, longitude) {
-                console.log("JSUtilities - convertDDMToDD" );
+                // console.log("JSUtilities - convertDDMToDD" );
                 return convertDDMLatitudeToDD(latitude) + ", " +
                     convertDDMLongitudeToDD(longitude);
             },
 
             convertDDMToDMS: function (latitude, longitude) {
-                console.log("JSUtilities - convertDDMToDMS" );
+                // console.log("JSUtilities - convertDDMToDMS" );
                 return convertDDLatitudeToDMS(convertDDMLatitudeToDD(latitude)) + ", " +
                     convertDDLongitudeToDMS(convertDDMLongitudeToDD(longitude))
             },
 
             convertDDMLongitudeToDD: function (longitude) {
-                console.log("JSUtilities - convertDDMLongitudeToDD" );
+                // console.log("JSUtilities - convertDDMLongitudeToDD" );
                 var ddm = longitude.replace(/[^-\. 0-9a-z]/gi, '').split(" ");
                 var d = Number(ddm[0]);
                 if (d < 0) d = d * -1;
@@ -291,7 +291,7 @@ define([],
             },
 
             convertDDMLatitudeToDD: function (latitude) {
-                console.log("JSUtilities - convertDDMLatitudeToDD" );
+                // console.log("JSUtilities - convertDDMLatitudeToDD" );
                 var ddm = latitude.replace(/[^-\. 0-9a-z]/gi, '').split(" ");
                 var d = Number(ddm[0]);
                 if (d < 0) d = d * -1;
@@ -309,7 +309,7 @@ define([],
 
             // Changes XML to JSON
             xmlToJson: function (xml) {
-                console.log("JSUtilities - xmlToJson");
+                // console.log("JSUtilities - xmlToJson");
                 // Create the return object
                 // Create the return object
                 let obj = {};
@@ -363,7 +363,7 @@ define([],
             },
 
             getBoolean: function (value) {
-                console.log("JSUtilities - getBoolean");
+                // console.log("JSUtilities - getBoolean");
                 // empty/null match
                 if ((value === null) || (value === undefined) || (value === NaN)) {
                     return false;
@@ -416,7 +416,7 @@ define([],
             // https://github.com/PimpTrizkit/PJs/wiki/12.-Shade,-Blend-and-Convert-a-Web-Color-(pSBC.js)
             // Version 4.0
             colorShadeBlendConvert: function (percent, fromColor, toColor, linear) {
-                console.log("JSUtilities - colorShadeBlendConvert");
+                // console.log("JSUtilities - colorShadeBlendConvert");
                 let r, g, b, P, f, t, h, i = parseInt, m = Math.round, a = typeof (toColor) == "string";
                 if (typeof (percent) != "number" || percent < -1 || percent > 1 || typeof (fromColor) != "string" || (fromColor[0] != 'r' && fromColor[0] != '#') || (toColor && !a)) return null;
                 if (!this.pSBCr) this.pSBCr = (d) => {
@@ -470,7 +470,7 @@ define([],
             *                           error in the provided data.
             */
             csv2Array: function (data, delimeter, isNumeric) {
-                console.log("JSUtilities - csv2Array");
+                // console.log("JSUtilities - csv2Array");
                 // Retrieve the delimeter
                 if (delimeter == undefined)
                     delimeter = ',';
@@ -569,7 +569,7 @@ define([],
             },
 
             tryJSONParse(str) {
-                console.log("JSUtilities - tryJSONParse");
+                // console.log("JSUtilities - tryJSONParse");
                 let json = null;
 
                 try {
@@ -581,17 +581,17 @@ define([],
             },
 
             hex2Int(hex) {
-                console.log("JSUtilities - hex2Int");
+                // console.log("JSUtilities - hex2Int");
                 return parseInt(hex, 16);
             },
 
             int2Hex(number) {
-                console.log("JSUtilities - int2Hex");
+                // console.log("JSUtilities - int2Hex");
                 return number.toString(16);
             },
 
             hex2Str(hex) {
-                console.log("JSUtilities - hex2Str");
+                // console.log("JSUtilities - hex2Str");
                 let str = "";
 
                 try {
@@ -604,7 +604,7 @@ define([],
             },
 
             str2Hex: function (str) {
-                console.log("JSUtilities - str2Hex");
+                // console.log("JSUtilities - str2Hex");
                 let hex = "";
 
                 try {
@@ -620,7 +620,7 @@ define([],
             },
 
             isEmpty: function (str) {
-                console.log("JSUtilities - isEmpty");
+                // console.log("JSUtilities - isEmpty");
                 if ((str === undefined) || (str === null) || (str.trim().length === 0)) {
                     return true;
                 } else {
