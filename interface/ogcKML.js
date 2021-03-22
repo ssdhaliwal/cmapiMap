@@ -233,6 +233,28 @@ define(["dojo/_base/lang", "resource/KML2GraphicsLayer",
                 });
             };
 
+            self.getData = function() {
+                console.log("ogcKML - getData" );
+
+                let layerData = {};
+                if (self.layer.kml.count === 0) {
+                } else {
+                    $.each(self.layer.kml, function (index, subLayer) {
+                        if (subLayer.graphicsLayer) {
+                            // docId, folderId, type, name, graphicsLayer.graphics(attributes/geometry(x/y,paths,rings))
+                            console.log(subLayer, subLayer.graphicsLayer);
+                        }
+                    });
+                }
+
+                return layerData;
+            };
+
+            self.centerOn = function(id) {
+                console.log("ogcKML - centerOn" );
+
+            };
+
             self.init();
         };
 

@@ -1,7 +1,7 @@
-define(["dojo/_base/lang", "dijit/registry",
+define(["dojo/_base/lang", "dijit/registry", "dojo/query",
     "dijit/layout/TabContainer", "dijit/layout/ContentPane", "dojox/grid/DataGrid",
     "dojo/data/ItemFileWriteStore", "dojo/data/ItemFileReadStore"],
-    function (lang, registry, TabContainer, ContentPane, DataGrid, ItemFileWriteStore, ItemFileReadStore) {
+    function (lang, registry, query, TabContainer, ContentPane, DataGrid, ItemFileWriteStore, ItemFileReadStore) {
         let extDatagrid = function (global) {
             let self = this;
             let map = global.plugins.extMap.instance;
@@ -15,6 +15,12 @@ define(["dojo/_base/lang", "dijit/registry",
                 console.log("extDatagrid - init");
 
                 self.tabContainer = registry.byId("datagrid_container");
+
+                // adjust the navigation button style
+                query("#datagrid_container_tablist_menuBtn").style({padding: "0"});
+                query("#datagrid_container_tablist_leftBtn").style({padding: "0"});
+                query("#datagrid_container_tablist_rightBtn").style({padding: "0"});
+
                 self.registerEvents();
             };
 
@@ -54,6 +60,15 @@ define(["dojo/_base/lang", "dijit/registry",
                     title: serviceObject.service.text,
                     content: gridDiv
                 });
+
+                // to form the grid, we need to get the service object to provide id, structure, and data
+                let checkIW = setInterval(() => {
+                    if (serviceObject.service.perspective) {
+                        clearInterval(checkIW);
+                        let serviceData = serviceObject.service.perspective.getData();
+                        console.log(serviceData);
+                    }
+                }, 500);
 
                 let data = {
                     identifier: "id",

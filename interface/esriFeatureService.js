@@ -684,6 +684,21 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                 return node;
             };
 
+            self.getData = function() {
+                console.log("esriFeatureService - getData" );
+
+                let layerData = {};
+                // objectIdField, geometryType, graphics(attributes)
+                console.log(self.layer, self.layer.objectIdField, self.layer.geometryType, self.layer.graphics);
+
+                return layerData;
+            };
+
+            self.centerOn = function(id) {
+                console.log("esriFeatureService - centerOn" );
+
+            };
+
             self.init();
         };
 

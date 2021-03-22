@@ -568,12 +568,14 @@ define([],
                 return array;
             },
 
-            tryJSONParse(str) {
+            tryJSONParse(value) {
                 // console.log("JSUtilities - tryJSONParse");
                 let json = null;
 
                 try {
-                    json = JSON.parse(str);
+                    if (typeof value === 'string') {
+                        json = JSON.parse(value);
+                    } else json = value;
                 } catch (exception) {
                     json = null;
                 }
