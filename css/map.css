@@ -495,7 +495,11 @@ img {
     /* height: 100%; */
     /* overflow-x: scroll; */
     /* overflow-y: scroll; */
+}
+
+.datagridDiv .dojoxGridCell {
     white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 #control-slider {

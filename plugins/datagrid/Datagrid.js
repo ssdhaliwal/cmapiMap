@@ -73,40 +73,45 @@ define(["dojo/_base/lang", "dijit/registry", "dojo/query",
                     if (serviceObject.service.perspective) {
                         clearInterval(checkIW);
                         let serviceData = serviceObject.service.perspective.getData();
-                        console.log(serviceData, Object.keys(serviceData.items[0]));
 
-                        // format the data for store/grid
-                        let dataStore = new ItemFileWriteStore({
-                            data: serviceData
-                        });
+                        serviceData.then(payload => {
+                            console.log(payload, Object.keys(payload.items[0]));
 
-                        // define the grid layout based on keys
-                        let layout = [[]];
-                        Object.keys(serviceData.items[0]).forEach(key => {
-                            layout[0].push({ 'name': key, 'field': key, 'width': '100px' });
-                        });
-
-                        let grid = new DataGrid({
-                            id: 'grid_' + serviceObject.service.text,
-                            store: dataStore,
-                            structure: layout,
-                            rowSelector: '20px'
-                        });
-
-                        self.tabs['div_' + serviceObject.service.text] = gridDiv;
-                        self.tabs['grid_' + serviceObject.service.text] = grid;
-                        self.tabs['content_' + serviceObject.service.text] = cp3;
-
-                        self.tabContainer.addChild(cp3);
-
-                        new Promise(function (resolve, reject) {
-                            grid.placeAt('div_' + serviceObject.service.text);
-                            grid.startup();
-                            resolve(grid);
-                        }).then(function (grid) {
-                            // grid.placeAt(cp3.containerNode);
-                            grid.height = "calc(250px - 69px)";
-                            grid.resize();
+                            // format the data for store/grid
+                            let dataStore = new ItemFileWriteStore({
+                                data: payload
+                            });
+    
+                            // define the grid layout based on keys
+                            let layout = [[]];
+                            Object.keys(payload.items[0]).forEach(key => {
+                                layout[0].push({ 'name': key, 'field': key, 'width': '100px' });
+                            });
+    
+                            let grid = new DataGrid({
+                                id: 'grid_' + serviceObject.service.text,
+                                store: dataStore,
+                                structure: layout,
+                                rowSelector: '20px'
+                            });
+    
+                            self.tabs['div_' + serviceObject.service.text] = gridDiv;
+                            self.tabs['grid_' + serviceObject.service.text] = grid;
+                            self.tabs['content_' + serviceObject.service.text] = cp3;
+    
+                            self.tabContainer.addChild(cp3);
+    
+                            new Promise(function (resolve, reject) {
+                                grid.placeAt('div_' + serviceObject.service.text);
+                                grid.startup();
+                                resolve(grid);
+                            }).then(function (grid) {
+                                // grid.placeAt(cp3.containerNode);
+                                grid.height = "calc(250px - 69px)";
+                                grid.resize();
+                            });
+                        }, function (error) {
+                            console.log(error);
                         });
                     }
                 }, 500);
@@ -122,14 +127,18 @@ define(["dojo/_base/lang", "dijit/registry", "dojo/query",
                 let gridContainer = self.tabs['grid_' + serviceObject.service.text];
                 let tabContainer = self.tabs['content_' + serviceObject.service.text];
 
-                tabContainer.removeChild(gridContainer);
-                gridContainer.destroy();
+                if (tabContainer && gridContainer) {
+                    tabContainer.removeChild(gridContainer);
+                    gridContainer.destroy();
+                }
 
-                self.tabContainer.removeChild(tabContainer);
-                tabContainer.destroy();
+                if (tabContainer) {
+                    self.tabContainer.removeChild(tabContainer);
+                    tabContainer.destroy();
 
-                tabContainer.removeChild(tableContainer);
-                //tableContainer.destroy();
+                    tabContainer.removeChild(tableContainer);
+                    //tableContainer.destroy();
+                }
 
                 delete self.tabs['div_' + serviceObject.service.text];
                 delete self.tabs['grid_' + serviceObject.service.text];

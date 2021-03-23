@@ -236,56 +236,52 @@ define(["dojo/_base/lang", "resource/KML2GraphicsLayer",
             self.getData = function() {
                 console.log("ogcKML - getData" );
 
-                let layerData = {}, idIndex = 0;
-                layerData.identifier = "id";
-                layerData.items = [];
-
-                if (self.layer.kml.count === 0) {
-                } else {
-                    let graphicType = "point";
-                    let point = null, latitude = 0, longitude = 0;
-                    $.each(self.layer.kml, function (index, subLayer) {
-                        if (subLayer.graphicsLayer) {
-                            // docId, folderId, type, name, graphicsLayer.graphics(attributes/geometry(x/y,paths,rings))
-                            console.log(subLayer, subLayer.graphicsLayer);
-                            subLayer.graphicsLayer.graphics.forEach(graphic => {
-                                if (graphic.geometry.hasOwnProperty("x")) {
-                                    graphicType = "point";
-                                    latitude = graphic.geometry.y;
-                                    longitude = graphic.geometry.x;
-                                } else if (graphic.geometry.hasOwnProperty("paths")) {
-                                    graphicType = "line";
-                                    point = graphic.geometry.getExtent().getCenter();
-                                    latitude = point.y;
-                                    longitude = point.x;
-                                } else if (graphic.geometry.hasOwnProperty("rings")) {
-                                    graphicType = "polygon";
-                                    point = graphic.geometry.getExtent().getCenter();
-                                    latitude = point.y;
-                                    longitude = point.x;
-                                } else {
-                                    graphicType = "unknown";
-                                    latitude = null;
-                                    longitude = null;
-                                }
-
-                                layerData.items.push({
-                                    docId: subLayer.docId,
-                                    folderId: subLayer.folderId,
-                                    container: subLayer.type,
-                                    collection: subLayer.name,
-                                    type: graphic.geometry.type,
-                                    id: (graphic.attributes.id || ('id-' + idIndex++)),
-                                    name: (graphic.attributes.name || graphic.attributes.title || "-"),
-                                    latitude: latitude,
-                                    longitude: longitude
+                return new Promise(function (resolve, reject) {
+                    let layerData = {}, idIndex = 0;
+                    layerData.identifier = "id";
+                    layerData.items = [];
+    
+                    if (self.layer.kml.count === 0) {
+                    } else {
+                        let point = null, item = {};
+                        $.each(self.layer.kml, function (index, subLayer) {
+                            if (subLayer.graphicsLayer) {
+                                // docId, folderId, type, name, graphicsLayer.graphics(attributes/geometry(x/y,paths,rings))
+                                console.log(subLayer, subLayer.graphicsLayer);
+                                subLayer.graphicsLayer.graphics.forEach(graphic => {
+                                    item = {};
+                                    if (graphic.geometry.hasOwnProperty("x")) {
+                                        item.latitude = graphic.geometry.y;
+                                        item.longitude = graphic.geometry.x;
+                                    } else if (graphic.geometry.hasOwnProperty("paths")) {
+                                        point = graphic.geometry.getExtent().getCenter();
+                                        item.latitude = point.y;
+                                        item.longitude = point.x;
+                                    } else if (graphic.geometry.hasOwnProperty("rings")) {
+                                        point = graphic.geometry.getExtent().getCenter();
+                                        item.latitude = point.y;
+                                        item.longitude = point.x;
+                                    } else {
+                                        item.latitude = null;
+                                        item.longitude = null;
+                                    }
+    
+                                    item.type = graphic.geometry.type;
+                                    item.id = (graphic.attributes.id || ('id-' + idIndex++));
+                                    item.name = (graphic.attributes.name || graphic.attributes.title || "-");
+                                    item.docId = subLayer.docId;
+                                    item.folderId = subLayer.folderId;
+                                    item.container = subLayer.type;
+                                    item.collection = subLayer.name;
+    
+                                    layerData.items.push(item);
                                 });
-                            });
-                        }
-                    });
-                }
+                            }
+                        });
+                    }
 
-                return layerData;
+                    resolve(layerData);
+                });
             };
 
             self.centerOn = function(id) {

@@ -296,13 +296,6 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
 
                 self.map.addLayers([self.layer]);
 
-                // add to grid via promise
-                new Promise(function (resolve, reject) {
-                    resolve(self);
-                }).then(function (layer) {
-                    self.datagrid.addTab(self);
-                });
-
                 self.registerEvents();
                 self.registerSearch();
             };
@@ -492,6 +485,13 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                     if (JSUtilities.getBoolean(params.zoom)) {
                         ViewUtilities.zoomToLayer(self.map, self.layer);
                     }
+
+                    // add to grid via promise
+                    new Promise(function (resolve, reject) {
+                        resolve(self);
+                    }).then(function (layer) {
+                        self.datagrid.addTab(self);
+                    });                    
                 });
 
                 let selectQuery = new Query();
@@ -684,18 +684,47 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                 return node;
             };
 
-            self.getData = function() {
-                console.log("esriFeatureService - getData" );
+            self.getData = function () {
+                console.log("esriFeatureService - getData");
 
-                let layerData = {};
                 // objectIdField, geometryType, graphics(attributes)
                 console.log(self.layer, self.layer.objectIdField, self.layer.geometryType, self.layer.graphics);
+                return new Promise(function (resolve, reject) {
+                    let layerData = {};
+                    layerData.identifier = self.layer.objectIdField;
+                    layerData.items = [];
+    
+                    let point = null, item = {};
+                    self.layer.graphics.forEach(graphic => {
+                        item = {};
+                        Object.assign(item, graphic.attributes);
 
-                return layerData;
+                        if (graphic.geometry.hasOwnProperty("x")) {
+                            item.latitude = graphic.geometry.y;
+                            item.longitude = graphic.geometry.x;
+                        } else if (graphic.geometry.hasOwnProperty("paths")) {
+                            point = graphic.geometry.getExtent().getCenter();
+                            item.latitude = point.y;
+                            item.longitude = point.x;
+                        } else if (graphic.geometry.hasOwnProperty("rings")) {
+                            point = graphic.geometry.getExtent().getCenter();
+                            item.latitude = point.y;
+                            item.longitude = point.x;
+                        } else {
+                            item.latitude = null;
+                            item.longitude = null;
+                        }
+
+                        item.type = graphic.geometry.type;
+                        layerData.items.push(item);
+                    });
+    
+                    resolve(layerData);
+                });
             };
 
-            self.centerOn = function(id) {
-                console.log("esriFeatureService - centerOn" );
+            self.centerOn = function (id) {
+                console.log("esriFeatureService - centerOn");
 
             };
 
