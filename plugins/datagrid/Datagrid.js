@@ -17,9 +17,9 @@ define(["dojo/_base/lang", "dijit/registry", "dojo/query",
                 self.tabContainer = registry.byId("datagrid_container");
 
                 // adjust the navigation button style
-                query("#datagrid_container_tablist_menuBtn").style({padding: "0"});
-                query("#datagrid_container_tablist_leftBtn").style({padding: "0"});
-                query("#datagrid_container_tablist_rightBtn").style({padding: "0"});
+                query("#datagrid_container_tablist_menuBtn").style({ padding: "0" });
+                query("#datagrid_container_tablist_leftBtn").style({ padding: "0" });
+                query("#datagrid_container_tablist_rightBtn").style({ padding: "0" });
 
                 self.registerEvents();
             };
@@ -30,6 +30,13 @@ define(["dojo/_base/lang", "dijit/registry", "dojo/query",
 
                 if (self.showing) {
                     $("#datagrid_wrapper").css("display", "block");
+
+                    // loop through the grids and resize them
+                    Object.keys(self.tabs).forEach(tab => {
+                        if (tab.startsWith("grid_")) {
+                            self.tabs[tab].resize();
+                        }
+                    });
                 } else {
                     $("#datagrid_wrapper").css("display", "none");
                 }
@@ -66,57 +73,43 @@ define(["dojo/_base/lang", "dijit/registry", "dojo/query",
                     if (serviceObject.service.perspective) {
                         clearInterval(checkIW);
                         let serviceData = serviceObject.service.perspective.getData();
-                        console.log(serviceData);
+                        console.log(serviceData, Object.keys(serviceData.items[0]));
+
+                        // format the data for store/grid
+                        let dataStore = new ItemFileWriteStore({
+                            data: serviceData
+                        });
+
+                        // define the grid layout based on keys
+                        let layout = [[]];
+                        Object.keys(serviceData.items[0]).forEach(key => {
+                            layout[0].push({ 'name': key, 'field': key, 'width': '100px' });
+                        });
+
+                        let grid = new DataGrid({
+                            id: 'grid_' + serviceObject.service.text,
+                            store: dataStore,
+                            structure: layout,
+                            rowSelector: '20px'
+                        });
+
+                        self.tabs['div_' + serviceObject.service.text] = gridDiv;
+                        self.tabs['grid_' + serviceObject.service.text] = grid;
+                        self.tabs['content_' + serviceObject.service.text] = cp3;
+
+                        self.tabContainer.addChild(cp3);
+
+                        new Promise(function (resolve, reject) {
+                            grid.placeAt('div_' + serviceObject.service.text);
+                            grid.startup();
+                            resolve(grid);
+                        }).then(function (grid) {
+                            // grid.placeAt(cp3.containerNode);
+                            grid.height = "calc(250px - 69px)";
+                            grid.resize();
+                        });
                     }
                 }, 500);
-
-                let data = {
-                    identifier: "id",
-                    items: []
-                };
-                let data_list = [
-                    { col1: "normal", col2: false, col3: 'But are not followed by two hexadecimal', col4: 29.91 },
-                    { col1: "important", col2: false, col3: 'Because a % sign always indicates', col4: 9.33 },
-                    { col1: "important", col2: false, col3: 'Signs can be selectively', col4: 19.34 }
-                ];
-                let rows = 60;
-                for (let i = 0, l = data_list.length; i < rows; i++) {
-                    data.items.push(lang.mixin({ id: i + 1 }, data_list[i % l]));
-                }
-
-                let dataStore = new ItemFileWriteStore({
-                    data: data
-                });
-
-                let layout = [[
-                    { 'name': 'Column 1', 'field': 'id', 'width': '100px' },
-                    { 'name': 'Column 2', 'field': 'col2', 'width': '100px' },
-                    { 'name': 'Column 3', 'field': 'col3', 'width': '200px' },
-                    { 'name': 'Column 4', 'field': 'col4', 'width': '150px' }
-                ]];
-
-                let grid = new DataGrid({
-                    id: 'grid_' + serviceObject.service.text,
-                    store: dataStore,
-                    structure: layout,
-                    rowSelector: '20px'
-                });
-
-                self.tabs['div_' + serviceObject.service.text] = gridDiv;
-                self.tabs['grid_' + serviceObject.service.text] = grid;
-                self.tabs['content_' + serviceObject.service.text] = cp3;
-
-                self.tabContainer.addChild(cp3);
-
-                new Promise(function (resolve, reject) {
-                    grid.placeAt('div_' + serviceObject.service.text);
-                    grid.startup();
-                    resolve(grid);
-                }).then(function (grid) {
-                    // grid.placeAt(cp3.containerNode);
-                    grid.height = "calc(250px - 69px)";
-                    grid.resize();
-                });
             };
 
             self.removeTab = function (serviceObject) {
