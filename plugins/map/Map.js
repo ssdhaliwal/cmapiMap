@@ -1,7 +1,9 @@
 define(["esri/map", "esri/geometry/Extent",
+    "esri/SpatialReference", "esri/geometry/Point",
     "esri/geometry/webMercatorUtils", "dojo/Deferred",
     "plugins/ViewUtilities", "plugins/JSUtilities"],
-    function (esriMap, Extent, 
+    function (esriMap, Extent,
+        SpatialReference, Point,
         webMercatorUtils, Deferred,
         ViewUtilities, JSUtilities) {
 
@@ -48,18 +50,18 @@ define(["esri/map", "esri/geometry/Extent",
                 console.log("extMap - regiserEvents");
                 self.instance.on("extent-change", function (evt) {
                     console.log("extMap - extent-change");
-                    self.redrawGraphics();
+                    self.handleRedrawGraphics();
                 });
 
                 self.instance.on("resize", function (evt) {
                     console.log("extMap - resize");
-                    self.redrawGraphics();
+                    self.handleRedrawGraphics();
                 });
 
                 self.instance.on("load", function (evt) {
                     console.log("extMap - load");
                     global.initialize();
-                    self.redrawGraphics();
+                    self.handleRedrawGraphics();
 
                     let payload = {};
                     payload.status = "init";
@@ -107,7 +109,7 @@ define(["esri/map", "esri/geometry/Extent",
                     }
 
                     self.handleShowCoordinates();
-                });    
+                });
             };
 
             self.handleShowCoordinates = function (event) {
@@ -134,8 +136,8 @@ define(["esri/map", "esri/geometry/Extent",
                             break;
                         case "DMS":
                             self.cooordinateElement.text("(z" + self.instance.getZoom() + ") [ lat: " +
-                            JSUtilities.convertDDLatitudeToDMS(self.lastY) + ", lon: " +
-                            JSUtilities.convertDDLongitudeToDMS(self.lastX) + " ]");
+                                JSUtilities.convertDDLatitudeToDMS(self.lastY) + ", lon: " +
+                                JSUtilities.convertDDLongitudeToDMS(self.lastX) + " ]");
                             break;
                         case "MGRS":
                             self.cooordinateElement.text("(z" + self.instance.getZoom() + ") [ CALCULATING MGRS... ]");
@@ -172,14 +174,32 @@ define(["esri/map", "esri/geometry/Extent",
                 }, 5);
             };
 
-            self.redrawGraphics = function () {
-                console.log("extMap - redrawGraphics");
+            self.handleRedrawGraphics = function () {
+                console.log("extMap - handleRedrawGraphics");
                 let graphics = self.instance.graphicsLayerIds;
                 let graphicLayer = null;
                 for (let i = 0; i < graphics.length; i++) {
                     graphicLayer = self.instance.getLayer(graphics[i]);
                     graphicLayer.redraw();
                 }
+            };
+
+            self.handleCenterAt = function (latitude, longitude, zoom) {
+                console.log("extMap - handleCenterAt");
+
+                let point = new Point([longitude, latitude], 
+                    new SpatialReference({ wkid: 4326 }));
+                self.instance.centerAt(point);
+
+                if (zoom) {
+                    self.instance.setZoom(zoom);
+                }
+            };
+
+            self.handleZoom = function (zoom) {
+                console.log("extMap - handleZoom");
+
+                self.instance.setZoom(zoom);
             };
 
             self.init();

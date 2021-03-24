@@ -9,7 +9,7 @@ require([
   "plugins/notify/Notify", "plugins/toolbar/Toolbar", "plugins/config/Config", "plugins/popup/Popup", "plugins/map/Map", "plugins/scalebar/Scalebar",
   "plugins/home/Home", "plugins/search/Search", "plugins/basemap/Basemap", "plugins/legend/Legend", "plugins/bookmarks/Bookmarks",
   "plugins/datagrid/Datagrid", "plugins/layerlist/Layerlist",
-  "interface/geometryService", "interface/messageService",
+  "interface/geocodingService", "interface/geometryService", "interface/geoprocessingService", "interface/messageService",
   "dojo/domReady!"
 ], function (
   parser,
@@ -17,7 +17,7 @@ require([
   extNotify, extToolbar, extConfig, extPopup, extMap, extScalebar,
   extHome, extSearch, extBasemap, extLegend, extBookmarks,
   extDatagrid, extLayerlist,
-  geometryService, messageService
+  geocodingService, geometryService, geoprocessingService, messageService
 ) {
   var global = {};
   global.plugins = {};
@@ -44,7 +44,9 @@ require([
   });
   global.plugins.extMap = { map: {} };
   global.interfaces.messageService = new messageService(global);
+  global.interfaces.geocodingService = new geocodingService(global);
   global.interfaces.geometryService = new geometryService(global);
+  global.interfaces.geoprocessingService = new geoprocessingService(global);
 
   global.plugins.extNotify = new extNotify(global);
   global.plugins.extToolbar = new extToolbar(global);

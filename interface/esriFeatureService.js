@@ -5,7 +5,7 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
     "esri/symbols/TextSymbol",
     "esri/InfoTemplate", "esri/dijit/PopupTemplate",
     "esri/tasks/query", "dojo/_base/array", "dojo/dom-construct",
-    "esri/graphicsUtils", "plugins/ViewUtilities", "plugins/JSUtilities"],
+    "esri/geometry/webMercatorUtils", "esri/graphicsUtils", "plugins/ViewUtilities", "plugins/JSUtilities"],
     function (FeatureLayer, GraphicsLayer,
         LabelClass, graphic, Point, Circle, Polygon,
         ClassBreaksRenderer, SimpleRenderer, UniqueValueRenderer,
@@ -13,7 +13,7 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
         TextSymbol,
         InfoTemplate, PopupTemplate,
         Query, array, domConstruct,
-        graphicsUtils, ViewUtilities, JSUtilities) {
+        webMercatorUtils, graphicsUtils, ViewUtilities, JSUtilities) {
 
         let esriFeatureService = function (global, service) {
             let self = this;
@@ -485,7 +485,10 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                     if (JSUtilities.getBoolean(params.zoom)) {
                         ViewUtilities.zoomToLayer(self.map, self.layer);
                     }
+                });
 
+                self.layer.on("update-end", function ($event) {
+                    console.log("esriFeatureService - registerEvents/update-end", $event);
                     // add to grid via promise
                     new Promise(function (resolve, reject) {
                         resolve(self);
@@ -694,26 +697,21 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                     layerData.identifier = self.layer.objectIdField;
                     layerData.items = [];
     
-                    let point = null, item = {};
+                    let point = null, mapPoint = null, item = {};
                     self.layer.graphics.forEach(graphic => {
                         item = {};
                         Object.assign(item, graphic.attributes);
 
                         if (graphic.geometry.hasOwnProperty("x")) {
-                            item.latitude = graphic.geometry.y;
-                            item.longitude = graphic.geometry.x;
+                            mapPoint = new Point(graphic.geometry.x, graphic.geometry.x);
                         } else if (graphic.geometry.hasOwnProperty("paths")) {
-                            point = graphic.geometry.getExtent().getCenter();
-                            item.latitude = point.y;
-                            item.longitude = point.x;
+                            mapPoint = graphic.geometry.getExtent().getCenter();
                         } else if (graphic.geometry.hasOwnProperty("rings")) {
-                            point = graphic.geometry.getExtent().getCenter();
-                            item.latitude = point.y;
-                            item.longitude = point.x;
-                        } else {
-                            item.latitude = null;
-                            item.longitude = null;
+                            mapPoint = graphic.geometry.getExtent().getCenter();
                         }
+                        point = webMercatorUtils.webMercatorToGeographic(mapPoint);
+                        item.latitude = point.y;
+                        item.longitude = point.x;
 
                         item.type = graphic.geometry.type;
                         layerData.items.push(item);

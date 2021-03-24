@@ -4,17 +4,16 @@ define(["dojo/_base/lang", "dijit/registry", "dojo/query",
     function (lang, registry, query, TabContainer, ContentPane, DataGrid, ItemFileWriteStore, ItemFileReadStore) {
         let extDatagrid = function (global) {
             let self = this;
-            let map = global.plugins.extMap.instance;
+            let map = global.plugins.extMap;
             self.instance = null;
             self.sources = [];
             self.showing = false;
-            self.tabContainer = null;
             self.tabs = {};
 
             self.init = function () {
                 console.log("extDatagrid - init");
 
-                self.tabContainer = registry.byId("datagrid_container");
+                self.instance = registry.byId("datagrid_container");
 
                 // adjust the navigation button style
                 query("#datagrid_container_tablist_menuBtn").style({ padding: "0" });
@@ -55,6 +54,11 @@ define(["dojo/_base/lang", "dijit/registry", "dojo/query",
             self.addTab = function (serviceObject) {
                 console.log("extDatagrid - addTab");
 
+                // if tab already exists, exit
+                if (self.tabs['grid_' + serviceObject.service.text]) {
+                    return;
+                }
+
                 // auto add if feature or local kml layer type
                 // currently supported; feature layers and kml - push filters to layer
                 console.log(serviceObject);
@@ -62,11 +66,14 @@ define(["dojo/_base/lang", "dijit/registry", "dojo/query",
                     id: 'div_' + serviceObject.service.text,
                     class: "datagridDiv"
                 });
+                self.tabs['div_' + serviceObject.service.text] = gridDiv;
+
                 let cp3 = new ContentPane({
                     id: 'content_' + serviceObject.service.text,
                     title: serviceObject.service.text,
                     content: gridDiv
                 });
+                self.tabs['content_' + serviceObject.service.text] = cp3;
 
                 // to form the grid, we need to get the service object to provide id, structure, and data
                 let checkIW = setInterval(() => {
@@ -95,11 +102,15 @@ define(["dojo/_base/lang", "dijit/registry", "dojo/query",
                                 rowSelector: '20px'
                             });
     
-                            self.tabs['div_' + serviceObject.service.text] = gridDiv;
+                            grid.on("RowClick", function($event) {
+                                let idx = $event.rowIndex,
+                                    rowData = grid.getItem(idx);
+                                
+                                map.handleCenterAt(rowData.latitude, rowData.longitude, null); 
+                            });
+
                             self.tabs['grid_' + serviceObject.service.text] = grid;
-                            self.tabs['content_' + serviceObject.service.text] = cp3;
-    
-                            self.tabContainer.addChild(cp3);
+                            self.instance.addChild(cp3);
     
                             new Promise(function (resolve, reject) {
                                 grid.placeAt('div_' + serviceObject.service.text);
@@ -123,21 +134,38 @@ define(["dojo/_base/lang", "dijit/registry", "dojo/query",
                 // only via layer remove
                 console.log(serviceObject.service);
 
-                let tableContainer = self.tabs['div_' + serviceObject.service.text];
+                let divContainer = self.tabs['div_' + serviceObject.service.text];
                 let gridContainer = self.tabs['grid_' + serviceObject.service.text];
                 let tabContainer = self.tabs['content_' + serviceObject.service.text];
 
                 if (tabContainer && gridContainer) {
-                    tabContainer.removeChild(gridContainer);
-                    gridContainer.destroy();
+                    try {
+                        tabContainer.removeChild(gridContainer);
+                    } catch(err) {}
+
+                    try {
+                        gridContainer.destroy();
+                    } catch(err) {}
                 }
 
                 if (tabContainer) {
-                    self.tabContainer.removeChild(tabContainer);
-                    tabContainer.destroy();
+                    try {
+                        self.instance.removeChild(tabContainer);
+                    } catch(err) {}
 
-                    tabContainer.removeChild(tableContainer);
-                    //tableContainer.destroy();
+                    try {
+                        tabContainer.destroy();
+                    } catch(err) {}
+                }
+
+                if (divContainer) {
+                    try {
+                        tabContainer.removeChild(divContainer);
+                    } catch(err) {}
+
+                    try {
+                        divContainer.destroy();
+                    } catch(err) {}
                 }
 
                 delete self.tabs['div_' + serviceObject.service.text];
