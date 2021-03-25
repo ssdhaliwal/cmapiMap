@@ -519,6 +519,52 @@ define(["vendor/js/jstree/jstree",
                 }
             };
 
+            findOverlayFeatures = function(overlayId, features) {
+                console.log("Layerlist - findOverlayFeatures" );
+                let node = self.instance.get_node(overlayId);
+                let cnode, original;
+
+                if (node.children.length > 0) {
+                    node.children.forEach(function (child_id) {
+                        cnode = self.instance.get_node(child_id);
+                        if (cnode.children.length > 0) {
+                            findOverlayFeatures(child_id, features);
+                        } else {
+                            features.push(cnode);
+                        }
+                    });
+                } else {
+                    features.push(node);
+                }
+
+                return features;
+            };
+
+            self.handleCenterOverlay = function(overlayId, zoom) {
+                console.log("Layerlist - handleCenterOverlay" );
+
+                // find overlayId; if it is has prespective, then we are good; else return error
+                // check if node already exists; if yes - ignore
+                let oNode = self.instance.get_node(overlayId);
+                if (JSUtilities.getBoolean(oNode)) {
+                    // get all the features for overlay on map
+                    let features = findOverlayFeatures(oNode, []);
+                    console.log(features);
+
+                    // loop through and collect the extent for all published features
+                }
+            };
+
+            self.handleCenterFeature = function(featureId, markerId, zoom) {
+                console.log("Layerlist - handleCenterFeature" );
+
+                // find featureId; if exists, good; else return error
+                let oNode = self.instance.get_node(featureId);
+                if (JSUtilities.getBoolean(oNode)) {
+                    console.log(oNode);
+                }
+            };
+
             self.init();
         };
 

@@ -135,3 +135,16 @@ map.feature.plot.url
 		"serviceType": "feature"
 	}
 }
+
+map.view.zoom
+{
+	"range":100000
+}
+
+map.view.zoom
+{
+	"zoom": 5
+}
+{
+	"zoom": 15
+}

@@ -1,5 +1,5 @@
-define(["plugins/ViewUtilities"],
-    function (ViewUtilities) {
+define(["plugins/JSUtilities"],
+    function (JSUtilities) {
 
         let cmapiAdapter = function (global) {
             let self = this;
@@ -23,10 +23,10 @@ define(["plugins/ViewUtilities"],
                 console.log("cmapiAdapter - onMapOverlayCreateUpdate");
                 // check minimum requirement - name or id
                 if (request.hasOwnProperty("name") || request.hasOwnProperty("overlayId")) {
-                    if (!request.hasOwnProperty("name") || ViewUtilities.isEmpty(request.name)) {
+                    if (!request.hasOwnProperty("name") || JSUtilities.isEmpty(request.name)) {
                         request.name = request.overlayId;
                     }
-                    if (!request.hasOwnProperty("overlayId") || ViewUtilities.isEmpty(request.overlayId)) {
+                    if (!request.hasOwnProperty("overlayId") || JSUtilities.isEmpty(request.overlayId)) {
                         request.overlayId = request.name;
                     }
 
@@ -62,8 +62,8 @@ define(["plugins/ViewUtilities"],
             self.onMapFeaturePlotUrl = function (request) {
                 console.log("cmapiAdapter - onMapFeaturePlotUrl");
                 if (request.hasOwnProperty("featureId") && request.hasOwnProperty("url")) {
-                    if (!ViewUtilities.isEmpty(request.featureId) && !ViewUtilities.isEmpty(request.url)) {
-                        if (!request.hasOwnProperty("name") || ViewUtilities.isEmpty(request.name)) {
+                    if (!JSUtilities.isEmpty(request.featureId) && !JSUtilities.isEmpty(request.url)) {
+                        if (!request.hasOwnProperty("name") || JSUtilities.isEmpty(request.name)) {
                             request.name = request.featureId;
                         }
 
@@ -75,19 +75,38 @@ define(["plugins/ViewUtilities"],
             // 3. map.view.*
             self.onMapViewZoom = function (request) {
                 console.log("cmapiAdapter - onMapViewZoom");
-                if (request.hasOwnProperty("range") || request.hasOwnProperty("zoom")) {
+                if (request.hasOwnProperty("range")) {
+                    global.plugins.extMap.handleScale(request.range);
+                } else if (request.hasOwnProperty("zoom")) {
+                    global.plugins.extMap.handleZoom(request.zoom);
                 }
             };
 
             self.onMapCenterOverlay = function (request) {
                 console.log("cmapiAdapter - onMapCenterOverlay");
-                if (request.hasOwnProperty("overlayId")) {
+                if (request.hasOwnProperty("overlayId") && !JSUtilities.isEmpty(request.overlayId)) {
+                    if (request.hasOwnProperty("zoom") && !JSUtilities.isEmpty(request.zoom)) {
+                        global.plugins.extLayerlist.handleCenterOverlay(request.overlayId, request.zoom);
+                    } else {
+                        global.plugins.extLayerlist.handleCenterOverlay(request.overlayId, null);
+                    }
                 }
             };
 
             self.onMapCenterFeature = function (request) {
                 console.log("cmapiAdapter - onMapCenterFeature");
-                if (request.hasOwnProperty("featureId")) {
+
+                let markerId = null;
+                if (request.hasOwnProperty("markerId") && !JSUtilities.isEmpty(request.markerId)) {
+                    markerId = request.hasOwnProperty("markerId");
+                }
+
+                if (request.hasOwnProperty("featureId") && !JSUtilities.isEmpty(request.featureId)) {
+                    if (request.hasOwnProperty("zoom") && !JSUtilities.isEmpty(request.zoom)) {
+                        global.plugins.extLayerlist.handleCenterFeature(request.featureId, markerId, request.zoom);
+                    } else {
+                        global.plugins.extLayerlist.handleCenterFeature(request.featureId, markerId, null);
+                    }
                 }
             };
 
@@ -95,8 +114,12 @@ define(["plugins/ViewUtilities"],
                 console.log("cmapiAdapter - onMapCenterLocation");
                 if (request.hasOwnProperty("location")) {
                     if (request.location.hasOwnProperty("lat") && request.location.hasOwnProperty("lon")) {
-                        if (!ViewUtilities.isEmpty(request.location.lat) && !ViewUtilities.isEmpty(request.location.lon)) {
-
+                        if (!JSUtilities.isEmpty(request.location.lat) && !JSUtilities.isEmpty(request.location.lon)) {
+                            if (request.hasOwnProperty("zoom") && !JSUtilities.isEmpty(request.zoom)) {
+                                global.plugins.extMap.handleCenterLocation(request.location.lat, request.location.lon, request.zoom);
+                            } else {
+                                global.plugins.extMap.handleCenterLocation(request.location.lat, request.location.lon, null);
+                            }
                         }
                     }
                 }

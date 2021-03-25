@@ -42,7 +42,7 @@ require([
   $("[rel=tooltip]").tooltip({
     placement: "bottom"
   });
-  global.plugins.extMap = { map: {} };
+  global.plugins.extMap = { };
   global.interfaces.messageService = new messageService(global);
   global.interfaces.geocodingService = new geocodingService(global);
   global.interfaces.geometryService = new geometryService(global);

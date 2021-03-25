@@ -184,16 +184,23 @@ define(["esri/map", "esri/geometry/Extent",
                 }
             };
 
-            self.handleCenterAt = function (latitude, longitude, zoom) {
-                console.log("extMap - handleCenterAt");
+            self.handleCenterLocation = function (latitude, longitude, zoom) {
+                console.log("extMap - handleCenterLocation");
 
-                let point = new Point([longitude, latitude], 
+                let point = new Point([longitude, latitude],
                     new SpatialReference({ wkid: 4326 }));
                 self.instance.centerAt(point);
 
                 if (zoom) {
                     self.instance.setZoom(zoom);
                 }
+            };
+
+            self.handleScale = function (scale) {
+                console.log("extMap - handleScale");
+
+                let mapScale = ViewUtilities.zoomAltitudeToScale(self.instance, scale);
+                self.instance.setScale(mapScale);
             };
 
             self.handleZoom = function (zoom) {

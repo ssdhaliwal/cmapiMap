@@ -683,7 +683,7 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
 
                 let node = domConstruct.toDom("<div>I'm a Node {" + graphic.attributes.FID + "}<br>" +
                     "<a href='javascript:window.GlobalNotify(\"ctrl-message\",\"" +
-                    JSUtilities.toHex(JSON.stringify(message)) + "\");'>click here</a></div>");
+                    JSUtilities.str2Hex(JSON.stringify(message)) + "\");'>click here</a></div>");
                 return node;
             };
 

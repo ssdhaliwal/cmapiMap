@@ -1,5 +1,5 @@
-define(["interface/cmapiAdapter", "plugins/ViewUtilities"],
-    function (cmapiAdapter, ViewUtilities) {
+define(["interface/cmapiAdapter", "plugins/ViewUtilities", "plugins/JSUtilities"],
+    function (cmapiAdapter, ViewUtilities, JSUtilities) {
 
         let messageService = function (global) {
             let self = this;
@@ -18,11 +18,11 @@ define(["interface/cmapiAdapter", "plugins/ViewUtilities"],
                 console.log("messageService - registerEvents");
                 window.addEventListener("message", function ($event) {
                     console.log("messageService - registerEvents/message", $event);
-                    let data = ViewUtilities.tryJSONParse($event.data);
+                    let data = JSUtilities.tryJSONParse($event.data);
                     console.log(data);
 
                     if (data.hasOwnProperty("channel") && data.hasOwnProperty("payload")) {
-                        let payload = ViewUtilities.tryJSONParse(data.payload);
+                        let payload = JSUtilities.tryJSONParse(data.payload);
                         console.log(payload);
 
                         switch (data.channel) {
@@ -50,14 +50,19 @@ define(["interface/cmapiAdapter", "plugins/ViewUtilities"],
 
                             // 3. map.view.*
                             case "map.view.zoom":
+                                self.cmapiAdapter.onMapViewZoom(payload);
                                 break;
-                            case "map.center.overlay":
+                            case "map.view.center.overlay":
+                                self.cmapiAdapter.onMapCenterOverlay(payload);
                                 break;
-                            case "map.center.feature":
+                            case "map.view.center.feature":
+                                self.cmapiAdapter.onMapCenterFeature(payload);
                                 break;
-                            case "map.center.location":
+                            case "map.view.center.location":
+                                self.cmapiAdapter.onMapCenterLocation(payload);
                                 break;
-                            case "map.center.bounds":
+                            case "map.view.center.bounds":
+                                self.cmapiAdapter.onMapCenterBounds(payload);
                                 break;
                             case "map.view.clicked":
                                 break;
@@ -81,7 +86,7 @@ define(["interface/cmapiAdapter", "plugins/ViewUtilities"],
                     console.log("messageService - registerEvents/GlobalNotify");
                     // payload.mapId = window.cmwapiMapId;
                     // OWF.Eventing.publish(channel, JSON.stringify(payload));
-                    window.parent.postMessage(JSON.stringify({ channel: channel, payload: ViewUtilities.fromHex(payload) }), "*");
+                    window.parent.postMessage(JSON.stringify({ channel: channel, payload: JSUtilities.hex2Str(payload) }), "*");
                 };
             };
 

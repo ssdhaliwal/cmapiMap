@@ -3,7 +3,7 @@ define([],
 
         let extToolbar = function (global) {
             let self = this;
-            let map = null; // global.plugins.extMap.map;
+            let map = null; // global.plugins.extMap.instance;
 
             self.init = function () {
                 console.log("extToolbar - init");
