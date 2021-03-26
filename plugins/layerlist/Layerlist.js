@@ -552,6 +552,12 @@ define(["vendor/js/jstree/jstree",
                     console.log(features);
 
                     // loop through and collect the extent for all published features
+                    let extents = [];
+                    features.forEach((feature) => {
+                        if (feature.original && feature.original.service && feature.original.service.perspective) {
+                            extents.push(ViewUtilities.findLayerExtent(feature.original.service.perspective));
+                        }
+                    });
                 }
             };
 
