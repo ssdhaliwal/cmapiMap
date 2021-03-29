@@ -78,6 +78,23 @@
 			loadJSON(function (response) {
 				// Parse JSON string into object
 				config = JSON.parse(response);
+
+				// Add ESRI JS API, which starts dojo AMD loader
+				addScript(config.jqueryPath);
+
+				addScript(config.esriJsPath);
+				addScript(config.bootstrapPath);
+				addScript(config.milSymbolPath);
+
+				// function to prevent session timeouts from idle
+				setInterval(function () {
+					var ver = "ver=" + new Date().getTime();
+
+					$("#waitingImageIcon").prop("src", "images/loading_blue.gif?" + ver);
+				}, 120000);
+
+				// Trigger app entry point
+				addScript("js/app.js?deployVer=1.5.12");
 			});
 		}
 
@@ -119,29 +136,13 @@
 			);
 		}
 
-		initConfig();
 		addCss("vendor/js/jstree/themes/default/style.min.css");
 		addCss(window.esriJsPath + "esri/themes/calcite/dijit/calcite.css");
 		addCss(window.esriJsPath + "dijit/themes/claro/claro.css");
 		addCss(window.esriJsPath + "esri/css/esri.css");
 		addCss("css/map.css");
 
-		// Add ESRI JS API, which starts dojo AMD loader
-		addScript(config.jqueryPath);
-
-		addScript(config.esriJsPath);
-		addScript(config.bootstrapPath);
-		addScript(config.milSymbolPath);
-
-		// function to prevent session timeouts from idle
-		setInterval(function () {
-			var ver = "ver=" + new Date().getTime();
-
-			$("#waitingImageIcon").prop("src", "images/loading_blue.gif?" + ver);
-		}, 120000);
-
-		// Trigger app entry point
-		addScript("js/app.js?deployVer=1.5.12");
+		initConfig();
 	</script>
 </body>
 

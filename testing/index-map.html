@@ -85,7 +85,7 @@
 				<input type="submit" value="Click to clear" style="width: 95%;" onclick="onClear();">
 			</div>
 			<div class="row content data">
-				<IFrame id="map" src="/esri-cmapi/index.html" name="cmapiMap" id="cmapiMap" frameborder="0"
+				<IFrame src="/esri-cmapi/index.html" id="cmapiMap" frameborder="0"
 					marginwidth="0" marginheight="0" scrolling="auto" onload="" allowtransparency="false"
 					style="width:100%; height:100%; display:block;"></IFrame>
 			</div>
@@ -111,7 +111,7 @@
 		}, false);
 
 		// iframe sender
-		let map = window.frames.map;
+		let map = window.frames.cmapiMap;
 
 		onSubmit = function () {
 			let eOptions = document.getElementById("configFontSelect");

@@ -4,6 +4,7 @@ define(["dojo/_base/lang", "dijit/registry", "dojo/query",
     function (lang, registry, query, TabContainer, ContentPane, DataGrid, ItemFileWriteStore, ItemFileReadStore) {
         let extDatagrid = function (global) {
             let self = this;
+            let extMap = global.plugins.extMap;
             let map = global.plugins.extMap.instance;
             self.instance = null;
             self.sources = [];
@@ -106,7 +107,7 @@ define(["dojo/_base/lang", "dijit/registry", "dojo/query",
                                 let idx = $event.rowIndex,
                                     rowData = grid.getItem(idx);
                                 
-                                map.handleCenterLocation(rowData.latitude, rowData.longitude, null); 
+                                extMap.handleCenterLocation(rowData.latitude, rowData.longitude, null); 
                             });
 
                             self.tabs['grid_' + serviceObject.service.text] = grid;
