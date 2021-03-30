@@ -9,6 +9,7 @@ define(["vendor/js/jstree/jstree",
             let self = this;
             self.message = global.interfaces.messageService;
             self.datagrid = global.plugins.extDatagrid;
+            self.extMap = global.plugins.extMap;
             self.layerlist = null;
             self.instance = null;
             self.layers = [];
@@ -552,12 +553,20 @@ define(["vendor/js/jstree/jstree",
                     console.log(features);
 
                     // loop through and collect the extent for all published features
-                    let extents = [];
+                    let extent;
                     features.forEach((feature) => {
-                        if (feature.original && feature.original.service && feature.original.service.perspective) {
-                            extents.push(ViewUtilities.findLayerExtent(feature.original.service.perspective));
+                        if (feature.original && feature.original.layer && feature.original.perspective) {
+                            extent = ViewUtilities.unionExtents(ViewUtilities.findLayerExtent(feature.original.perspective.layer), extent);
                         }
                     });
+
+                    if(extent) {
+                        if (!JSUtilities.getBoolean(zoom) || (zoom === "auto")) {
+                            self.extMap.handleSetExtent(extent, true);
+                        } else {
+                            self.extMap.centerAt(extent.getCenter());
+                        }
+                    }
                 }
             };
 
@@ -565,9 +574,28 @@ define(["vendor/js/jstree/jstree",
                 console.log("Layerlist - handleCenterFeature" );
 
                 // find featureId; if exists, good; else return error
-                let oNode = self.instance.get_node(featureId);
-                if (JSUtilities.getBoolean(oNode)) {
-                    console.log(oNode);
+                let feature = self.instance.get_node(featureId);
+                if (JSUtilities.getBoolean(feature)) {
+                    console.log(feature);
+
+                    // if not doing by markerId, then we handle layer extent
+                    if (!markerId) {
+                        let extent;
+                        if (feature.original && feature.original.layer && feature.original.perspective) {
+                            extent = ViewUtilities.findLayerExtent(feature.original.perspective);
+                        }
+
+                        if(extent) {
+                            if (!JSUtilities.getBoolean(zoom) || (zoom === "auto")) {
+                                self.extMap.handleSetExtent(extent, true);
+                            } else {
+                                self.extMap.centerAt(extent.getCenter());
+                            }
+                        }
+                    } else {
+                        // if feature layer, we need to do a query...; if local, then we need to search
+                        // push the execution to the layer itself...
+                    }
                 }
             };
 

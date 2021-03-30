@@ -196,15 +196,25 @@ define(["esri/map", "esri/geometry/Extent",
                 }
             };
 
-            self.handleScale = function (scale) {
-                console.log("extMap - handleScale");
+            self.handleSetExtent = function (extent, center) {
+                console.log("extMap - handleSetExtent");
+
+                if (JSUtilities.getBoolean(center)) {
+                    self.instance.setExtent(extent, true);
+                } else {
+                    self.instance.centerAt(extent.getCenter());
+                }
+            };
+
+            self.handleSetScale = function (scale) {
+                console.log("extMap - handleSetScale");
 
                 let mapScale = ViewUtilities.zoomAltitudeToScale(self.instance, scale);
                 self.instance.setScale(mapScale);
             };
 
-            self.handleZoom = function (zoom) {
-                console.log("extMap - handleZoom");
+            self.handleSetZoom = function (zoom) {
+                console.log("extMap - handleSetZoom");
 
                 self.instance.setZoom(zoom);
             };

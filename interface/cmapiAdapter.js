@@ -76,9 +76,9 @@ define(["plugins/JSUtilities"],
             self.onMapViewZoom = function (request) {
                 console.log("cmapiAdapter - onMapViewZoom");
                 if (request.hasOwnProperty("range")) {
-                    global.plugins.extMap.handleScale(request.range);
+                    global.plugins.extMap.handleSetScale(request.range);
                 } else if (request.hasOwnProperty("zoom")) {
-                    global.plugins.extMap.handleZoom(request.zoom);
+                    global.plugins.extMap.handleSetZoom(request.zoom);
                 }
             };
 

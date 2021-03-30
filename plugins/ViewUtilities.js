@@ -2,22 +2,6 @@ define(["esri/geometry/Extent", "esri/Color", "esri/symbols/SimpleLineSymbol", "
     "plugins/JSUtilities"],
     function (Extent, Color, SimpleLineSymbol, SimpleFillSymbol, JSUtilities) {
 
-        /*
-         * @see {@link https://developers.arcgis.com/en/javascript/jsapi/extent-amd.html|Extent}
-         * @see {@link https://developers.arcgis.com/en/javascript/jsapi/map-amd.html|Map}
-         * @see {@link https://developers.arcgis.com/en/javascript/jsapi/layer-amd.html|Layer}
-         */
-
-        var unionExtents = function (newExtent, currentMax) {
-            // console.log("ViewUtilities - unionExtents");
-
-            if (currentMax === null) {
-                return newExtent;
-            } else {
-                return currentMax.union(newExtent);
-            }
-        };
-
         var ViewUtilities = {
 
             /**
@@ -105,6 +89,21 @@ define(["esri/geometry/Extent", "esri/Color", "esri/symbols/SimpleLineSymbol", "
                 return range;
             },
 
+            /*
+            * @see {@link https://developers.arcgis.com/en/javascript/jsapi/extent-amd.html|Extent}
+            * @see {@link https://developers.arcgis.com/en/javascript/jsapi/map-amd.html|Map}
+            * @see {@link https://developers.arcgis.com/en/javascript/jsapi/layer-amd.html|Layer}
+            */
+            unionExtents: function (newExtent, currentMax) {
+                // console.log("ViewUtilities - unionExtents");
+
+                if (!currentMax) {
+                    return newExtent;
+                } else {
+                    return currentMax.union(newExtent);
+                }
+            },
+
             /**
              * Finds the outermost extent of an ArcGIS Layer.  This function is used to examine ArcGIS JavaScript Layers that have a
              * nested Layer structure and attempts to find the outmost layer that encompasses all contained data by performing a union
@@ -127,14 +126,14 @@ define(["esri/geometry/Extent", "esri/Color", "esri/symbols/SimpleLineSymbol", "
                     layer = layers[i];
 
                     if (typeof (layer.getLayers) !== 'undefined') { //kmlLayer
-                        extent = unionExtents(this.findLayerExtent(layer), extent);
+                        extent = this.unionExtents(this.findLayerExtent(layer), extent);
                     } else if (typeof (layer.getImages) !== 'undefined') { //mapImageLayer
                         var images = layer.getImages();
                         for (var j = 0; j < images.length; j++) {
-                            extent = unionExtents(images[j].extent, extent);
+                            extent = this.unionExtents(images[j].extent, extent);
                         }
                     } else { //featureLayer
-                        extent = unionExtents(layer.fullExtent, extent);
+                        extent = this.unionExtents(layer.fullExtent, extent);
                     }
                 }
                 return extent;
@@ -149,36 +148,6 @@ define(["esri/geometry/Extent", "esri/Color", "esri/symbols/SimpleLineSymbol", "
             findFeatureExtent: function (feature) {
                 // console.log("ViewUtilities - findFeatureExtent" );
                 return this.findLayerExtent(feature.esriObject);
-            },
-
-            /**
-             * Finds the outermost Extent of a CMWAPI Overlay.  This function traverses the overlay's child overlays and feature
-             * and unions the extents of all ArcGIS Layers contained therein.  The composite Extent is returned.
-             * @param {cmwapi-adapter/EsriOverlayManager/Overlay} overlay A CMWAPI overlay.
-             * @return {Extent} The outermost extent.
-             */
-            findOverlayExtent: function (overlay) {
-                // console.log("ViewUtilities - findOverlayExtent" );
-                var extent = null;
-                var idx = null;
-
-                // Get the max extent of the features in this overlay.
-                if (typeof (overlay.features) !== 'undefined') {
-                    //for (var i = 0; i < overlay.features.length; i++) {
-                    for (idx in overlay.features) {
-                        if (overlay.features[idx].format !== 'wms' && overlay.features[idx].format !== 'wms-url') {
-                            extent = unionExtents(this.findFeatureExtent(overlay.features[idx]), extent);
-                        }
-                    }
-                }
-
-                // Recursively check any child overlays
-                if (typeof (overlay.children) !== 'undefined') {
-                    for (idx in overlay.children) {
-                        extent = unionExtents(this.findOverlayExtent(overlay.children[idx]), extent);
-                    }
-                }
-                return extent;
             },
 
             // https://developers.arcgis.com/javascript/3/sandbox/sandbox.html?sample=fl_popup

@@ -148,3 +148,8 @@ map.view.zoom
 {
 	"zoom": 15
 }
+
+map.view.center.overlay
+{
+	"overlayId": "WTHR1003-01-1"
+}
