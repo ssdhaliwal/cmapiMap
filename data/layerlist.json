@@ -224,6 +224,30 @@
                     "serviceType": "kml"
                 }
             }
+        },{
+            "id": "TEST1001-02",
+            "text": "KML - Interanet 2",
+            "icon": "/esri-cmapi/plugins/layerlist/icons/KML.png",
+            "state": {
+                "opened": true,
+                "disabled": false,
+                "selected": false
+            },
+            "layer": {
+                "properties": {
+                    "dateCreated": "20180521",
+                    "dateVerified": "20201208",
+                    "url": "/esri-cmapi/testing/testdata/placemark_folders.kml",
+                    "intranet": true,
+                    "credentials": {
+                        "required": false,
+                        "token": ""
+                    }
+                },
+                "params": {
+                    "serviceType": "kml"
+                }
+            }
         }]
     }
 ]

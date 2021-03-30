@@ -475,9 +475,9 @@ img {
     height: 235px;
     bottom: 0px;
     opacity: 0.85;
-    display: none;
+    /* display: none; */
     opacity: 80%;
-    z-index: 99;
+    z-index: -1;
     padding: 0px !important;
 }
 
