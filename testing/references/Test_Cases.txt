@@ -153,3 +153,24 @@ map.view.center.overlay
 {
 	"overlayId": "WTHR1003-01-1"
 }
+{
+	"overlayId": "WTHR1003-01-1",
+	"zoom": 5
+}
+{
+	"overlayId": "WTHR1003-01-1",
+	"zoom": 15
+}
+
+map.view.center.feature
+{
+	"featureId": "WTHR1003-01-1"
+}
+{
+	"featureId": "WTHR1003-01-1",
+	"zoom": 5
+}
+{
+	"featureId": "WTHR1003-01-1",
+	"zoom": 15
+}

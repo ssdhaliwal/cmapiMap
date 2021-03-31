@@ -10,7 +10,7 @@ define(["esri/map", "esri/geometry/Extent",
         let extMap = function (global) {
             let self = this;
             self.instance = null;
-            self.message = global.interfaces.messageService;
+            self.messageService = global.interfaces.messageService;
             self.geometryService = global.interfaces.geometryService;
             self.coordinateFormat = "DMM";
             self.cooordinateElement = $("#latlonpos");
@@ -66,13 +66,13 @@ define(["esri/map", "esri/geometry/Extent",
                     let payload = {};
                     payload.status = "init";
 
-                    self.message.sendMessage("map.status.initialization",
+                    self.messageService.sendMessage("map.status.initialization",
                         JSON.stringify(payload));
 
                     self.instance.on("update-end", function (error) {
                         console.log("extMap - update-end");
                         payload.status = "ready";
-                        self.message.sendMessage("map.status.initialization",
+                        self.messageService.sendMessage("map.status.initialization",
                             JSON.stringify(payload));
 
                         console.log(error);
@@ -189,6 +189,12 @@ define(["esri/map", "esri/geometry/Extent",
 
                 let point = new Point([longitude, latitude],
                     new SpatialReference({ wkid: 4326 }));
+                self.handleCenterLocation(point, zoom);
+            };
+
+            self.handleCenterLocation = function (point, zoom) {
+                console.log("extMap - handleCenterLocation point");
+
                 self.instance.centerAt(point);
 
                 if (zoom) {

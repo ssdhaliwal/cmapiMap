@@ -5,7 +5,6 @@ define(["dojo/_base/lang", "dijit/registry", "dojo/query",
         let extDatagrid = function (global) {
             let self = this;
             let extMap = global.plugins.extMap;
-            let map = global.plugins.extMap.instance;
             self.instance = null;
             self.sources = [];
             self.showing = false;

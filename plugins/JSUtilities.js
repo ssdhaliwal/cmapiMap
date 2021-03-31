@@ -621,13 +621,27 @@ define([],
                 return hex
             },
 
-            isEmpty: function (str) {
+            isEmpty: function (value) {
                 // console.log("JSUtilities - isEmpty");
-                if ((str === undefined) || (str === null) || (str.trim().length === 0)) {
-                    return true;
-                } else {
-                    return false;
+                let result = true;
+
+                if (typeof str === "string") {
+                    if (value.trim().length > 0) {
+                        result = false;
+                    }
+                } else if (typeof value === "object") {
+                    if (Object.keys(value).length > 0) {
+                        result = false;
+                    }
+                } else if (Array.isArray(value)) {
+                    if (value.length > 0) {
+                        result = false;
+                    }
+                } else if ((value !== undefined) || (value !== null)) {
+                    result = false;
                 }
+
+                return result;
             }
         };
 

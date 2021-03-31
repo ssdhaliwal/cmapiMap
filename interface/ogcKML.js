@@ -5,11 +5,8 @@ define(["dojo/_base/lang", "resource/KML2GraphicsLayer",
         let ogcKML = function (global, service) {
             let self = this;
             self.map = global.plugins.extMap.instance;
-            self.search = global.plugins.extSearch;
-            self.notify = global.plugins.extNotify;
-            self.message = global.interfaces.messageService;
-            self.layerList = global.plugins.extLayerlist;
-            self.datagrid = global.plugins.extDatagrid;
+            self.messageService = global.interfaces.messageService;
+            self.extDatagrid = global.plugins.extDatagrid;
             self.service = service;
             self.layer = null;
             self.selectedFeatures = [];
@@ -50,7 +47,7 @@ define(["dojo/_base/lang", "resource/KML2GraphicsLayer",
                 console.log("ogcKML - remove" );
                 console.log("... removed layer: " + self.service.text);
 
-                self.datagrid.removeTab(self);
+                self.extDatagrid.removeTab(self);
 
                 // remove all associated graphics layers
                 if (self.layer.kml.count === 0) {
@@ -64,7 +61,7 @@ define(["dojo/_base/lang", "resource/KML2GraphicsLayer",
                 /*
                 // need to remove any nodes created by the layer
                 $.each(self.selectedFeatures, function (index, feature) {
-                    self.message.sendMessage("map.feature.deselected",
+                    self.messageService.sendMessage("map.feature.deselected",
                         JSON.stringify({
                             overlayId: self.service.parentId,
                             featureId: self.service.id,
@@ -192,42 +189,9 @@ define(["dojo/_base/lang", "resource/KML2GraphicsLayer",
                         new Promise(function (resolve, reject) {
                             resolve(self.layer);
                         }).then(function(layer) {
-                            self.datagrid.addTab(self);
+                            self.extDatagrid.addTab(self);
                         });
                     }
-                    /*
-                      else {
-                        // if more than one layer; then we need to create node for each layer
-                        let folders = undefined;
-                        $.each(layer.kml, function (index, subLayer) {
-                            if (subLayer.hasOwnProperty("folderId")) {
-                                folders = subLayer.folderId.split("/");
-
-                                let prespective = null;
-                                if (subLayer.graphicsLayer) {
-                                    prespective = subLayer.graphicsLayer;
-                                    self.map.addLayer(prespective);
-                                }
-    
-                                if (folders.length === 1) {
-                                    self.layerList.handleAddOverlay({
-                                        "name": subLayer.name,
-                                        "overlayId": folders[0],
-                                        "parentId": service.id,
-                                        "perspective": prespective
-                                    });
-                                } else {
-                                    self.layerList.handleAddOverlay({
-                                        "name": subLayer.name,
-                                        "overlayId": folders[folders.length - 1],
-                                        "parentId": folders[folders.length - 2],
-                                        "perspective": prespective
-                                    });
-                                }
-                            }
-                        });
-                    }
-                    */
                 }, function (error) {
                     console.log(error);
                 });
@@ -284,8 +248,18 @@ define(["dojo/_base/lang", "resource/KML2GraphicsLayer",
                 });
             };
 
-            self.centerOn = function(id) {
-                console.log("ogcKML - centerOn" );
+            self.getExtent = function (featureId) {
+                console.log("ogcKML - getExtent");
+
+            };
+
+            self.centerOnExtent = function (zoom) {
+                console.log("ogcKML - centerOnExtent");
+
+            };
+
+            self.centerOnFeature = function (featureId, zoom) {
+                console.log("ogcKML - centerOnFeature");
 
             };
 

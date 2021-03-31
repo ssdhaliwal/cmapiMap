@@ -17,11 +17,11 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
 
         let esriFeatureService = function (global, service) {
             let self = this;
+            self.extMap = global.plugins.extMap;
             self.map = global.plugins.extMap.instance;
-            self.search = global.plugins.extSearch;
-            self.notify = global.plugins.extNotify;
-            self.message = global.interfaces.messageService;
-            self.datagrid = global.plugins.extDatagrid;
+            self.extSearch = global.plugins.extSearch;
+            self.messageService = global.interfaces.messageService;
+            self.extDatagrid = global.plugins.extDatagrid;
             self.service = service;
             self.layer = null;
             self.selectedFeatures = [];
@@ -493,7 +493,7 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                     new Promise(function (resolve, reject) {
                         resolve(self);
                     }).then(function (layer) {
-                        self.datagrid.addTab(self);
+                        self.extDatagrid.addTab(self);
                     });                    
                 });
 
@@ -520,7 +520,7 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                         deselectedName: $event.graphic.getLayer().name
                     });
 
-                    self.message.sendMessage("map.feature.clicked",
+                    self.messageService.sendMessage("map.feature.clicked",
                         JSON.stringify({
                             overlayId: self.service.parentId,
                             featureId: self.service.id,
@@ -531,7 +531,7 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                             keys: []
                         }));
 
-                    self.message.sendMessage("map.status.selected",
+                    self.messageService.sendMessage("map.status.selected",
                         JSON.stringify({
                             overlayId: self.service.parentId,
                             selectedFeatures: [{
@@ -558,7 +558,7 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                                 });
                             }
 
-                            self.message.sendMessage("map.feature.selected",
+                            self.messageService.sendMessage("map.feature.selected",
                                 JSON.stringify({
                                     overlayId: self.service.parentId,
                                     featureId: self.service.id,
@@ -567,7 +567,7 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                                     features: featureItems
                                 }));
                         } else {
-                            self.message.sendMessage("map.feature.selected",
+                            self.messageService.sendMessage("map.feature.selected",
                                 JSON.stringify({
                                     overlayId: self.service.parentId,
                                     featureId: self.service.id,
@@ -580,7 +580,7 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
 
                 self.layer.on('mouse-down', function ($event) {
                     console.log("esriFeatureService - registerEvents/mouse-down", $event);
-                    self.message.sendMessage("map.feature.mousedown",
+                    self.messageService.sendMessage("map.feature.mousedown",
                         JSON.stringify({
                             overlayId: self.service.parentId,
                             featureId: self.service.id,
@@ -594,7 +594,7 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
 
                 self.layer.on('mouse-up', function ($event) {
                     console.log("esriFeatureService - registerEvents/mouse-up", $event);
-                    self.message.sendMessage("map.feature.mouseup",
+                    self.messageService.sendMessage("map.feature.mouseup",
                         JSON.stringify({
                             overlayId: self.service.parentId,
                             featureId: self.service.id,
@@ -626,15 +626,15 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                 console.log("esriFeatureService - remove");
                 console.log("... removed layer: " + self.service.text);
                 if (self.layer.hasOwnProperty("searchOptions")) {
-                    self.search.removeSource(self.layer.searchOptions);
+                    self.extSearch.removeSource(self.layer.searchOptions);
                 }
                 self.deregisterSearch();
 
-                self.datagrid.removeTab(self);
+                self.extDatagrid.removeTab(self);
 
                 self.map.removeLayer(self.layer);
                 $.each(self.selectedFeatures, function (index, feature) {
-                    self.message.sendMessage("map.feature.deselected",
+                    self.messageService.sendMessage("map.feature.deselected",
                         JSON.stringify({
                             overlayId: self.service.parentId,
                             featureId: self.service.id,
@@ -661,14 +661,14 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                     self.searchOptions.maxResults = params.searchOptions.maxResults;
                     self.searchOptions.outFields = params.outFields;
 
-                    self.search.addSource(self.searchOptions);
+                    self.extSearch.addSource(self.searchOptions);
                 }
             };
 
             self.deregisterSearch = function () {
                 console.log("esriFeatureService - deregisterSearch");
                 if (self.searchOptions !== null) {
-                    self.search.removeSource(self.searchOptions);
+                    self.extSearch.removeSource(self.searchOptions);
                 }
             }
 
@@ -721,8 +721,32 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                 });
             };
 
-            self.centerOn = function (id) {
-                console.log("esriFeatureService - centerOn");
+            self.getExtent = function (featureId) {
+                console.log("esriFeatureService - getExtent");
+		
+				if (self.layer && self.layer.fullExtent) {
+					return self.layer.fullExtent;
+				} else {
+					return null;
+				}
+            };
+
+            self.centerOnExtent = function (zoom) {
+                console.log("esriFeatureService - centerOnExtent");
+
+                if (self.layer && self.layer.fullExtent) {
+					let extent = self.layer.fullExtent;
+
+                    if (!JSUtilities.getBoolean(zoom) || (zoom === "auto")) {
+                        self.extMap.handleSetExtent(extent, true);
+                    } else {
+                        self.extMap.handleCenterLocation(extent.getCenter());
+                    }
+				}
+            };
+
+            self.centerOnFeature = function (markerId, zoom) {
+                console.log("esriFeatureService - centerOnFeature");
 
             };
 

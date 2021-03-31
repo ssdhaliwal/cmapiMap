@@ -104,52 +104,6 @@ define(["esri/geometry/Extent", "esri/Color", "esri/symbols/SimpleLineSymbol", "
                 }
             },
 
-            /**
-             * Finds the outermost extent of an ArcGIS Layer.  This function is used to examine ArcGIS JavaScript Layers that have a
-             * nested Layer structure and attempts to find the outmost layer that encompasses all contained data by performing a union
-             * of all their extents.
-             * @param {Layer} esriLayer An ArcGIS JavaScript Layer
-             * @return {Extent}  The outermost extent
-             */
-            findLayerExtent: function (esriLayer) {
-                // console.log("ViewUtilities - findLayerExtent" );
-                var extent = null;
-                try {
-                    var layers = esriLayer.getLayers();
-                }
-                catch (exception) {
-                    var layers = [esriLayer];
-                }
-
-                var layer;
-                for (var i = 0; i < layers.length; i++) {
-                    layer = layers[i];
-
-                    if (typeof (layer.getLayers) !== 'undefined') { //kmlLayer
-                        extent = this.unionExtents(this.findLayerExtent(layer), extent);
-                    } else if (typeof (layer.getImages) !== 'undefined') { //mapImageLayer
-                        var images = layer.getImages();
-                        for (var j = 0; j < images.length; j++) {
-                            extent = this.unionExtents(images[j].extent, extent);
-                        }
-                    } else { //featureLayer
-                        extent = this.unionExtents(layer.fullExtent, extent);
-                    }
-                }
-                return extent;
-            },
-
-            /**
-             * Convenience function for finding the outermost extent of a CMWAPI feature.  This function pulls the equivalent
-             * ArcGIS layer from the feature object and defers to findLayerExtent for the bulk of the work.
-             * @param {cmwapi-adapter/EsriOverlayManager/Feature} feature A CMWAPI feature.
-             * @return {Extent}  The outermost extent
-             */
-            findFeatureExtent: function (feature) {
-                // console.log("ViewUtilities - findFeatureExtent" );
-                return this.findLayerExtent(feature.esriObject);
-            },
-
             // https://developers.arcgis.com/javascript/3/sandbox/sandbox.html?sample=fl_popup
             pointToExtent: function (map, point, toleranceInPixel) {
                 // console.log("ViewUtilities - pointToExtent" );

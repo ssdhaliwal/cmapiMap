@@ -4,9 +4,7 @@ define(["esri/layers/ArcGISDynamicMapServiceLayer", "plugins/ViewUtilities"],
         let esriDynamicMapService = function (global, service) {
             let self = this;
             self.map = global.plugins.extMap.instance;
-            self.search = global.plugins.extSearch;
-			self.notify = global.plugins.extNotify;
-			self.message = global.interfaces.messageService;
+			self.extNotify = global.plugins.extNotify;
             self.service = service;
             self.layer = null;
 
@@ -101,7 +99,7 @@ define(["esri/layers/ArcGISDynamicMapServiceLayer", "plugins/ViewUtilities"],
                     if ($event.error.hasOwnProperty("code")) {
                         if (($event.error.code >= 400) && ($event.error.code < 600)) {
                             let msg = 'Unable to apply layer - ' + $event.error;
-                            self.notify.errorNotifier(msg);
+                            self.extNotify.errorNotifier(msg);
                         }
                     }
                 });
@@ -115,11 +113,37 @@ define(["esri/layers/ArcGISDynamicMapServiceLayer", "plugins/ViewUtilities"],
             self.remove = function() {
                 console.log("esriDynamicMapService - remove");
                 console.log("... removed layer: " + self.service.text);
-                if (self.layer.hasOwnProperty("searchOptions")) {
-                    self.search.removeSource(self.layer.searchOptions);
-                }
                 self.map.removeLayer(self.layer);
              };
+
+			 self.getExtent = function (featureId) {
+                console.log("esriDynamicMapService - getExtent");
+		
+				if (self.layer && self.layer.fullExtent) {
+					return self.layer.fullExtent;
+				} else {
+					return null;
+				}
+            };
+
+            self.centerOnExtent = function (zoom) {
+                console.log("esriDynamicMapService - centerOnExtent");
+
+				if (self.layer && self.layer.fullExtent) {
+					let extent = self.layer.fullExtent;
+
+                    if (!JSUtilities.getBoolean(zoom) || (zoom === "auto")) {
+                        self.extMap.handleSetExtent(extent, true);
+                    } else {
+                        self.extMap.handleCenterLocation(extent.getCenter());
+                    }
+				}
+            };
+
+            self.centerOnFeature = function (markerId, zoom) {
+                console.log("esriDynamicMapService - centerOnFeature");
+
+            };
 
             self.init();
         };

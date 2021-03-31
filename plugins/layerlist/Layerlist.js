@@ -7,8 +7,7 @@ define(["vendor/js/jstree/jstree",
 
         let extLayerlist = function (global) {
             let self = this;
-            self.message = global.interfaces.messageService;
-            self.datagrid = global.plugins.extDatagrid;
+            self.messageService = global.interfaces.messageService;
             self.extMap = global.plugins.extMap;
             self.layerlist = null;
             self.instance = null;
@@ -219,7 +218,7 @@ define(["vendor/js/jstree/jstree",
                             }
                         } catch (exception) {
                             let payload = { "type": "map.overlay.*", "msg": "user click on query overlay", "error": exception };
-                            self.message.sendMessage("map.error", JSON.stringify(payload));
+                            self.messageService.sendMessage("map.error", JSON.stringify(payload));
                         }
                     });
                 }
@@ -370,7 +369,7 @@ define(["vendor/js/jstree/jstree",
                         }
                     } else {
                         let payload = { "type": "map.overlay.create", "msg": request, "error": "duplicate overlay, already exists!" };
-                        self.message.sendMessage("map.error", JSON.stringify(payload));
+                        self.messageService.sendMessage("map.error", JSON.stringify(payload));
                     }
                 }
             };
@@ -449,7 +448,7 @@ define(["vendor/js/jstree/jstree",
                 console.log("Layerlist - handlePlotFeatureUrl" );
                 // create the overlay if not existing
                 if (request.hasOwnProperty("overlayId") && !JSUtilities.isEmpty(request.overlayId)) {
-                    global.interfaces.messageService.cmapiAdapter.onMapOverlayCreateUpdate({ overlayId: request.overlayId });
+                    self.messageService.cmapiAdapter.onMapOverlayCreateUpdate({ overlayId: request.overlayId });
                 }
 
                 // check if feature id already exists
@@ -556,7 +555,7 @@ define(["vendor/js/jstree/jstree",
                     let extent;
                     features.forEach((feature) => {
                         if (feature.original && feature.original.layer && feature.original.perspective) {
-                            extent = ViewUtilities.unionExtents(ViewUtilities.findLayerExtent(feature.original.perspective.layer), extent);
+                            extent = ViewUtilities.unionExtents(feature.original.perspective.getExtent(), extent);
                         }
                     });
 
@@ -564,7 +563,7 @@ define(["vendor/js/jstree/jstree",
                         if (!JSUtilities.getBoolean(zoom) || (zoom === "auto")) {
                             self.extMap.handleSetExtent(extent, true);
                         } else {
-                            self.extMap.centerAt(extent.getCenter());
+                            self.extMap.handleCenterLocation(extent.getCenter());
                         }
                     }
                 }
@@ -580,17 +579,8 @@ define(["vendor/js/jstree/jstree",
 
                     // if not doing by markerId, then we handle layer extent
                     if (!markerId) {
-                        let extent;
                         if (feature.original && feature.original.layer && feature.original.perspective) {
-                            extent = ViewUtilities.findLayerExtent(feature.original.perspective);
-                        }
-
-                        if(extent) {
-                            if (!JSUtilities.getBoolean(zoom) || (zoom === "auto")) {
-                                self.extMap.handleSetExtent(extent, true);
-                            } else {
-                                self.extMap.centerAt(extent.getCenter());
-                            }
+                            feature.original.perspective.centerOnExtent(markerId, zoom);
                         }
                     } else {
                         // if feature layer, we need to do a query...; if local, then we need to search

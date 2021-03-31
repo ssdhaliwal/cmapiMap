@@ -6,7 +6,7 @@ define(["esri/dijit/Search", "esri/layers/FeatureLayer", "esri/InfoTemplate", "e
         let extSearch = function (global) {
             let self = this;
             let map = global.plugins.extMap.instance;
-            let notify = global.plugins.extNotify;
+            let extNotify = global.plugins.extNotify;
             self.instance = null;
             self.sources = null;
 
@@ -93,7 +93,7 @@ define(["esri/dijit/Search", "esri/layers/FeatureLayer", "esri/InfoTemplate", "e
 
                             return retVal;
                         } else {
-                            notify.errorNotifier("Search templatitudee error</br>EXAMPLE: 43.45N, 22.12W");
+                            extNotify.errorNotifier("Search templatitudee error</br>EXAMPLE: 43.45N, 22.12W");
                         }
                     } else if (geocoderName === "latitude/longitude D/M.m") {
                         if (checkDM != null && self.get('value') == checkDM[0]) {
@@ -157,7 +157,7 @@ define(["esri/dijit/Search", "esri/layers/FeatureLayer", "esri/InfoTemplate", "e
 
                             return retVal;
                         } else {
-                            notify.errorNotifier("Search templatitudee error</br>EXAMPLE: 22 12.432'S, 156 12.3238'E");
+                            extNotify.errorNotifier("Search templatitudee error</br>EXAMPLE: 22 12.432'S, 156 12.3238'E");
                         }
                     } else if (geocoderName === "latitude/longitude D/M/S.s") {
                         if (checkDMS != null && self.get('value') == checkDMS[0]) {
@@ -238,14 +238,14 @@ define(["esri/dijit/Search", "esri/layers/FeatureLayer", "esri/InfoTemplate", "e
 
                             return retVal;
                         } else {
-                            notify.errorNotifier("Search templatitudee error</br>EXAMPLE:13 12' 12.324N, 23 12' 55.324E");
+                            extNotify.errorNotifier("Search templatitudee error</br>EXAMPLE:13 12' 12.324N, 23 12' 55.324E");
                         }
                     } else if (geocoderName === "MGRS / USNG") {
                         if (checkMGRS != null && self.get('value') == checkMGRS[0]) {
                             var retVal = self.inherited(arguments);
                             return retVal;
                         } else {
-                            notify.errorNotifier("Search templatitudee error</br>NO SPACES. EXAMPLE: 18SUH6789043210");
+                            extNotify.errorNotifier("Search templatitudee error</br>NO SPACES. EXAMPLE: 18SUH6789043210");
                         }
                     } else {
                         let retVal = self.inherited(arguments);
