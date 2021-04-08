@@ -17,22 +17,22 @@
 
 <body class="claro">
 	<div id="map">
-		<span id="latlonpos" class="latlonpos"></span>
+		<span id="latlonpos" class="latlonpos" style="display: none;"></span>
 	</div>
-	<div id="home" rel="tooltip" title="Home"></div>
+	<div id="home" rel="tooltip" title="Home" style="display: none;"></div>
 
-	<div id="control-slider" rel="tooltip" title="Map Tools">
+	<div id="control-slider" rel="tooltip" title="Map Tools" style="display: none;">
 	</div>
-	<div id="map-controls2">
+	<div id="map-controls2" style="display: none;">
 		<div id="search" rel="tooltip" title="Search"></div>
 	</div>
 	<div id="map-controls1">
-		<div id="basemaps" rel="tooltip" title="Base Maps"></div>
-		<div id="legend" rel="tooltip" title="Legend"></div>
-		<div id="bookmark" rel="tooltip" title="Bookmark"></div>
-		<div id="config" rel="tooltip" title="Config"></div>
-		<div id="layerlist" rel="tooltip" title="Layerlist"></div>
-		<div id="datagrid" rel="tooltip" title="DataGrid"></div>
+		<div id="basemaps" rel="tooltip" title="Base Maps" style="display: none;"></div>
+		<div id="legend" rel="tooltip" title="Legend" style="display: none;"></div>
+		<div id="bookmark" rel="tooltip" title="Bookmark" style="display: none;"></div>
+		<div id="config" rel="tooltip" title="Config" style="display: none;"></div>
+		<div id="layerlist" rel="tooltip" title="Layerlist" style="display: none;"></div>
+		<div id="datagrid" rel="tooltip" title="DataGrid" style="display: none;"></div>
 	</div>
 
 	<div id="basemaps_wrapper" class="basemaptip" style="display:none;">
@@ -82,6 +82,7 @@
 				// Add ESRI JS API, which starts dojo AMD loader
 				addScript(config.jqueryPath);
 
+				addScript(config.globals);
 				addScript(config.esriJsPath);
 				addScript(config.bootstrapPath);
 				addScript(config.milSymbolPath);

@@ -1,9 +1,9 @@
 define(["esri/dijit/Legend"],
     function (esriLegend) {
 
-        let extLegend = function (global) {
+        let extLegend = function (globals) {
             let self = this;
-            let map = global.plugins.extMap.instance;
+            let map = globals.plugins.extMap.instance;
             self.layers = [];
             self.instance = null;
 
@@ -22,7 +22,7 @@ define(["esri/dijit/Legend"],
 
             self.handleClick = function () {
                 console.log("extLegend - handleClick");
-                global.plugins.extToolbar.toggleOptions("#legend");
+                globals.plugins.extToolbar.toggleOptions("#legend");
 
                 if ($("#legend").hasClass("selected")) {
                     $("#infoPanel_wrapper").css("display", "block");
@@ -30,6 +30,18 @@ define(["esri/dijit/Legend"],
 
                 let container = dijit.byId("infoPanel_container");
                 container.selectChild("legendPane", true);
+            };
+
+            self.hide = function() {
+                console.log("extLegend - hide");
+
+                $("#legend").css("display", "none");
+            };
+            
+            self.show = function() {
+                console.log("extLegend - show");
+
+                $("#legend").css("display", "block");
             };
 
             self.registerEvents = function () {

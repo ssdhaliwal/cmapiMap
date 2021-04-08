@@ -1,9 +1,9 @@
 define(["esri/geometry/Extent", "plugins/ViewUtilities"],
     function (esriExtent, ViewUtilties) {
 
-        let extHome = function (global) {
+        let extHome = function (globals) {
             let self = this;
-            let map = global.plugins.extMap.instance;
+            let map = globals.plugins.extMap.instance;
 
             self.init = function () {
                 console.log("extHome - init");
@@ -26,13 +26,13 @@ define(["esri/geometry/Extent", "plugins/ViewUtilities"],
                 let range = ViewUtilties.scaleToZoomAltitude(map);
                 let zoom = map.getZoom();
 
-                global.data.home = { bounds: bounds, center: center, range: range, zoom: zoom };
+                globals.data.home = { bounds: bounds, center: center, range: range, zoom: zoom };
                 self.registerEvents();
             };
 
             self.handleClick = function () {
                 console.log("extHome - handleClick");
-                let data = global.data.home;
+                let data = globals.data.home;
                 let extent = new esriExtent(data.bounds.southWest.lon,
                     data.bounds.southWest.lat,
                     data.bounds.northEast.lon,
@@ -55,6 +55,18 @@ define(["esri/geometry/Extent", "plugins/ViewUtilities"],
                 else {
                     map.centerAt(extent.getCenter());
                 }
+            };
+
+            self.hide = function() {
+                console.log("extHome - hide");
+
+                $("#home").css("display", "none");
+            };
+            
+            self.show = function() {
+                console.log("extHome - show");
+
+                $("#home").css("display", "block");
             };
 
             self.registerEvents = function () {

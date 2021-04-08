@@ -15,13 +15,13 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
         Query, array, domConstruct,
         webMercatorUtils, graphicsUtils, ViewUtilities, JSUtilities) {
 
-        let esriFeatureService = function (global, service) {
+        let esriFeatureService = function (globals,service) {
             let self = this;
-            self.extMap = global.plugins.extMap;
-            self.map = global.plugins.extMap.instance;
-            self.extSearch = global.plugins.extSearch;
-            self.messageService = global.interfaces.messageService;
-            self.extDatagrid = global.plugins.extDatagrid;
+            self.extMap = globals.plugins.extMap;
+            self.map = globals.plugins.extMap.instance;
+            self.extSearch = globals.plugins.extSearch;
+            self.messageService = globals.interfaces.messageService;
+            self.extDatagrid = globals.plugins.extDatagrid;
             self.service = service;
             self.layer = null;
             self.selectedFeatures = [];
@@ -740,7 +740,7 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                     if (!JSUtilities.getBoolean(zoom) || (zoom === "auto")) {
                         self.extMap.handleSetExtent(extent, true);
                     } else {
-                        self.extMap.handleCenterLocation(extent.getCenter());
+                        self.extMap.handleCenterLocationPoint(extent.getCenter());
                     }
 				}
             };

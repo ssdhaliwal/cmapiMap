@@ -2,13 +2,13 @@ define(["esri/dijit/BasemapGallery", "esri/dijit/BasemapLayer", "esri/dijit/Base
     "plugins/ViewUtilities", "plugins/JSUtilities"],
     function (esriBasemapGallery, esriBasemapLayer, esriBasemap, ViewUtilties, JSUtilities) {
 
-        let extBasemap = function (global) {
+        let extBasemap = function (globals) {
             let self = this;
-            let map = global.plugins.extMap.instance;
+            let map = globals.plugins.extMap.instance;
             self.instance = null;
 
             self.init = function () {
-                console.log("extBasemap = init");
+                console.log("extBasemap - init");
                 self.instance = new esriBasemapGallery({
                     showArcGISBasemaps: true,
                     /* 20191029 - depreciated due to no license key
@@ -130,18 +130,30 @@ define(["esri/dijit/BasemapGallery", "esri/dijit/BasemapLayer", "esri/dijit/Base
             };
 
             self.handleClick = function () {
-                console.log("extBasemap = handleClick");
-                global.plugins.extToolbar.toggleOptions("#basemaps");
+                console.log("extBasemap - handleClick");
+                globals.plugins.extToolbar.toggleOptions("#basemaps");
 
                 if ($("#basemaps").hasClass("selected")) {
                     $("#basemaps_wrapper").css("display", "block");
                 }
             };
 
+            self.hide = function() {
+                console.log("extBasemap - hide");
+
+                $("#basemaps").css("display", "none");
+            };
+            
+            self.show = function() {
+                console.log("extBasemap - show");
+
+                $("#basemaps").css("display", "block");
+            };
+
             self.registerEvents = function() {
-                console.log("extBasemap = registerEvents");
+                console.log("extBasemap - registerEvents");
                 $("#basemaps").on("click", function($event) {
-                    console.log("extBasemap = registerEvents/click", $event);
+                    console.log("extBasemap - registerEvents/click", $event);
                     self.handleClick();
                 });
             };

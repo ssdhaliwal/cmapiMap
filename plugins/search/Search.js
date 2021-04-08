@@ -3,10 +3,10 @@ define(["esri/dijit/Search", "esri/layers/FeatureLayer", "esri/InfoTemplate", "e
     "dojo/_base/declare"],
     function (esriSearch, esriFeatureLayer, esriInfoTemplate, esriLocator, ViewUtilities, declare) {
 
-        let extSearch = function (global) {
+        let extSearch = function (globals) {
             let self = this;
-            let map = global.plugins.extMap.instance;
-            let extNotify = global.plugins.extNotify;
+            let map = globals.plugins.extMap.instance;
+            let extNotify = globals.plugins.extNotify;
             self.instance = null;
             self.sources = null;
 
@@ -338,6 +338,18 @@ define(["esri/dijit/Search", "esri/layers/FeatureLayer", "esri/InfoTemplate", "e
 
             self.handleClick = function () {
                 console.log("extSearch - handleClick");
+            };
+
+            self.hide = function() {
+                console.log("extSearch - hide");
+
+                $("#search").css("display", "none");
+            };
+            
+            self.show = function() {
+                console.log("extSearch - show");
+
+                $("#search").css("display", "block");
             };
 
             self.registerEvents = function () {

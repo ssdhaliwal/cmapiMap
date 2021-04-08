@@ -1,10 +1,10 @@
 define(["esri/layers/ArcGISDynamicMapServiceLayer", "plugins/ViewUtilities"],
     function (ArcGISDynamicMapServiceLayer, ViewUtilities) {
 
-        let esriDynamicMapService = function (global, service) {
+        let esriDynamicMapService = function (globals,service) {
             let self = this;
-            self.map = global.plugins.extMap.instance;
-			self.extNotify = global.plugins.extNotify;
+            self.map = globals.plugins.extMap.instance;
+			self.extNotify = globals.plugins.extNotify;
             self.service = service;
             self.layer = null;
 
@@ -135,7 +135,7 @@ define(["esri/layers/ArcGISDynamicMapServiceLayer", "plugins/ViewUtilities"],
                     if (!JSUtilities.getBoolean(zoom) || (zoom === "auto")) {
                         self.extMap.handleSetExtent(extent, true);
                     } else {
-                        self.extMap.handleCenterLocation(extent.getCenter());
+                        self.extMap.handleCenterLocationPoint(extent.getCenter());
                     }
 				}
             };

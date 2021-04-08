@@ -4,7 +4,7 @@
 // (AMD) are included in the webapp's HTML file to prevent issues.
 
 require([
-  "dojo/parser",
+  "dojo/parser", 
   "esri/geometry/projection",
   "plugins/notify/Notify", "plugins/toolbar/Toolbar", "plugins/config/Config", "plugins/popup/Popup", "plugins/map/Map", "plugins/scalebar/Scalebar",
   "plugins/home/Home", "plugins/search/Search", "plugins/basemap/Basemap", "plugins/legend/Legend", "plugins/bookmarks/Bookmarks",
@@ -19,10 +19,9 @@ require([
   extDatagrid, extLayerlist,
   geocodingService, geometryService, geoprocessingService, messageService
 ) {
-  var global = {};
-  global.plugins = {};
-  global.data = {};
-  global.interfaces = {};
+  globals.plugins = {};
+  globals.data = {};
+  globals.interfaces = {};
 
   parser.parse();
 
@@ -42,30 +41,70 @@ require([
   $("[rel=tooltip]").tooltip({
     placement: "bottom"
   });
-  global.plugins.extMap = { };
-  global.interfaces.messageService = new messageService(global);
-  global.interfaces.geocodingService = new geocodingService(global);
-  global.interfaces.geometryService = new geometryService(global);
-  global.interfaces.geoprocessingService = new geoprocessingService(global);
+  globals.plugins.extMap = { };
+  globals.interfaces.messageService = new messageService(globals);
+  globals.interfaces.geocodingService = new geocodingService(globals);
+  globals.interfaces.geometryService = new geometryService(globals);
+  globals.interfaces.geoprocessingService = new geoprocessingService(globals);
 
-  global.plugins.extNotify = new extNotify(global);
-  global.plugins.extToolbar = new extToolbar(global);
-  global.plugins.extConfig = new extConfig(global);
-  global.plugins.extPopup = new extPopup(global);
-  global.plugins.extMap = new extMap(global);
+  globals.plugins.extNotify = new extNotify(globals);
+  globals.plugins.extToolbar = new extToolbar(globals);
+  globals.plugins.extConfig = new extConfig(globals);
+  globals.plugins.extPopup = new extPopup(globals);
+  globals.plugins.extMap = new extMap(globals);
 
-  global.initialize = function () {
+  globals.initialize = function () {
     console.log("app - initialize");
-    global.plugins.extScalebar = new extScalebar(global);
-    global.plugins.extHome = new extHome(global);
-    global.plugins.extSearch = new extSearch(global);
-    global.plugins.extBasemap = new extBasemap(global);
-    global.plugins.extLegend = new extLegend(global);
-    global.plugins.extBookmarks = new extBookmarks(global);
-    global.plugins.extDatagrid = new extDatagrid(global);
+    if (globals.options.map.scalebar) {
+      globals.plugins.extScalebar = new extScalebar(globals);
+    }
+
+    globals.plugins.extHome = new extHome(globals);
+
+    if (globals.options.search.available) {
+      globals.plugins.extSearch = new extSearch(globals);
+    }
+    
+    globals.plugins.extBasemap = new extBasemap(globals);
+    globals.plugins.extLegend = new extLegend(globals);
+    globals.plugins.extBookmarks = new extBookmarks(globals);
+    globals.plugins.extDatagrid = new extDatagrid(globals);
 
     window.setTimeout(() => {
-      global.plugins.extLayerlist = new extLayerlist(global);
+      globals.plugins.extLayerlist = new extLayerlist(globals);
+
+      // update the ui based on config opions
+      if (globals.options.basemap.available) {
+        globals.plugins.extBasemap.show();
+      }
+      if (globals.options.bookmarks.available) {
+        globals.plugins.extBookmarks.show();
+      }
+      if (globals.options.config.available) {
+        globals.plugins.extConfig.show();
+      }
+      if (globals.options.datagrid.available) {
+        globals.plugins.extDatagrid.show();
+      }
+      if (globals.options.home.available) {
+        globals.plugins.extHome.show();
+      }
+      if (globals.options.layerlist.available) {
+        globals.plugins.extLayerlist.show();
+      }
+      if (globals.options.map.infobar) {
+        $("#latlonpos").css("display", "block");
+      }
+      if (globals.options.map.zoombar) {
+        $(".esriSimpleSliderIncrementButton").css("display", "block");
+        $(".esriSimpleSliderDecrementButton").css("display", "block");
+      }
+      if (globals.options.legend.available) {
+        globals.plugins.extLegend.show();
+      }
+      if (globals.options.toolbar.available) {
+        globals.plugins.extToolbar.show();
+      }
     }, 1000);
   }
 });

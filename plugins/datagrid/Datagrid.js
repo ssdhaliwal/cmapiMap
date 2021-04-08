@@ -2,9 +2,9 @@ define(["dojo/_base/lang", "dijit/registry", "dojo/query",
     "dijit/layout/TabContainer", "dijit/layout/ContentPane", "dojox/grid/DataGrid",
     "dojo/data/ItemFileWriteStore", "dojo/data/ItemFileReadStore"],
     function (lang, registry, query, TabContainer, ContentPane, DataGrid, ItemFileWriteStore, ItemFileReadStore) {
-        let extDatagrid = function (global) {
+        let extDatagrid = function (globals) {
             let self = this;
-            let extMap = global.plugins.extMap;
+            let extMap = globals.plugins.extMap;
             self.instance = null;
             self.sources = [];
             self.showing = false;
@@ -43,6 +43,18 @@ define(["dojo/_base/lang", "dijit/registry", "dojo/query",
                 }
 
                 $("#datagrid").toggleClass("selected");
+            };
+
+            self.show = function() {
+                console.log("extDatagrid - show");
+
+                $("#datagrid").css("display", "block");
+            };
+
+            self.hide = function() {
+                console.log("extDatagrid - hide");
+
+                $("#datagrid").css("display", "none");
             };
 
             self.registerEvents = function () {
@@ -111,7 +123,7 @@ define(["dojo/_base/lang", "dijit/registry", "dojo/query",
                                     let idx = $event.rowIndex,
                                         rowData = grid.getItem(idx);
                                     
-                                    extMap.handleCenterLocation(rowData.latitude, rowData.longitude, null); 
+                                    extMap.handleCenterLocationLatLon(rowData.latitude, rowData.longitude); 
                                 });
 
                                 self.tabs['grid_' + serviceObject.service.text] = grid;

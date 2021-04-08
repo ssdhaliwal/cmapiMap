@@ -3,7 +3,7 @@ define(["esri/tasks/GeometryService", "esri/geometry/webMercatorUtils", "dojo/De
     function (GeometryService, webMercatorUtils, Deferred,
         ViewUtilities) {
 
-        let geometryService = function (global) {
+        let geometryService = function (globals) {
             let self = this;
             self.instance = new GeometryService(window.esriGeometryService);
 

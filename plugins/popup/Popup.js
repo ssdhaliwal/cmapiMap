@@ -1,7 +1,7 @@
 define(["esri/dijit/Popup", "esri/symbols/SimpleFillSymbol", "esri/Color", "dojo/dom-class", "dojo/dom-construct"],
   function (esriPopup, SimpleFillSymbol, Color, domClass, domConstruct) {
 
-    let extPopup = function (global) {
+    let extPopup = function (globals) {
       let self = this;
       self.fillSymbol = new SimpleFillSymbol("solid", null, new Color("#A4CE67"));;
       self.instance = null;

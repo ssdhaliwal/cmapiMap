@@ -1,7 +1,7 @@
 define(["vendor/js/notify.min"],
     function () {
 
-        let extNotify = function (global) {
+        let extNotify = function (globals) {
             let self = this;
 
             self.init = function () {

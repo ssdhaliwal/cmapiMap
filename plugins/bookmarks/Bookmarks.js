@@ -1,9 +1,9 @@
 define(["esri/dijit/Bookmarks"],
     function (esriBookmarks) {
 
-        let extBookmark = function (global) {
+        let extBookmark = function (globals) {
             let self = this;
-            let map = global.plugins.extMap.instance;
+            let map = globals.plugins.extMap.instance;
             self.instance = null;
             self.sources = [];
 
@@ -20,7 +20,7 @@ define(["esri/dijit/Bookmarks"],
 
             self.handleClick = function () {
                 console.log("extBookmark - handleClick");
-                global.plugins.extToolbar.toggleOptions("#bookmark");
+                globals.plugins.extToolbar.toggleOptions("#bookmark");
 
                 if ($("#bookmark").hasClass("selected")) {
                     $("#infoPanel_wrapper").css("display", "block");
@@ -28,6 +28,18 @@ define(["esri/dijit/Bookmarks"],
 
                 let container = dijit.byId("infoPanel_container");
                 container.selectChild("bookmarkPane", true);
+            };
+
+            self.hide = function() {
+                console.log("extBookmark - hide");
+
+                $("#bookmark").css("display", "none");
+            };
+            
+            self.show = function() {
+                console.log("extBookmark - show");
+
+                $("#bookmark").css("display", "block");
             };
 
             self.registerEvents = function() {

@@ -2,11 +2,11 @@ define(["dojo/_base/lang", "resource/KML2GraphicsLayer",
     "plugins/ViewUtilities", "plugins/JSUtilities"],
     function (lang, KML2GraphicsLayer, ViewUtilities, JSUtilities) {
 
-        let ogcKML = function (global, service) {
+        let ogcKML = function (globals,service) {
             let self = this;
-            self.map = global.plugins.extMap.instance;
-            self.messageService = global.interfaces.messageService;
-            self.extDatagrid = global.plugins.extDatagrid;
+            self.map = globals.plugins.extMap.instance;
+            self.messageService = globals.interfaces.messageService;
+            self.extDatagrid = globals.plugins.extDatagrid;
             self.service = service;
             self.layer = null;
             self.selectedFeatures = [];

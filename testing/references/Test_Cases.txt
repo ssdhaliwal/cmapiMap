@@ -174,3 +174,26 @@ map.view.center.feature
 	"featureId": "WTHR1003-01-1",
 	"zoom": 15
 }
+
+map.view.center.location
+{
+   "location":{
+      "lat":38.8708,
+      "lon":-77.0558
+   }
+}
+
+map.view.center.bounds
+{
+   "bounds":{
+      "southWest":{
+         "lat":34.5,
+         "lon":-120
+      },
+      "northEast":{
+         "lat":30.5,
+         "lon":-110
+      }
+   },
+   "zoom":5
+}

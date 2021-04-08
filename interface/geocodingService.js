@@ -1,7 +1,7 @@
 define([],
     function () {
 
-        let geocodingService = function (global, service) {
+        let geocodingService = function (globals,service) {
 
             self.init = function () {
                 console.log("geocodingService - init" );

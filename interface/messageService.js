@@ -1,9 +1,9 @@
 define(["interface/cmapiAdapter", "plugins/ViewUtilities", "plugins/JSUtilities"],
     function (cmapiAdapter, ViewUtilities, JSUtilities) {
 
-        let messageService = function (global) {
+        let messageService = function (globals) {
             let self = this;
-            self.cmapiAdapter = new cmapiAdapter(global);
+            self.cmapiAdapter = new cmapiAdapter(globals);
 
             self.init = function () {
                 console.log("messageService - init");
@@ -48,6 +48,18 @@ define(["interface/cmapiAdapter", "plugins/ViewUtilities", "plugins/JSUtilities"
                                 self.cmapiAdapter.onMapFeaturePlotUrl(payload);
                                 break;
 
+                            case "map.feature.remove":
+                                self.cmapiAdapter.onMapOverlayRemove(payload);
+                                break;
+
+                            case "map.feature.hide":
+                                self.cmapiAdapter.onMapOverlayHide(payload);
+                                break;
+
+                            case "map.feature.show":
+                                self.cmapiAdapter.onMapOverlayShow(payload);
+                                break;
+            
                             // 3. map.view.*
                             case "map.view.zoom":
                                 self.cmapiAdapter.onMapViewZoom(payload);

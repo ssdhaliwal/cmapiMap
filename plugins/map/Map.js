@@ -7,11 +7,11 @@ define(["esri/map", "esri/geometry/Extent",
         webMercatorUtils, Deferred,
         ViewUtilities, JSUtilities) {
 
-        let extMap = function (global) {
+        let extMap = function (globals) {
             let self = this;
             self.instance = null;
-            self.messageService = global.interfaces.messageService;
-            self.geometryService = global.interfaces.geometryService;
+            self.messageService = globals.interfaces.messageService;
+            self.geometryService = globals.interfaces.geometryService;
             self.coordinateFormat = "DMM";
             self.cooordinateElement = $("#latlonpos");
             self.timerTimeout = null;
@@ -33,7 +33,7 @@ define(["esri/map", "esri/geometry/Extent",
                         }
                     }),
                     showLabels: true,
-                    infoWindow: global.popup
+                    infoWindow: globals.popup
                 });
                 self.instance.infoWindow.resize(350, 240);
 
@@ -60,7 +60,7 @@ define(["esri/map", "esri/geometry/Extent",
 
                 self.instance.on("load", function (evt) {
                     console.log("extMap - load");
-                    global.initialize();
+                    globals.initialize();
                     self.handleRedrawGraphics();
 
                     let payload = {};
@@ -184,29 +184,46 @@ define(["esri/map", "esri/geometry/Extent",
                 }
             };
 
-            self.handleCenterLocation = function (latitude, longitude, zoom) {
-                console.log("extMap - handleCenterLocation");
+            self.handleCenterLocationLatLon = function (latitude, longitude, zoom) {
+                console.log("extMap - handleCenterLocationLatLon");
 
                 let point = new Point([longitude, latitude],
                     new SpatialReference({ wkid: 4326 }));
-                self.handleCenterLocation(point, zoom);
+                self.handleCenterLocationPoint(point, zoom);
             };
 
-            self.handleCenterLocation = function (point, zoom) {
-                console.log("extMap - handleCenterLocation point");
-
-                self.instance.centerAt(point);
+            self.handleCenterLocationPoint = function (point, zoom) {
+                console.log("extMap - handleCenterLocationPoint");
 
                 if (zoom) {
                     self.instance.setZoom(zoom);
                 }
+
+                self.instance.centerAt(point);
+            };
+
+            self.handleCenterBounds = function (bounds, zoom) {
+                console.log("extMap - handleCenterBounds");
+
+                let extent = new Extent(bounds.southWest.lon,
+                    bounds.southWest.lat,
+                    bounds.northEast.lon,
+                    bounds.northEast.lat,
+                    self.instance.geographicExtent.spatialReference);
+
+                self.handleSetExtent(extent, zoom);
             };
 
             self.handleSetExtent = function (extent, center) {
                 console.log("extMap - handleSetExtent");
 
                 if (JSUtilities.getBoolean(center)) {
-                    self.instance.setExtent(extent, true);
+                    if ((center === "auto") || (center === "true")) {
+                        self.instance.setExtent(extent, true);
+                    } else {
+                        self.instance.setZoom(center);
+                        self.instance.centerAt(extent.getCenter());
+                    }
                 } else {
                     self.instance.centerAt(extent.getCenter());
                 }

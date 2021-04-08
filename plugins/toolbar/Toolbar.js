@@ -1,7 +1,7 @@
 define([],
     function () {
 
-        let extToolbar = function (global) {
+        let extToolbar = function (globals) {
             let self = this;
 
             self.init = function () {
@@ -17,6 +17,18 @@ define([],
                 if (!$("#control-slider").hasClass("selected")) {
                     self.toggleOptions();
                 }
+            };
+
+            self.hide = function() {
+                console.log("extToolbar - hide");
+
+                $("#control-slider").css("display", "none");
+            };
+            
+            self.show = function() {
+                console.log("extToolbar - show");
+
+                $("#control-slider").css("display", "block");
             };
 
             self.registerEvents = function () {

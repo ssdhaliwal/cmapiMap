@@ -1,7 +1,7 @@
 define([],
     function () {
 
-        let geometryService = function (global, service) {
+        let geometryService = function (globals,service) {
 
             self.init = function () {
                 console.log("geometryService - init" );

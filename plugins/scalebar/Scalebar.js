@@ -1,9 +1,9 @@
 define(["esri/dijit/Scalebar"],
     function (esriScalebar) {
 
-        let extScalebar = function (global) {
+        let extScalebar = function (globals) {
             let self = this;
-            let map = global.plugins.extMap.instance;
+            let map = globals.plugins.extMap.instance;
             self.instance = null;
 
             self.init = function () {

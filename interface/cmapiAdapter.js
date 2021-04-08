@@ -1,7 +1,7 @@
 define(["plugins/JSUtilities"],
     function (JSUtilities) {
 
-        let cmapiAdapter = function (global) {
+        let cmapiAdapter = function (globals) {
             let self = this;
 
             self.init = function () {
@@ -30,7 +30,7 @@ define(["plugins/JSUtilities"],
                         request.overlayId = request.name;
                     }
 
-                    global.plugins.extLayerlist.handleAddOverlay(request);
+                    globals.plugins.extLayerlist.handleAddOverlay(request);
                 }
             };
 
@@ -38,15 +38,17 @@ define(["plugins/JSUtilities"],
                 console.log("cmapiAdapter - onMapOverlayRemove");
                 // check minimum requirement - id
                 if (request.hasOwnProperty("overlayId")) {
-                    global.plugins.extLayerlist.handleRemoveOverlay(request);
+                    self.onMapOverlayHide(request);
+                    globals.plugins.extLayerlist.handleRemoveOverlay(request);
                 }
             };
 
             self.onMapOverlayHide = function (request) {
                 console.log("cmapiAdapter - onMapOverlayHide");
                 // check minimum requirement - id
+                
                 if (request.hasOwnProperty("overlayId")) {
-                    global.plugins.extLayerlist.handleHideOverlay(request);
+                    globals.plugins.extLayerlist.handleHideOverlay(request);
                 }
             };
 
@@ -54,11 +56,15 @@ define(["plugins/JSUtilities"],
                 console.log("cmapiAdapter - onMapOverlayShow");
                 // check minimum requirement - id
                 if (request.hasOwnProperty("overlayId")) {
-                    global.plugins.extLayerlist.handleShowOverlay(request);
+                    globals.plugins.extLayerlist.handleShowOverlay(request);
                 }
             };
 
             // 2. map.feature.*
+            self.onMapFeaturePlot = function(request) {
+                console.log("cmapiAdapter - onMapFeaturePlot");
+            };
+
             self.onMapFeaturePlotUrl = function (request) {
                 console.log("cmapiAdapter - onMapFeaturePlotUrl");
                 if (request.hasOwnProperty("featureId") && request.hasOwnProperty("url")) {
@@ -67,8 +73,35 @@ define(["plugins/JSUtilities"],
                             request.name = request.featureId;
                         }
 
-                        global.plugins.extLayerlist.handlePlotFeatureUrl(request);
+                        globals.plugins.extLayerlist.handlePlotFeatureUrl(request);
                     }
+                }
+            };
+
+            self.onMapFeatureRemove = function(request) {
+                console.log("cmapiAdapter - onMapFeatureRemove");
+
+                if (request.hasOwnProperty("featureId")) {
+                    request.overlayId = request.featureId;
+                    self.onMapFeatureHide(request);
+                    self.onMapOverlayRemove(request);
+                }
+            };
+
+            self.onMapFeatureHide = function(request) {
+                console.log("cmapiAdapter - onMapFeatureHide");
+
+                if (request.hasOwnProperty("featureId")) {
+                    request.overlayId = request.featureId;
+                    self.onMapOverlayHide(request);
+                }
+            };
+
+            self.onMapFeatureShow = function(request) {
+                console.log("cmapiAdapter - onMapFeatureShow");
+                if (request.hasOwnProperty("featureId")) {
+                    request.overlayId = request.featureId;
+                    self.onMapOverlayShow(request);
                 }
             };
 
@@ -76,9 +109,9 @@ define(["plugins/JSUtilities"],
             self.onMapViewZoom = function (request) {
                 console.log("cmapiAdapter - onMapViewZoom");
                 if (request.hasOwnProperty("range")) {
-                    global.plugins.extMap.handleSetScale(request.range);
+                    globals.plugins.extMap.handleSetScale(request.range);
                 } else if (request.hasOwnProperty("zoom")) {
-                    global.plugins.extMap.handleSetZoom(request.zoom);
+                    globals.plugins.extMap.handleSetZoom(request.zoom);
                 }
             };
 
@@ -86,9 +119,9 @@ define(["plugins/JSUtilities"],
                 console.log("cmapiAdapter - onMapCenterOverlay");
                 if (request.hasOwnProperty("overlayId") && !JSUtilities.isEmpty(request.overlayId)) {
                     if (request.hasOwnProperty("zoom") && !JSUtilities.isEmpty(request.zoom)) {
-                        global.plugins.extLayerlist.handleCenterOverlay(request.overlayId, request.zoom);
+                        globals.plugins.extLayerlist.handleCenterOverlay(request.overlayId, request.zoom);
                     } else {
-                        global.plugins.extLayerlist.handleCenterOverlay(request.overlayId, null);
+                        globals.plugins.extLayerlist.handleCenterOverlay(request.overlayId, "auto");
                     }
                 }
             };
@@ -103,9 +136,9 @@ define(["plugins/JSUtilities"],
 
                 if (request.hasOwnProperty("featureId") && !JSUtilities.isEmpty(request.featureId)) {
                     if (request.hasOwnProperty("zoom") && !JSUtilities.isEmpty(request.zoom)) {
-                        global.plugins.extLayerlist.handleCenterFeature(request.featureId, markerId, request.zoom);
+                        globals.plugins.extLayerlist.handleCenterFeature(request.featureId, markerId, request.zoom);
                     } else {
-                        global.plugins.extLayerlist.handleCenterFeature(request.featureId, markerId, null);
+                        globals.plugins.extLayerlist.handleCenterFeature(request.featureId, markerId, "auto");
                     }
                 }
             };
@@ -116,9 +149,9 @@ define(["plugins/JSUtilities"],
                     if (request.location.hasOwnProperty("lat") && request.location.hasOwnProperty("lon")) {
                         if (!JSUtilities.isEmpty(request.location.lat) && !JSUtilities.isEmpty(request.location.lon)) {
                             if (request.hasOwnProperty("zoom") && !JSUtilities.isEmpty(request.zoom)) {
-                                global.plugins.extMap.handleCenterLocation(request.location.lat, request.location.lon, request.zoom);
+                                globals.plugins.extMap.handleCenterLocationLatLon(request.location.lat, request.location.lon, request.zoom);
                             } else {
-                                global.plugins.extMap.handleCenterLocation(request.location.lat, request.location.lon, null);
+                                globals.plugins.extMap.handleCenterLocationLatLon(request.location.lat, request.location.lon);
                             }
                         }
                     }
@@ -127,7 +160,9 @@ define(["plugins/JSUtilities"],
 
             self.onMapCenterBounds = function (request) {
                 console.log("cmapiAdapter - onMapCenterBounds");
-                if (request.hasOwnProperty("location")) {
+
+                if (request.hasOwnProperty("bounds")) {
+                    globals.plugins.extMap.handleCenterBounds(request.bounds, request.zoom);
                 }
             };
 

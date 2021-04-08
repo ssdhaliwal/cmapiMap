@@ -1,10 +1,10 @@
 define(["dojo/html", "dojo/dom", "dojo/on"],
     function (html, dom, on) {
 
-        let extConfig = function (global) {
+        let extConfig = function (globals) {
             let self = this;
-            self.fontColor = global.data.fontColor || null;
-            self.fontColorName = global.data.fontColorName || "YellowGreen;#9ACD32";
+            self.fontColor = globals.data.fontColor || null;
+            self.fontColorName = globals.data.fontColorName || "YellowGreen;#9ACD32";
 
             self.init = function () {
                 console.log("extConfig - init");
@@ -169,7 +169,7 @@ define(["dojo/html", "dojo/dom", "dojo/on"],
 
             self.handleClick = function () {
                 console.log("extConfig - handleClick");
-                global.plugins.extToolbar.toggleOptions("#config");
+                globals.plugins.extToolbar.toggleOptions("#config");
 
                 if ($("#config").hasClass("selected")) {
                     $("#infoPanel_wrapper").css("display", "block");
@@ -177,6 +177,18 @@ define(["dojo/html", "dojo/dom", "dojo/on"],
 
                 let container = dijit.byId("infoPanel_container");
                 container.selectChild("configPane", true);
+            };
+
+            self.hide = function() {
+                console.log("extConfig - hide");
+
+                $("#config").css("display", "none");
+            };
+            
+            self.show = function() {
+                console.log("extConfig - show");
+
+                $("#config").css("display", "block");
             };
 
             self.registerEvents = function () {

@@ -5,12 +5,13 @@ define(["vendor/js/jstree/jstree",
         esriDynamicMapService, esriFeatureService, ogcKML,
         ViewUtilities, JSUtilities) {
 
-        let extLayerlist = function (global) {
+        let extLayerlist = function (globals) {
             let self = this;
-            self.messageService = global.interfaces.messageService;
-            self.extMap = global.plugins.extMap;
+            self.messageService = globals.interfaces.messageService;
+            self.extMap = globals.plugins.extMap;
             self.layerlist = null;
             self.instance = null;
+            self.eventPropagation = true;
             self.layers = [];
             self.defaultOverlayId = "USER1001";
             self.defaultParams = {
@@ -47,33 +48,51 @@ define(["vendor/js/jstree/jstree",
             };
 
             self.handleClick = function () {
-                console.log("Layerlist - handleClick" );
-                global.plugins.extToolbar.toggleOptions("#layerlist");
+                console.log("extLayerlist - handleClick" );
+                globals.plugins.extToolbar.toggleOptions("#layerlist");
 
                 if ($("#layerlist").hasClass("selected")) {
                     $("#layerlist_wrapper").css("display", "block");
                 }
             };
 
+            self.hide = function() {
+                console.log("extLayerlist - hide");
+
+                $("#layerlist").css("display", "none");
+            };
+            
+            self.show = function() {
+                console.log("extLayerlist - show");
+
+                $("#layerlist").css("display", "block");
+            };
+
             self.registerEvents = function () {
-                console.log("Layerlist - registerEvents" );
+                console.log("extLayerlist - registerEvents" );
                 $("#layerlist").on("click", function($event) {
-                    console.log("Layerlist - registerEvents/click");
+                    console.log("extLayerlist - registerEvents/click");
                     self.handleClick()
                 });
 
                 self.layerlist.on('check_node.jstree', function ($event, data) {
-                    console.log("Layerlist - registerEvents/check_node.jstree");
-                    self.handleShowOverlay({ overlayId: data.node });
+                    console.log("extLayerlist - registerEvents/check_node.jstree");
+
+                    if (self.eventPropagation) {
+                        self.handleShowOverlay({ overlayId: data.node });
+                    }
                 });
 
                 self.layerlist.on('uncheck_node.jstree', function ($event, data) {
-                    console.log("Layerlist - registerEvents/uncheck_node.jstree");
-                    self.handleHideOverlay({ overlayId: data.node });
+                    console.log("extLayerlist - registerEvents/uncheck_node.jstree");
+
+                    if (self.eventPropagation) {
+                        self.handleHideOverlay({ overlayId: data.node });
+                    }
                 });
 
                 self.layerlist.on('select_node.jstree', function ($event, data) {
-                    console.log("Layerlist - registerEvents/select_node.jstree");
+                    console.log("extLayerlist - registerEvents/select_node.jstree");
                     let length = data.selected.length;
                     for (i = 0, j = length; i < j; i++) {
                         let node = self.instance.get_node(data.selected[i]);
@@ -88,7 +107,7 @@ define(["vendor/js/jstree/jstree",
                                     delete original.perspective;
                                 }
 
-                                uncheckSelected(node);
+                                uncheckSelected(node, false);
                                 self.discoverLayers(node);
                             }
                         }
@@ -96,7 +115,7 @@ define(["vendor/js/jstree/jstree",
                 });
 
                 self.layerlist.on('deselect_node.jstree', function ($event, data) {
-                    console.log("Layerlist - registerEvents/deselect_node.jstree");
+                    console.log("extLayerlist - registerEvents/deselect_node.jstree");
                     let length = data.selected.length;
                     for (i = 0, j = length; i < j; i++) {
                         let node = self.instance.get_node(data.selected[i]);
@@ -106,7 +125,7 @@ define(["vendor/js/jstree/jstree",
             };
 
             self.discoverLayers = function (node, parent) {
-                console.log("Layerlist - discoverLayers" );
+                console.log("extLayerlist - discoverLayers" );
                 let original = node.original;
                 let pnode = (parent || node);
 
@@ -224,12 +243,17 @@ define(["vendor/js/jstree/jstree",
                 }
             };
 
-            self.handleRenderService = function (parentId, parentText, service) {
-                console.log("Layerlist - handleRenderService" );
-                console.log("... render service!!", parentId, parentText, service);
+            self.handleRenderService = function (node) {
+                console.log("extLayerlist - handleRenderService" );
 
-                service.parentId = parentId;
-                service.parentText = parentText;
+                let service, parentNode;
+
+                service = node.original;
+                service.parentId = self.instance.get_parent(node);
+                parentNode = self.instance.get_node(service.parentId);
+                service.parentText = parentNode.text;
+
+                console.log("... render service!!", service.parentId, service.parentText, service);
 
                 // add default params to service if not present
                 if (service.hasOwnProperty("layer")) {
@@ -242,9 +266,9 @@ define(["vendor/js/jstree/jstree",
 
                         if (service.layer.params.hasOwnProperty("serviceType")) {
                             if (service.layer.params.serviceType === "dynamic") {
-                                service.perspective = new esriDynamicMapService(global, service);
+                                service.perspective = new esriDynamicMapService(globals,service);
                             } else if (service.layer.params.serviceType === "feature") {
-                                service.perspective = new esriFeatureService(global, service);
+                                service.perspective = new esriFeatureService(globals,service);
                             } else if ((service.layer.params.serviceType === "kml") ||
                                 (service.layer.params.serviceType === "kmz")) {
                                 // if properties has data or property has local = true with url
@@ -252,9 +276,9 @@ define(["vendor/js/jstree/jstree",
                                     if (service.layer.properties.hasOwnProperty("data") ||
                                         (service.layer.properties.hasOwnProperty("url") &&
                                             service.layer.properties.hasOwnProperty("intranet"))) {
-                                        service.perspective = new ogcKML(global, service);
+                                        service.perspective = new ogcKML(globals,service);
                                     } else {
-                                        // service.perspective = new esriKMLervice(global, service);
+                                        // service.perspective = new esriKMLervice(globals,service);
                                     }
                                 }
                             } else if (service.layer.params.serviceType === "wms") {
@@ -275,20 +299,26 @@ define(["vendor/js/jstree/jstree",
                 }
             };
 
-            checkSelected = function (nodeId) {
-                console.log("Layerlist - checkSelected" );
+            checkSelected = function (nodeId, propagation) {
+                console.log("extLayerlist - checkSelected" );
                 let node = self.instance.get_node(nodeId);
+                
+                self.eventPropagation = propagation;
                 self.instance.check_node(node);
+                self.eventPropagation = true;
             };
 
-            uncheckSelected = function (nodeId) {
-                console.log("Layerlist - uncheckSelected" );
+            uncheckSelected = function (nodeId, propagation) {
+                console.log("extLayerlist - uncheckSelected" );
                 let node = self.instance.get_node(nodeId);
+
+                self.eventPropagation = propagation;
                 self.instance.uncheck_node(node);
+                self.eventPropagation = true;
             };
 
             changeNodeStatus = function (nodeId, status) {
-                console.log("Layerlist - changeNodeStatus" );
+                console.log("extLayerlist - changeNodeStatus" );
                 let node = self.instance.get_node(nodeId);
                 let cnode, original;
                 node.children.forEach(function (child_id) {
@@ -313,7 +343,7 @@ define(["vendor/js/jstree/jstree",
             };
 
             self.handleAddOverlay = function (request) {
-                console.log("Layerlist - handleAddOverlay" );
+                console.log("extLayerlist - handleAddOverlay" );
                 // get USER FAVORITES node and add new items as child nodes
                 let pNode = self.instance.get_node(self.defaultOverlayId);
                 if (request.hasOwnProperty("parentId")) {
@@ -333,7 +363,7 @@ define(["vendor/js/jstree/jstree",
                         "state": {
                             "opened": false,
                             "disabled": false,
-                            "selected": false
+                            "selected": true
                         }
                     };
 
@@ -375,27 +405,27 @@ define(["vendor/js/jstree/jstree",
             };
 
             self.handleRemoveOverlay = function (request) {
-                console.log("Layerlist - handleRemoveOverlay" );
+                console.log("extLayerlist - handleRemoveOverlay" );
                 // get USER FAVORITES node and remove items from child nodes
                 let oNode = $("#layerlistDiv").jstree().get_node(request.overlayId);
                 if (JSUtilities.getBoolean(oNode)) {
                     let pId = oNode.id;
 
                     // uncheck and remove the layers from map
-                    uncheckSelected(pId);
+                    uncheckSelected(pId, false);
                     $("#layerlistDiv").jstree("delete_node", $("#" + pId));
                 }
             };
 
             self.handleHideOverlay = function (request) {
-                console.log("Layerlist - handleHideOverlay" );
+                console.log("extLayerlist - handleHideOverlay" );
                 // get USER FAVORITES node and remove items from child nodes
                 let node = self.instance.get_node(request.overlayId);
                 if (JSUtilities.getBoolean(node)) {
                     let pId = node.id;
 
                     // uncheck and remove the layers from map
-                    uncheckSelected(pId);
+                    uncheckSelected(pId, false);
                     let original = node.original;
 
                     console.log("^ unchecked..." + node.text, original);
@@ -410,42 +440,48 @@ define(["vendor/js/jstree/jstree",
             };
 
             self.handleShowOverlay = function (request) {
-                console.log("Layerlist - handleShowOverlay" );
+                console.log("extLayerlist - handleShowOverlay" );
                 // get USER FAVORITES node and remove items from child nodes
                 let node = self.instance.get_node(request.overlayId);
                 if (JSUtilities.getBoolean(node)) {
                     let original = node.original;
 
-                    let parentId, parentNode, parentText;
-                    checkSelected(node.id);
+                    checkSelected(node.id, false);
                     if (node.children.length === 0) {
                         console.log("^ checked..." + node.text, original);
 
                         if (!original.hasOwnProperty("perspective")) {
-                            parentId = self.instance.get_parent(node);
-                            parentNode = self.instance.get_node(parentId);
-                            parentText = parentNode.text;
-
-                            self.handleRenderService(parentId, parentText, original);
+                            self.handleRenderService(node);
                         }
                     } else {
-                        if (node.children.length > 0) {
-                            console.log("^ checked..." + node.text, original);
-                            changeNodeStatus(node, "disable");
-                            if (!original.hasOwnProperty("perspective")) {
-                                parentId = self.instance.get_parent(node);
-                                parentNode = self.instance.get_node(parentId);
-                                parentText = parentNode.text;
-
-                                self.handleRenderService(parentId, parentText, original);
-                            }
-                        }
+                        showOverlayChildren(node);
                     }
                 }
             };
 
+            showOverlayChildren = function(node) {
+                let original = node.original;
+
+                console.log("^ checked..." + node.text, original);
+
+                // if the node has a layer (dynamic layer?)
+                if (original.hasOwnProperty("layer")) {
+                    changeNodeStatus(node, "disable");
+                    if (!original.hasOwnProperty("perspective")) {
+                        self.handleRenderService(node);
+                    }
+                } else {
+                    // loop and activate all nodes with layers
+                    let cnode;
+                    node.children.forEach(function (child_id) {
+                        cnode = self.instance.get_node(child_id);
+                        showOverlayChildren(cnode);
+                    });
+                }
+            };
+
             self.handlePlotFeatureUrl = function (request) {
-                console.log("Layerlist - handlePlotFeatureUrl" );
+                console.log("extLayerlist - handlePlotFeatureUrl" );
                 // create the overlay if not existing
                 if (request.hasOwnProperty("overlayId") && !JSUtilities.isEmpty(request.overlayId)) {
                     self.messageService.cmapiAdapter.onMapOverlayCreateUpdate({ overlayId: request.overlayId });
@@ -515,12 +551,14 @@ define(["vendor/js/jstree/jstree",
                     let overlayId = request.overlayId || self.defaultOverlayId;
                     let pNode = self.instance.get_node(overlayId);
                     console.log(layerCopy);
+
                     let id = $('#layerlistDiv').jstree('create_node', pNode.id, layerCopy, 'last', false);
+                    self.handleShowOverlay({overlayId: id});
                 }
             };
 
             findOverlayFeatures = function(overlayId, features) {
-                console.log("Layerlist - findOverlayFeatures" );
+                console.log("extLayerlist - findOverlayFeatures" );
                 let node = self.instance.get_node(overlayId);
                 let cnode, original;
 
@@ -541,7 +579,7 @@ define(["vendor/js/jstree/jstree",
             };
 
             self.handleCenterOverlay = function(overlayId, zoom) {
-                console.log("Layerlist - handleCenterOverlay" );
+                console.log("extLayerlist - handleCenterOverlay" );
 
                 // find overlayId; if it is has prespective, then we are good; else return error
                 // check if node already exists; if yes - ignore
@@ -563,14 +601,14 @@ define(["vendor/js/jstree/jstree",
                         if (!JSUtilities.getBoolean(zoom) || (zoom === "auto")) {
                             self.extMap.handleSetExtent(extent, true);
                         } else {
-                            self.extMap.handleCenterLocation(extent.getCenter());
+                            self.extMap.handleCenterLocationPoint(extent.getCenter());
                         }
                     }
                 }
             };
 
             self.handleCenterFeature = function(featureId, markerId, zoom) {
-                console.log("Layerlist - handleCenterFeature" );
+                console.log("extLayerlist - handleCenterFeature" );
 
                 // find featureId; if exists, good; else return error
                 let feature = self.instance.get_node(featureId);
