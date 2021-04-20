@@ -1,7 +1,7 @@
 	
 	{
 		"globals": "js/globals.js",
-		"esriJsPath": "/esri_jsapi-3.33/init.js",
+		"esriJsPath": "/esri_jsapi-3.35/init.js",
 		"jqueryPath": "vendor/js/jquery-1.12.4.min.js",
 		"bootstrapPath": "vendor/js/bootstrap.min.js",
 		"treeJqueryPath": "vendor/js/tree.jquery.js",

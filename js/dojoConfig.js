@@ -61,12 +61,12 @@ if (!window.esriJsPath) {
     window.esriJsPath = (function () {
         // var path = "http://js.arcgis.com/3.23/";
         // var path = window.contextPath + "../vendor/js/esri_jsapi/";
-        var path = "/esri_jsapi-3.33/";
+        var path = "/esri_jsapi-3.35/";
 
         if (window.isOffline()) {
             // Use local copy of API files
             // path = window.contextPath + "../vendor/js/esri_jsapi/";
-            path = "/esri_jsapi-3.33/";
+            path = "/esri_jsapi-3.35/";
         } else if (window.location.protocol != "file:") {
             // Match same protocol as page to avoid mixed content issues
             path = path.replace("http://", window.location.protocol + "//");

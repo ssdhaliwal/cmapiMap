@@ -80,8 +80,14 @@ require([
       if (globals.options.bookmarks.available) {
         globals.plugins.extBookmarks.show();
       }
+      if (!globals.options.bookmarks.available) {
+        globals.plugins.extBookmarks.hide();
+      }
       if (globals.options.config.available) {
         globals.plugins.extConfig.show();
+      }
+      if (!globals.options.config.available) {
+        globals.plugins.extConfig.hide();
       }
       if (globals.options.datagrid.available) {
         globals.plugins.extDatagrid.show();
@@ -101,6 +107,9 @@ require([
       }
       if (globals.options.legend.available) {
         globals.plugins.extLegend.show();
+      }
+      if (!globals.options.legend.available) {
+        globals.plugins.extLegend.hide();
       }
       if (globals.options.toolbar.available) {
         globals.plugins.extToolbar.show();

@@ -1,5 +1,5 @@
-define(["esri/dijit/Legend"],
-    function (esriLegend) {
+define(["esri/dijit/Legend", "dijit/registry", "dojo/dom-style"],
+    function (esriLegend, registry, domStyle) {
 
         let extLegend = function (globals) {
             let self = this;
@@ -36,6 +36,11 @@ define(["esri/dijit/Legend"],
                 console.log("extLegend - hide");
 
                 $("#legend").css("display", "none");
+
+                let container = registry.byId("legendPane");
+                domStyle.set(container.domNode, "display", "none");
+                container = registry.byId("legendPane_wrapper");
+                domStyle.set(container.domNode, "display", "none");
             };
             
             self.show = function() {

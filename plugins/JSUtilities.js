@@ -11,10 +11,10 @@ define([],
 
                 // match native value
                 if (typeof value === "number") {
-                    if (value >= 0) {
-                        return true;
-                    } else {
+                    if (value <= 0) {
                         return false;
+                    } else {
+                        return true;
                     }
                 }
 
@@ -51,6 +51,7 @@ define([],
                     }
                 }
 
+                // return false
                 return false;
             },
 
@@ -360,57 +361,6 @@ define([],
                 }
 
                 return obj;
-            },
-
-            getBoolean: function (value) {
-                // console.log("JSUtilities - getBoolean");
-                // empty/null match
-                if ((value === null) || (value === undefined) || (value === NaN)) {
-                    return false;
-                }
-
-                // match native value
-                if (typeof value === "number") {
-                    switch (value) {
-                        case 0: case false: return false;
-                        default: return true;
-                    }
-                }
-
-                // match boolean value
-                if (typeof value === "boolean") {
-                    return value;
-                }
-
-                // match string value
-                if (typeof value === "string") {
-                    switch (value.toLowerCase()) {
-                        case "error": case "reject": case "closed": case "hide": case "hidden":
-                        case "false": case "off": case "no": case "none":
-                        case "0": return false;
-                        default: return true;
-                    }
-                }
-
-                // match array value
-                if (Array.isArray(value)) {
-                    if (value.length > 0) {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
-
-                // match object value
-                if (typeof value === "object") {
-                    if (Object.keys(value).length > 0) {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
-
-                return false;
             },
 
             // https://github.com/PimpTrizkit/PJs/wiki/12.-Shade,-Blend-and-Convert-a-Web-Color-(pSBC.js)

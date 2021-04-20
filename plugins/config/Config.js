@@ -1,5 +1,5 @@
-define(["dojo/html", "dojo/dom", "dojo/on"],
-    function (html, dom, on) {
+define(["dojo/html", "dojo/dom", "dojo/on", "dijit/registry", "dojo/dom-style"],
+    function (html, dom, on, registry, domStyle) {
 
         let extConfig = function (globals) {
             let self = this;
@@ -183,6 +183,11 @@ define(["dojo/html", "dojo/dom", "dojo/on"],
                 console.log("extConfig - hide");
 
                 $("#config").css("display", "none");
+
+                let container = registry.byId("configPane");
+                domStyle.set(container.domNode, "display", "none");
+                container = registry.byId("configPane_wrapper");
+                domStyle.set(container.domNode, "display", "none");
             };
             
             self.show = function() {

@@ -1,5 +1,5 @@
-define(["esri/dijit/Bookmarks"],
-    function (esriBookmarks) {
+define(["esri/dijit/Bookmarks", "dijit/registry", "dojo/dom-style"],
+    function (esriBookmarks, registry, domStyle) {
 
         let extBookmark = function (globals) {
             let self = this;
@@ -34,6 +34,11 @@ define(["esri/dijit/Bookmarks"],
                 console.log("extBookmark - hide");
 
                 $("#bookmark").css("display", "none");
+
+                let container = registry.byId("bookmarkPane");
+                domStyle.set(container.domNode, "display", "none");
+                container = registry.byId("bookmarkPane_wrapper");
+                domStyle.set(container.domNode, "display", "none");
             };
             
             self.show = function() {
