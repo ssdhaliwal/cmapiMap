@@ -3,13 +3,14 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
     "esri/symbols/PictureFillSymbol", "esri/symbols/TextSymbol",
     "esri/symbols/Font",
     "esri/graphic", "esri/SpatialReference", "esri/geometry/webMercatorUtils",
+    "esri/geometry/normalizeUtils", "esri/geometry/geodesicUtils",
     "esri/geometry/Point", "esri/geometry/Polyline", "esri/geometry/Polygon",
     "esri/layers/GraphicsLayer", "esri/InfoTemplate",
     "esri/Color",
     "plugins/ViewUtilities", "plugins/JSUtilities", "milsymbol"],
     function (SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol,
         PictureMarkerSymbol, PictureFillSymbol, TextSymbol, Font,
-        Graphic, SpatialReference, webMercatorUtils,
+        Graphic, SpatialReference, WebMercatorUtils, NormalizeUtils, GeodesicUtils,
         Point, Polyline, Polygon, GraphicsLayer, InfoTemplate,
         Color,
         ViewUtilities, JSUtilities, mil2525) {
@@ -744,6 +745,11 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
                                         "paths": rings
                                     });
 
+                                    // densify support for IDL
+                                    if (this.properties.densify && JSUtils.getBoolean(this.properties.densify)) {
+                                        polyline = new GeodesicUtils.geodesicDensify(polyline, 10000);
+                                    }
+
                                     let popupTemplate = updatePopupTemplate(params.popupTemplate, attributes);
                                     let graphic = new Graphic(polyline, style.normal, attributes, popupTemplate);
                                     graphic.normalSymbol = style.normal;
@@ -777,6 +783,11 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
                                     let polygon = new Polygon({
                                         "rings": rings
                                     });
+
+                                    // densify support for IDL
+                                    if (this.properties.densify && JSUtils.getBoolean(this.properties.densify)) {
+                                        polygon = new GeodesicUtils.geodesicDensify(polygon, 10000);
+                                    }
 
                                     let popupTemplate = updatePopupTemplate(params.popupTemplate, attributes);
                                     let graphic = new Graphic(polygon, style.normal, attributes, popupTemplate);
