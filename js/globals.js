@@ -17,7 +17,7 @@ let globals = {
             "available": false
         },
         "layerlist": {
-            "available": false
+            "available": true
         },
         "legend": {
             "available": false
