@@ -10,10 +10,6 @@ define(["interface/cmapiAdapter", "plugins/ViewUtilities", "plugins/JSUtilities"
                 self.registerEvents();
             };
 
-            self.handleClick = function () {
-                console.log("messageService - handleClick");
-            };
-
             self.registerEvents = function () {
                 console.log("messageService - registerEvents");
                 window.addEventListener("message", function ($event) {

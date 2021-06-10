@@ -35,7 +35,7 @@ define([],
                 console.log("extToolbar - registerEvents");
                 $("#control-slider").on("click", function($event) {
                     console.log("extToolbar - registerEvents/click", $event);
-                    self.handleClick()
+                    self.handleClick();
                 });
             };
 

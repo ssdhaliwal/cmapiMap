@@ -12,10 +12,6 @@ define(["esri/tasks/GeometryService", "esri/geometry/webMercatorUtils", "dojo/De
                 self.registerEvents();
             };
 
-            self.handleClick = function () {
-                console.log("geometryService - handleClick");
-            };
-
             self.registerEvents = function () {
                 console.log("geometryService - registerEvents");
             };

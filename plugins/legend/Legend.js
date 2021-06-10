@@ -96,7 +96,7 @@ define(["esri/dijit/Legend", "dijit/registry", "dojo/dom-style"],
 
                 $("#legend").on("click", function($event) {
                     console.log("extLegend - registerEvents/click", $event);
-                    self.handleClick()
+                    self.handleClick();
                 });
             };
 

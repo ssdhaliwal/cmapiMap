@@ -1,15 +1,20 @@
-define(["esri/map", "esri/geometry/Extent",
-    "esri/SpatialReference", "esri/geometry/Point",
+define(["esri/map", "esri/layers/GraphicsLayer", "esri/geometry/Extent",
+    "esri/SpatialReference",
+    "esri/graphic", "esri/geometry/Point",
+    "esri/symbols/SimpleMarkerSymbol",
     "esri/geometry/webMercatorUtils", "dojo/Deferred",
     "plugins/ViewUtilities", "plugins/JSUtilities"],
-    function (esriMap, Extent,
-        SpatialReference, Point,
+    function (esriMap, GraphicsLayer, Extent,
+        SpatialReference,
+        Graphic, Point,
+        SimpleMarkerSymbol,
         webMercatorUtils, Deferred,
         ViewUtilities, JSUtilities) {
 
         let extMap = function (globals) {
             let self = this;
             self.instance = null;
+            self.initialization = true;
             self.messageService = globals.interfaces.messageService;
             self.geometryService = globals.interfaces.geometryService;
             self.coordinateFormat = "DMM";
@@ -18,6 +23,7 @@ define(["esri/map", "esri/geometry/Extent",
             self.mgrsTimeout = null;
             self.lastX = 0;
             self.lastY = 0;
+            self.tmpGraphicsLayer = null;
 
             self.init = function () {
                 console.log("extMap - init");
@@ -40,10 +46,6 @@ define(["esri/map", "esri/geometry/Extent",
                 // add to allow double-click without zoom
                 self.instance.disableDoubleClickZoom();
                 self.regiserEvents();
-            };
-
-            self.handleClick = function () {
-                console.log("extMap - handleClick");
             };
 
             self.regiserEvents = function () {
@@ -77,23 +79,40 @@ define(["esri/map", "esri/geometry/Extent",
 
                         console.log(error);
 
-                        /*
-                        // self.instance.on("basemap-change", sendInit);
-                        self.instance.on("update-end", sendReady);
-                        self.instance.on("before-unload", sendTeardown);
-                        self.instance.on("basemap-change", sendMapswap);
-                        self.instance.on("click", sendClick);
-                        self.instance.on("mouse-down", sendMousedown);
-                        self.instance.on("mouse-up", sendMouseup);
-                        self.instance.on("dbl-click", sendDoubleClick);
-                        self.instance.map.on("extent-change", sendStatusViewUpdate);
-                        self.instance.on('mouse-up', updateMouseLocation);
-                        self.instance.on('mouse-over', setDropEnabled);
-                        self.instance.on('mouse-out', setDropDisabled);
-                        //self.instance.on("unload", unloadHandlers);
-                        */
-                        self.instance.on("mouse-move", self.handleShowCoordinates);
-                        self.instance.on("mouse-drag", self.handleShowCoordinates);
+                        // ensure these events are bound only once after initialization
+                        // is complete
+                        if (self.initialization) {
+                            self.initialization = false;
+
+                            /*
+                            // self.instance.on("basemap-change", sendInit);
+                            self.instance.on("update-end", sendReady);
+                            self.instance.on("before-unload", sendTeardown);
+                            self.instance.on("basemap-change", sendMapswap);
+                            self.instance.on("mouse-down", sendMousedown);
+                            self.instance.on("mouse-up", sendMouseup);
+                            self.instance.map.on("extent-change", sendStatusViewUpdate);
+                            self.instance.on('mouse-up', updateMouseLocation);
+                            self.instance.on('mouse-over', setDropEnabled);
+                            self.instance.on('mouse-out', setDropDisabled);
+                            //self.instance.on("unload", unloadHandlers);
+                            */
+                            self.instance.on("mouse-move", self.handleShowCoordinates);
+                            self.instance.on("mouse-drag", self.handleShowCoordinates);
+
+                            self.instance.on("click", function ($event) {
+                                self.handleClick($event, "click");
+                            });
+                            self.instance.on("dbl-click", function ($event) {
+                                self.handleClick($event, "dbl-click");
+                            });
+                            self.instance.on("mouse-down", function ($event) {
+                                self.handleClick($event, "mouse-down");
+                            });
+                            self.instance.on("mouse-up", function ($event) {
+                                self.handleClick($event, "mouse-up");
+                            });
+                        }
                     });
                 });
 
@@ -131,8 +150,8 @@ define(["esri/map", "esri/geometry/Extent",
                     switch (self.coordinateFormat) {
                         case "DMM":
                             self.cooordinateElement.text("(z" + self.instance.getZoom() + ") [ lat: " +
-                                JSUtilities.convertDDLatitudeToDMM(self.lastY) + ", lon: " +
-                                JSUtilities.convertDDLongitudeToDMM(self.lastX) + " ]");
+                                JSUtilities.convertDDLatitudeToDDM(self.lastY) + ", lon: " +
+                                JSUtilities.convertDDLongitudeToDDM(self.lastX) + " ]");
                             break;
                         case "DMS":
                             self.cooordinateElement.text("(z" + self.instance.getZoom() + ") [ lat: " +
@@ -196,9 +215,10 @@ define(["esri/map", "esri/geometry/Extent",
                 console.log("extMap - handleCenterLocationPoint");
 
                 if (zoom) {
-                    self.instance.setZoom(zoom);
+                    self.handleSetZoom(zoom);
                 }
 
+                self.showTempMarker(point);
                 self.instance.centerAt(point);
             };
 
@@ -217,11 +237,11 @@ define(["esri/map", "esri/geometry/Extent",
             self.handleSetExtent = function (extent, center) {
                 console.log("extMap - handleSetExtent");
 
-                if (JSUtilities.getBoolean(center)) {
+                if ((center !== null) && (center !== undefined)) {
                     if ((center === "auto") || (center === "true")) {
                         self.instance.setExtent(extent, true);
                     } else {
-                        self.instance.setZoom(center);
+                        self.handleSetZoom(center);
                         self.instance.centerAt(extent.getCenter());
                     }
                 } else {
@@ -241,6 +261,109 @@ define(["esri/map", "esri/geometry/Extent",
 
                 self.instance.setZoom(zoom);
             };
+
+            self.handleClick = function (evt, type) {
+                console.log("extMap - handleClick");
+
+                var payload = {
+                    lat: 0,
+                    lon: 0,
+                    button: "left",
+                    type: "single",
+                    keys: [],
+                    time: new Date().getTime()
+                };
+
+                // DOM events - https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent
+                // button # pressed (0-5; 3=back, 4=forward are ignored)
+                if (evt.button === 0) {
+                } else if (evt.button === 1) {
+                    payload.button = "middle";
+                } else if (evt.button === 2) {
+                    payload.button = "right";
+                } else {
+                    return;
+                }
+
+                // Calculate lat/lon from event's MapPoint.
+                payload.lat = evt.mapPoint.getLatitude();
+                payload.lon = evt.mapPoint.getLongitude();
+
+                // individual function keys
+                if (evt.altKey) {
+                    payload.keys.push("alt");
+                }
+                if (evt.ctrlKey) {
+                    payload.keys.push("ctrl");
+                }
+                if (evt.shiftKey) {
+                    payload.keys.push("shift");
+                }
+                if (payload.keys.length === 0) {
+                    payload.keys.push("none");
+                }
+
+                // validate type for multiple options
+                if (type === "click") {
+                    payload.type = "single";
+                    self.messageService.sendMessage("map.view.clicked",
+                        JSON.stringify(payload));
+                } else if (type === "dbl-click") {
+                    payload.type = "double";
+                    self.messageService.sendMessage("map.view.clicked",
+                        JSON.stringify(payload));
+                } else if (type === "mouse-down") {
+                    payload.type = "single";
+                    self.messageService.sendMessage("map.view.mousedown",
+                        JSON.stringify(payload));
+                } else if (type === "mouse-up") {
+                    payload.type = "single";
+                    self.messageService.sendMessage("map.view.mouseup",
+                        JSON.stringify(payload));
+                }
+            };
+
+            self.showTempMarker = function (point, size) {
+                console.log("extMap - handleSetZoom");
+
+                if (self.tmpGraphicsLayer) {
+                    self.instance.removeLayer(self.tmpGraphicsLayer);
+                    self.tmpGraphicsLayer = null;
+                }
+
+                self.tmpGraphicsLayer = new GraphicsLayer({
+                    id: "tmp_marker"
+                });
+                self.instance.addLayer(self.tmpGraphicsLayer);
+
+                let markerSymbol = new SimpleMarkerSymbol({
+                    "color": [255, 0, 58, 64],
+                    "size": size || 18,
+                    "angle": -30,
+                    "xoffset": 0,
+                    "yoffset": 0,
+                    "type": "esriSMS",
+                    "style": "esriSMSCircle",
+                    "outline": {
+                        "color": [255, 0, 58, 255],
+                        "width": 1,
+                        "type": "esriSLS",
+                        "style": "esriSLSSolid"
+                    }
+                });
+                let graphic = new Graphic(point, markerSymbol);
+                self.tmpGraphicsLayer.add(graphic);
+
+                window.setTimeout(function (point, size) {
+                    self.instance.removeLayer(self.tmpGraphicsLayer);
+                    self.tmpGraphicsLayer = null;
+
+                    size -= 2;
+                    if (size >= 4) {
+                        self.showTempMarker(point, size);
+                    }
+                }, 1000, point, (size || 12));
+            }
 
             self.init();
         };

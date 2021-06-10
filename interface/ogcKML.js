@@ -35,10 +35,6 @@ define(["dojo/_base/lang", "resource/KML2GraphicsLayer",
                 //self.registerEvents();
             };
 
-            self.handleClick = function () {
-                console.log("ogcKML - handleClick" );
-            };
-
             self.registerEvents = function (layer) {
                 console.log("ogcKML - registerEvents" );
             };

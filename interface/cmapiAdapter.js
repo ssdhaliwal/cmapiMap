@@ -9,10 +9,6 @@ define(["plugins/JSUtilities"],
                 self.registerEvents();
             };
 
-            self.handleClick = function () {
-                console.log("cmapiAdapter - handleClick");
-            };
-
             self.registerEvents = function () {
                 console.log("cmapiAdapter - registerEvents");
             };
@@ -165,25 +161,29 @@ define(["plugins/JSUtilities"],
                     globals.plugins.extMap.handleCenterBounds(request.bounds, request.zoom);
                 }
             };
-
+                                                                                                                                                          
             self.onMapViewClicked = function (request) {
                 console.log("cmapiAdapter - onMapViewClicked");
 
+                // implemented - outgoing
             };
 
             self.onMapViewMouseDown = function (request) {
                 console.log("cmapiAdapter - onMapViewMouseDown");
 
+                // implemented - outgoing
             };
 
             self.onMapViewMouseUp = function (request) {
                 console.log("cmapiAdapter - onMapViewMouseUp");
 
+                // implemented - outgoing
             };
 
             self.onMapViewAreaSelected = function (request) {
                 console.log("cmapiAdapter - onMapViewAreaSelected");
 
+                // implemented - outgoing
             };
 
             // 4. map.status.*

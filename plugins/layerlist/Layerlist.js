@@ -72,7 +72,7 @@ define(["vendor/js/jstree/jstree",
                 console.log("extLayerlist - registerEvents" );
                 $("#layerlist").on("click", function($event) {
                     console.log("extLayerlist - registerEvents/click");
-                    self.handleClick()
+                    self.handleClick();
                 });
 
                 self.layerlist.on('check_node.jstree', function ($event, data) {

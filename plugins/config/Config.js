@@ -200,7 +200,7 @@ define(["dojo/html", "dojo/dom", "dojo/on", "dijit/registry", "dojo/dom-style"],
                 console.log("extConfig - registerEvents");
                 $("#config").on("click", function($event) {
                     console.log("extConfig - registerEvents/click");
-                    self.handleClick()
+                    self.handleClick();
                 });
 
                 $("#configFontSelect option[value='" + self.fontColorName + "']").attr("selected", "selected");

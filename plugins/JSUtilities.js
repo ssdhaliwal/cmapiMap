@@ -158,83 +158,183 @@ define([],
                 img.src = url + "/favicon.ico";
             },
 
-            convertDDToDMM: function (latitude, longitude) {
-                // console.log("JSUtilities - convertDDToDMM" );
-                return convertDDLatitudeToDMM(latitude) + ", " +
-                    convertDDLongitudeToDMM(longitude);
+            coordinate2Decimal: function (lat, lon) {
+                var sepCount;
+
+                // longitude
+                sepCount = (lon.match(/ /g) || []).length;
+                if (sepCount === 0) {
+                    if (lon.includes("-") || lon.includes("W")) {
+                        lon = "-" + lon.replace("_", "").replace("W", "").replace("-", "");
+                    } else {
+                        lon = lon.replace("+", "").replace("_", "").replace("E", "");
+                    }
+                } else if (sepCount === 1) {
+                    lon = JSUtils.convertDDMLongitudeToDD(lon.replace("_", ""));
+                } else if (sepCount === 2) {
+                    lon = JSUtils.convertDMSLongitudeToDD(lon.replace("_", ""));
+                }
+
+                // latitude
+                sepCount = (lat.match(/ /g) || []).length;
+                if (sepCount === 0) {
+                    if (lat.includes("-") || lat.includes("S")) {
+                        lat = "-" + lat.replace("_", "").replace("S", "").replace("-", "");
+                    } else {
+                        lat = lat.replace("+", "").replace("_", "").replace("N", "");
+                    }
+                } else if (sepCount === 1) {
+                    lat = JSUtils.convertDDMLatitudeToDD(lat.replace("_", ""));
+                } else if (sepCount === 2) {
+                    lat = JSUtils.convertDMSLatitudeToDD(lat.replace("_", ""));
+                }
+
+                return { "lon": lon, "lat": lat };
             },
 
-            convertDDLongitudeToDMM: function (longitude) {
-                // console.log("JSUtilities - convertDDLongitudeToDMM" );
-                var lon = Number(longitude);
-                var dir = (lon >= 0 ? 'E' : 'W');
+            coordinate2DDM: function (lat, lon) {
+                var ddmLat = JSUtils.convertDDLatitudeToDDM(lat);
+                var ddmLon = JSUtils.convertDDLongitudeToDDM(lon);
+
+                return { "lon": ddmLon, "lat": ddmLat };
+            },
+
+            coordinate2DMS: function (lat, lon) {
+                var ddmLat = JSUtils.convertDDLatitudeToDMS(lat);
+                var ddmLon = JSUtils.convertDDLongitudeToDMS(lon);
+
+                return { "lon": ddmLon, "lat": ddmLat };
+            },
+
+            convertDDToDDM: function (latitude, longitude) {
+                return this.convertDDLatitudeToDDM(latitude) + ", " +
+                    this.convertDDLongitudeToDDM(longitude);
+            },
+
+            convertDDLongitudeToDDM: function (longitude) {
+                var lon = 0.00;
+
+                longitude = longitude + "";
+                if (longitude.includes("-") || longitude.includes("W") || longitude.includes("w")) {
+                    try {
+                        lon = -1 * Number(longitude.replace(/[-W]/gi, ""));
+                    } catch { lon = 0; }
+                    dir = "W";
+                } else {
+                    try {
+                        lon = Number(longitude.replace(/[+E]/gi, ""));
+                    } catch { lon = 0; }
+                    dir = "E";
+                }
+
                 lon = Math.abs(lon);
                 var d = Math.floor(lon);
-                var m = ((lon - d) * 60).toFixed(4);
-                return d + '° ' + m + '\' ' + dir;
+                var m = ((lon - d) * 60);
+                return d + ' ' + m + dir;
             },
 
-            convertDDLatitudeToDMM: function (latitude) {
-                // console.log("JSUtilities - convertDDLatitudeToDMM" );
-                var lat = Number(latitude);
-                var dir = (lat >= 0 ? 'N' : 'S');
+            convertDDLatitudeToDDM: function (latitude) {
+                var lat = 0.00;
+
+                latitude = latitude + "";
+                if (latitude.includes("-") || latitude.includes("S") || latitude.includes("s")) {
+                    try {
+                        lat = -1 * Number(latitude.replace(/[-S]/gi, ""));
+                    } catch { lat = 0; }
+                    dir = "S";
+                } else {
+                    try {
+                        lat = Number(latitude.replace(/[+N]/gi, ""));
+                    } catch { lat = 0; }
+                    dir = "N";
+                }
+
                 lat = Math.abs(lat);
                 var d = Math.floor(lat);
-                var m = ((lat - d) * 60).toFixed(4);
-                return d + '° ' + m + '\' ' + dir;
+                var m = ((lat - d) * 60);
+                return d + ' ' + m + dir;
             },
 
             convertDDToDMS: function (latitude, longitude) {
-                // console.log("JSUtilities - convertDDToDMS" );
-                return convertDDLatitudeToDMS(latitude) + ", " +
-                    convertDDLongitudeToDMS(longitude);
+                return this.convertDDLatitudeToDMS(latitude) + ", " +
+                    this.convertDDLongitudeToDMS(longitude);
             },
 
             convertDDLongitudeToDMS: function (longitude) {
-                // console.log("JSUtilities - convertDDLongitudeToDMS" );
-                var lon = Number(longitude);
-                var dir = (lon >= 0 ? 'E' : 'W');
+                var lon = 0.00;
+
+                longitude = longitude + "";
+                if (longitude.includes("-") || longitude.includes("W") || longitude.includes("w")) {
+                    try {
+                        lon = -1 * Number(longitude.replace(/[-W]/gi, ""));
+                    } catch { lon = 0; }
+                    dir = "W";
+                } else {
+                    try {
+                        lon = Number(longitude.replace(/[+E]/gi, ""));
+                    } catch { lon = 0; }
+                    dir = "E";
+                }
+
                 lon = Math.abs(lon);
                 var d = Math.floor(lon);
                 var m = Math.floor((lon - d) * 60);
-                var s = ((lon - d - (m / 60)) * 3600).toFixed(2);
-                return d + '° ' + m + '\' ' + s + '" ' + dir;
+                var s = ((lon - d - (m / 60)) * 3600);
+                return d + ' ' + m + ' ' + s + dir;
             },
 
             convertDDLatitudeToDMS: function (latitude) {
-                // console.log("JSUtilities - convertDDLatitudeToDMS" );
-                var lat = Number(latitude);
-                var dir = (lat >= 0 ? 'N' : 'S');
+                var lat = 0.00;
+
+                latitude = latitude + "";
+                if (latitude.includes("-") || latitude.includes("S") || latitude.includes("s")) {
+                    try {
+                        lat = -1 * Number(latitude.replace(/[-S]/gi, ""));
+                    } catch { lat = 0; }
+                    dir = "S";
+                } else {
+                    try {
+                        lat = Number(latitude.replace(/[+N]/gi, ""));
+                    } catch { lat = 0; }
+                    dir = "N";
+                }
+
                 lat = Math.abs(lat);
                 var d = Math.floor(lat);
                 var m = Math.floor((lat - d) * 60);
-                var s = ((lat - d - (m / 60)) * 3600).toFixed(2);
-                return d + '° ' + m + '\' ' + s + '" ' + dir;
+                var s = ((lat - d - (m / 60)) * 3600);
+                return d + ' ' + m + ' ' + s + dir;
             },
 
             convertDMSToDD: function (latitude, longitude) {
-                // console.log("JSUtilities - convertDMSToDD" );
-                return convertDMSLatitudeToDD(latitude) + ", " +
-                    convertDMSLongitudeToDD(longitude);
+                return this.convertDMSLatitudeToDD(latitude) + ", " +
+                    this.convertDMSLongitudeToDD(longitude);
             },
 
             convertDMSToDDM: function (latitude, longitude) {
-                // console.log("JSUtilities - convertDMSToDDM" );
-                return convertDDLatitudeToDDM(convertDMSLatitudeToDD(latitude)) + ", " +
-                    convertDDLongitudeToDDM(convertDMSLongitudeToDD(longitude))
+                return this.convertDDLatitudeToDDM(this.convertDMSLatitudeToDD(latitude)) + ", " +
+                    this.convertDDLongitudeToDDM(this.convertDMSLongitudeToDD(longitude))
             },
 
             convertDMSLongitudeToDD: function (longitude) {
-                // console.log("JSUtilities - convertDMSLongitudeToDD" );
                 var dms = longitude.replace(/[^-\. 0-9a-z]/gi, '').split(" ");
-                var d = Number(dms[0]);
+                var d = 0;
+                try {
+                    d = Number(dms[0]);
+                } catch { d = 0; }
                 if (d < 0) d = d * -1;
 
-                var m = Number(dms[1]);
-                var s = Number(dms[2].replace(/[EW]/gi, ""));
+                var m = 0;
+                try {
+                    m = Number(dms[1]);
+                } catch { m = 0; }
+                var s = 0;
+                try {
+                    s = Number(dms[2].replace(/[EW]/gi, ""));
+                } catch { s = 0; }
 
                 var dir = "+";
-                if (longitude.includes("-") || longitude.includes("W")) {
+                if (longitude.includes("-") || longitude.includes("W") || longitude.includes("w")) {
                     dir = "-";
                 }
 
@@ -244,16 +344,24 @@ define([],
             },
 
             convertDMSLatitudeToDD: function (latitude) {
-                // console.log("JSUtilities - convertDMSLatitudeToDD" );
                 var dms = latitude.replace(/[^-\. 0-9a-z]/gi, '').split(" ");
-                var d = Number(dms[0]);
+                var d = 0;
+                try {
+                    d = Number(dms[0]);
+                } catch { d = 0; }
                 if (d < 0) d = d * -1;
 
-                var m = Number(dms[1]);
-                var s = Number(dms[2].replace(/[NS]/gi, ""));
+                var m = 0;
+                try {
+                    m = Number(dms[1]);
+                } catch { m = 0; }
+                var s = 0;
+                try {
+                    s = Number(dms[2].replace(/[NS]/gi, ""));
+                } catch { s = 0; }
 
                 var dir = "+";
-                if (latitude.includes("-") || latitude.includes("S")) {
+                if (latitude.includes("-") || latitude.includes("S") || latitude.includes("s")) {
                     dir = "-";
                 }
 
@@ -263,27 +371,30 @@ define([],
             },
 
             convertDDMToDD: function (latitude, longitude) {
-                // console.log("JSUtilities - convertDDMToDD" );
-                return convertDDMLatitudeToDD(latitude) + ", " +
-                    convertDDMLongitudeToDD(longitude);
+                return this.convertDDMLatitudeToDD(latitude) + ", " +
+                    this.convertDDMLongitudeToDD(longitude);
             },
 
             convertDDMToDMS: function (latitude, longitude) {
-                // console.log("JSUtilities - convertDDMToDMS" );
-                return convertDDLatitudeToDMS(convertDDMLatitudeToDD(latitude)) + ", " +
-                    convertDDLongitudeToDMS(convertDDMLongitudeToDD(longitude))
+                return this.convertDDLatitudeToDMS(this.convertDDMLatitudeToDD(latitude)) + ", " +
+                    this.convertDDLongitudeToDMS(this.convertDDMLongitudeToDD(longitude))
             },
 
             convertDDMLongitudeToDD: function (longitude) {
-                // console.log("JSUtilities - convertDDMLongitudeToDD" );
                 var ddm = longitude.replace(/[^-\. 0-9a-z]/gi, '').split(" ");
-                var d = Number(ddm[0]);
+                var d = 0;
+                try {
+                    d = Number(ddm[0]);
+                } catch { d = 0; }
                 if (d < 0) d = d * -1;
 
-                var m = Number(ddm[1].replace(/[EW]/gi, ""));
+                var m = 0;
+                try {
+                    m = Number(ddm[1].replace(/[EW]/gi, ""));
+                } catch { m = 0; }
 
                 var dir = "+";
-                if (longitude.includes("-") || longitude.includes("W")) {
+                if (longitude.includes("-") || longitude.includes("W") || longitude.includes("w")) {
                     dir = "-";
                 }
 
@@ -292,15 +403,20 @@ define([],
             },
 
             convertDDMLatitudeToDD: function (latitude) {
-                // console.log("JSUtilities - convertDDMLatitudeToDD" );
                 var ddm = latitude.replace(/[^-\. 0-9a-z]/gi, '').split(" ");
-                var d = Number(ddm[0]);
+                var d = 0;
+                try {
+                    d = Number(ddm[0]);
+                } catch { d = 0; }
                 if (d < 0) d = d * -1;
 
-                var m = Number(ddm[1].replace(/[NS]/gi, ""));
+                var m = 0;
+                try {
+                    m = Number(ddm[1].replace(/[NS]/gi, ""));
+                } catch { m = 0; }
 
                 var dir = "+";
-                if (latitude.includes("-") || latitude.includes("S")) {
+                if (latitude.includes("-") || latitude.includes("S") || latitude.includes("s")) {
                     dir = "-";
                 }
 
