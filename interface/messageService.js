@@ -24,7 +24,7 @@ define(["interface/cmapiAdapter", "plugins/ViewUtilities", "plugins/JSUtilities"
                         switch (data.channel) {
                             // 1. map.overlay.*
                             case "map.overlay.create":
-                                self.cmapiAdapter.onMapOverlayCreateUpdate(payload);
+                                self.cmapiAdapter.onMapOverlayCreate(payload);
                                 break;
                             case "map.overlay.remove":
                                 self.cmapiAdapter.onMapOverlayRemove(payload);
@@ -36,7 +36,12 @@ define(["interface/cmapiAdapter", "plugins/ViewUtilities", "plugins/JSUtilities"
                                 self.cmapiAdapter.onMapOverlayShow(payload);
                                 break;
                             case "map.overlay.update":
-                                self.cmapiAdapter.onMapOverlayCreateUpdate(payload);
+                                self.cmapiAdapter.onMapOverlayUpdate(payload);
+                                break;
+                            case "map.overlay.cluster.set":
+                            case "map.overlay.cluster.remove":
+                            case "map.overlay.cluster.activate":
+                            case "map.overlay.cluster.deactivate":
                                 break;
 
                             // 2. map.feature.*
@@ -73,15 +78,22 @@ define(["interface/cmapiAdapter", "plugins/ViewUtilities", "plugins/JSUtilities"
                                 self.cmapiAdapter.onMapCenterBounds(payload);
                                 break;
                             case "map.view.clicked":
-                                break;
                             case "map.view.mousedown":
-                                break;
                             case "map.view.mouseup":
-                                break;
                             case "map.view.area.selected":
                                 break;
 
                             // 4. map.status.*
+                            case "map.status.request":
+                                self.cmapiAdapter.onMapStatusRequest(payload);
+                                break;
+                                
+                            case "map.status.view":
+                            case "map.status.format":
+                            case "map.status.about":
+                            case "map.status.selected":
+                            case "map.status.initialization":
+                                break;
 
                             // 5. map.message.*
                         }

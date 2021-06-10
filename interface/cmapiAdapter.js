@@ -15,8 +15,8 @@ define(["plugins/JSUtilities"],
 
             // cmapi functions
             // 1. map.overlay.*
-            self.onMapOverlayCreateUpdate = function (request) {
-                console.log("cmapiAdapter - onMapOverlayCreateUpdate");
+            self.onMapOverlayCreate = function (request) {
+                console.log("cmapiAdapter - onMapOverlayCreate");
                 // check minimum requirement - name or id
                 if (request.hasOwnProperty("name") || request.hasOwnProperty("overlayId")) {
                     if (!request.hasOwnProperty("name") || JSUtilities.isEmpty(request.name)) {
@@ -54,6 +54,11 @@ define(["plugins/JSUtilities"],
                 if (request.hasOwnProperty("overlayId")) {
                     globals.plugins.extLayerlist.handleShowOverlay(request);
                 }
+            };
+
+            self.onMapOverlayUpdate = function (request) {
+                console.log("cmapiAdapter - onMapOverlayUpdate");
+                self.onMapOverlayCreate(request);
             };
 
             // 2. map.feature.*
@@ -183,10 +188,21 @@ define(["plugins/JSUtilities"],
             self.onMapViewAreaSelected = function (request) {
                 console.log("cmapiAdapter - onMapViewAreaSelected");
 
-                // implemented - outgoing
+                // pending - outgoing
             };
 
             // 4. map.status.*
+            self.onMapStatusRequest = function (request) {
+                console.log("cmapiAdapter - onMapStatusRequest");
+
+                // "view", "format", "selected", "about", "initialization"
+                if (request.hasOwnProperty("types")) {
+                    if (request.types.includes("view") || request.types.includes("format") ||
+                        request.types.includes("selected") || request.types.includes("about")) {
+                        globals.plugins.extMap.handleMapStatusRequest(request);
+                    }
+                }
+            };
 
             // 5. map.message.*
 

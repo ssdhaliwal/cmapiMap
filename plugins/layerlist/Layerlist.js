@@ -484,7 +484,7 @@ define(["vendor/js/jstree/jstree",
                 console.log("extLayerlist - handlePlotFeatureUrl" );
                 // create the overlay if not existing
                 if (request.hasOwnProperty("overlayId") && !JSUtilities.isEmpty(request.overlayId)) {
-                    self.messageService.cmapiAdapter.onMapOverlayCreateUpdate({ overlayId: request.overlayId });
+                    self.messageService.cmapiAdapter.onMapOverlayCreate({ overlayId: request.overlayId });
                 }
 
                 // check if feature id already exists

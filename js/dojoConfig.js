@@ -97,6 +97,8 @@ if (!window.esriWorldGeocoderService) {
  */
 window.esriDeployVer = "1.0.0";
 window.esriDeployDate = "20201201";
+window.esriUniversalName = "org.cmapi.esri";
+window.esriInstanceName = window.esriUniversalName + "-" + (new Date().getTime().toString(16));
 var dojoConfig = dojoConfig || {};
 
 /* 20191029 - depreciated due to no license key

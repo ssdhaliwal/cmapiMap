@@ -1,11 +1,13 @@
-define(["esri/map", "esri/layers/GraphicsLayer", "esri/geometry/Extent",
-    "esri/SpatialReference",
+define(["dojo/_base/array",
+    "esri/map", "esri/layers/GraphicsLayer", "esri/geometry/Extent",
+    "esri/geometry/normalizeUtils", "esri/SpatialReference",
     "esri/graphic", "esri/geometry/Point",
     "esri/symbols/SimpleMarkerSymbol",
     "esri/geometry/webMercatorUtils", "dojo/Deferred",
     "plugins/ViewUtilities", "plugins/JSUtilities"],
-    function (esriMap, GraphicsLayer, Extent,
-        SpatialReference,
+    function (array,
+        esriMap, GraphicsLayer, Extent,
+        NormalizeUtils, SpatialReference,
         Graphic, Point,
         SimpleMarkerSymbol,
         webMercatorUtils, Deferred,
@@ -17,7 +19,7 @@ define(["esri/map", "esri/layers/GraphicsLayer", "esri/geometry/Extent",
             self.initialization = true;
             self.messageService = globals.interfaces.messageService;
             self.geometryService = globals.interfaces.geometryService;
-            self.coordinateFormat = "DMM";
+            self.coordinateFormat = "DDM";
             self.cooordinateElement = $("#latlonpos");
             self.timerTimeout = null;
             self.mgrsTimeout = null;
@@ -91,7 +93,6 @@ define(["esri/map", "esri/layers/GraphicsLayer", "esri/geometry/Extent",
                             self.instance.on("basemap-change", sendMapswap);
                             self.instance.on("mouse-down", sendMousedown);
                             self.instance.on("mouse-up", sendMouseup);
-                            self.instance.map.on("extent-change", sendStatusViewUpdate);
                             self.instance.on('mouse-up', updateMouseLocation);
                             self.instance.on('mouse-over', setDropEnabled);
                             self.instance.on('mouse-out', setDropDisabled);
@@ -112,19 +113,23 @@ define(["esri/map", "esri/layers/GraphicsLayer", "esri/geometry/Extent",
                             self.instance.on("mouse-up", function ($event) {
                                 self.handleClick($event, "mouse-up");
                             });
+
+                            self.instance.on("extent-change", function ($event) {
+                                self.handleMapStatusRequestView();
+                            });
                         }
                     });
                 });
 
                 self.cooordinateElement.click(function () {
-                    if (self.coordinateFormat === "DMM") {
+                    if (self.coordinateFormat === "DDM") {
                         self.coordinateFormat = "DMS";
                     } else if (self.coordinateFormat === "DMS") {
                         self.coordinateFormat = "DD";
                     } else if (self.coordinateFormat === "DD") {
                         self.coordinateFormat = "MGRS";
                     } else {
-                        self.coordinateFormat = "DMM";
+                        self.coordinateFormat = "DDM";
                     }
 
                     self.handleShowCoordinates();
@@ -148,7 +153,7 @@ define(["esri/map", "esri/layers/GraphicsLayer", "esri/geometry/Extent",
                     }
 
                     switch (self.coordinateFormat) {
-                        case "DMM":
+                        case "DDM":
                             self.cooordinateElement.text("(z" + self.instance.getZoom() + ") [ lat: " +
                                 JSUtilities.convertDDLatitudeToDDM(self.lastY) + ", lon: " +
                                 JSUtilities.convertDDLongitudeToDDM(self.lastX) + " ]");
@@ -324,7 +329,7 @@ define(["esri/map", "esri/layers/GraphicsLayer", "esri/geometry/Extent",
             };
 
             self.showTempMarker = function (point, size) {
-                console.log("extMap - handleSetZoom");
+                console.log("extMap - showTempMarker");
 
                 if (self.tmpGraphicsLayer) {
                     self.instance.removeLayer(self.tmpGraphicsLayer);
@@ -363,7 +368,135 @@ define(["esri/map", "esri/layers/GraphicsLayer", "esri/geometry/Extent",
                         self.showTempMarker(point, size);
                     }
                 }, 1000, point, (size || 12));
-            }
+            };
+
+            self.handleMapStatusRequest = function (request) {
+                console.log("extMap - handleMapStatusRequest");
+
+                // check and send appropriate messages
+                if (request.types.includes("view")) {
+                    globals.plugins.extMap.handleMapStatusRequestView();
+                } else if (request.types.includes("format")) {
+                    globals.plugins.extMap.handleMapStatusRequestFormat();
+                } else if (request.types.includes("selected")) {
+                    globals.plugins.extMap.handleMapStatusRequestSelected();
+                } else if (request.types.includes("about")) {
+                    globals.plugins.extMap.handleMapStatusRequestAbout();
+                }
+            };
+
+            self.handleMapStatusRequestView = function () {
+                console.log("extMap - handleMapStatusRequestView");
+
+                let payload = {};
+
+                // The map is still loading
+                if (self.instance.geographicExtent === undefined) {
+                    window.setTimeout(function () {
+                        me.sendView(caller);
+                    }, 1000);
+
+                    return;
+                }
+
+                // adjust for IDL
+                NormalizeUtils.normalizeCentralMeridian([self.instance.geographicExtent], self.geometryService, function (evt) {
+                    // if polygon is returned; then format for accordingly
+                    payload.bounds = [];
+                    if (evt[0].hasOwnProperty("rings")) {
+                        array.forEach(evt[0]["rings"], function (ring) {
+                            payload.bounds.push({
+                                southWest: {
+                                    lat: ring[0][1],
+                                    lon: ring[0][0]
+                                },
+                                northEast: {
+                                    lat: ring[2][1],
+                                    lon: ring[2][0]
+                                }
+                            });
+                        });
+                    } else {
+                        payload.bounds.push({
+                            southWest: {
+                                lat: self.instance.geographicExtent.ymin,
+                                lon: Extent.prototype._normalizeX(self.instance.geographicExtent.xmin,
+                                    self.instance.geographicExtent.spatialReference._getInfo()).x
+                            },
+                            northEast: {
+                                lat: self.instance.geographicExtent.ymax,
+                                lon: Extent.prototype._normalizeX(self.instance.geographicExtent.xmax,
+                                    self.instance.geographicExtent.spatialReference._getInfo()).x
+                            }
+                        });
+                    }
+
+                    payload.center = {
+                        lat: self.instance.geographicExtent.getCenter().y,
+                        lon: Extent.prototype._normalizeX(self.instance.geographicExtent.getCenter().x,
+                            self.instance.geographicExtent.spatialReference._getInfo()).x
+                    };
+
+                    payload.range = ViewUtilities.scaleToZoomAltitude(self.instance);
+
+                    payload.scale = self.instance.getScale();
+                    payload.zoom = self.instance.getZoom();
+                    payload.basemap = self.instance.getBasemap();
+                    payload.timeExtent = self.instance.timeExent || "";
+
+                    payload.coordinateFormat = self.coordinateFormat;
+
+                    self.messageService.sendMessage("map.status.request.view",
+                        JSON.stringify(payload));
+                }, function (error) {
+                    console.log("err/extMap - handleMapStatusRequestView", error);
+                });
+            };
+
+            self.handleMapStatusRequestFormat = function () {
+                console.log("extMap - handleMapStatusRequestFormat");
+
+                let payload =
+                {
+                    formats: ["kml, feature, dynamic"]
+                };
+
+                self.messageService.sendMessage("map.status.request.format",
+                    JSON.stringify(payload));
+            };
+
+            self.handleMapStatusRequestSelected = function () {
+                console.log("extMap - handleMapStatusRequestSelected");
+
+                let payload =
+                {
+                    overlayId: "",
+                    selectedFeatures: {
+                        "featureId": "",
+                        "selectedId": ""
+                    }
+                };
+
+                self.messageService.sendMessage("map.status.request.selected",
+                    JSON.stringify(payload));
+            };
+
+            self.handleMapStatusRequestAbout = function () {
+                console.log("extMap - handleMapStatusRequestAbout");
+
+                let payload =
+                {
+                    version: window.esriDeployVer + "@" + window.esriDeployDate,
+                    type: string["2-D"],
+                    widgetName: "cmapiESRI",
+                    instanceName: window.esriInstanceName,
+                    universalName: window.esriUniversalName,
+                    extensions: [""]
+                };
+
+                self.messageService.sendMessage("map.status.request.about",
+                    JSON.stringify(payload));
+            };
 
             self.init();
         };
