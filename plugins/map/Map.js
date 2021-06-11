@@ -25,7 +25,8 @@ define(["dojo/_base/array",
             self.mgrsTimeout = null;
             self.lastX = 0;
             self.lastY = 0;
-            self.tmpGraphicsLayer = null;
+            self.tmpGraphicsLayer = {};
+            self.clickTracker = {};
 
             self.init = function () {
                 console.log("extMap - init");
@@ -148,23 +149,26 @@ define(["dojo/_base/array",
                         var mp = webMercatorUtils.webMercatorToGeographic(event.mapPoint);
 
                         //display mouse coordinates
-                        self.lastX = mp.x.toFixed(5);
-                        self.lastY = mp.y.toFixed(5);
+                        self.lastX = mp.x;
+                        self.lastY = mp.y;
                     }
 
                     switch (self.coordinateFormat) {
                         case "DDM":
-                            self.cooordinateElement.text("(z" + self.instance.getZoom() + ") [ lat: " +
+                            self.cooordinateElement.text("(z" + self.instance.getZoom() + ") " +
+                                "[(" + self.coordinateFormat + ") lat: " +
                                 JSUtilities.convertDDLatitudeToDDM(self.lastY) + ", lon: " +
                                 JSUtilities.convertDDLongitudeToDDM(self.lastX) + " ]");
                             break;
                         case "DMS":
-                            self.cooordinateElement.text("(z" + self.instance.getZoom() + ") [ lat: " +
+                            self.cooordinateElement.text("(z" + self.instance.getZoom() + ") " +
+                                "[(" + self.coordinateFormat + ") lat: " +
                                 JSUtilities.convertDDLatitudeToDMS(self.lastY) + ", lon: " +
                                 JSUtilities.convertDDLongitudeToDMS(self.lastX) + " ]");
                             break;
                         case "MGRS":
-                            self.cooordinateElement.text("(z" + self.instance.getZoom() + ") [ CALCULATING MGRS... ]");
+                            self.cooordinateElement.text("(z" + self.instance.getZoom() + ") " +
+                                "[(" + self.coordinateFormat + ") CALCULATING MGRS... ]");
                             self.mgrsTimeout = setTimeout(function () {
                                 var params = {
                                     conversionType: "mgrs",
@@ -181,18 +185,21 @@ define(["dojo/_base/array",
                                     deferred.resolve(result);
                                 }, function () {
                                     if (self.coordinateFormat === "MGRS") {
-                                        self.cooordinateElement.text("(z" + self.instance.getZoom() + ") [ ERROR ]");
+                                        self.cooordinateElement.text("(z" + self.instance.getZoom() + ") " +
+                                            "[(" + self.coordinateFormat + ") ERROR ]");
                                     }
                                 });
                                 deferred.promise.then(function (response) {
                                     if (self.coordinateFormat === "MGRS") {
-                                        self.cooordinateElement.text("(z" + self.instance.getZoom() + ") [ " + response[0] + " ]");
+                                        self.cooordinateElement.text("(z" + self.instance.getZoom() + ") " +
+                                            "[(" + self.coordinateFormat + ") " + response[0] + " ]");
                                     }
                                 });
                             }, 250);
                             break;
                         default:
-                            self.cooordinateElement.text("(z" + self.instance.getZoom() + ") [ lat: " + self.lastY + ", lon: " + self.lastX + " ]");
+                            self.cooordinateElement.text("(z" + self.instance.getZoom() + ") " +
+                                "[(" + self.coordinateFormat + ") lat: " + self.lastY + ", lon: " + self.lastX + " ]");
                             break;
                     }
                 }, 5);
@@ -313,6 +320,15 @@ define(["dojo/_base/array",
                     payload.type = "single";
                     self.messageService.sendMessage("map.view.clicked",
                         JSON.stringify(payload));
+
+                    // show marker enabled?
+                    if (globals.options.map.click.showMarker === true) {
+                        self.showTempMarker(evt.mapPoint, 18, "mapClick", globals.options.map.click.hideAfter);
+                        self.clickTracker[(new Date().getTime().toString(16))] = {
+                            x: evt.mapPoint.getLongitude(),
+                            y: evt.mapPoint.getLatitude()
+                        };
+                    }
                 } else if (type === "dbl-click") {
                     payload.type = "double";
                     self.messageService.sendMessage("map.view.clicked",
@@ -328,18 +344,20 @@ define(["dojo/_base/array",
                 }
             };
 
-            self.showTempMarker = function (point, size) {
+            self.showTempMarker = function (point, size, name, hideAfter) {
                 console.log("extMap - showTempMarker");
 
-                if (self.tmpGraphicsLayer) {
-                    self.instance.removeLayer(self.tmpGraphicsLayer);
-                    self.tmpGraphicsLayer = null;
+                if (name && (self.tmpGraphicsLayer.hasOwnProperty(name))) {
+                    self.instance.removeLayer(self.tmpGraphicsLayer[name]);
+                    delete self.tmpGraphicsLayer[name];
+                } else {
+                    name = "tmp_marker_" + (new Date().getTime().toString(16));
                 }
 
-                self.tmpGraphicsLayer = new GraphicsLayer({
-                    id: "tmp_marker"
+                self.tmpGraphicsLayer[name] = new GraphicsLayer({
+                    id: name
                 });
-                self.instance.addLayer(self.tmpGraphicsLayer);
+                self.instance.addLayer(self.tmpGraphicsLayer[name]);
 
                 let markerSymbol = new SimpleMarkerSymbol({
                     "color": [255, 0, 58, 64],
@@ -357,17 +375,30 @@ define(["dojo/_base/array",
                     }
                 });
                 let graphic = new Graphic(point, markerSymbol);
-                self.tmpGraphicsLayer.add(graphic);
+                self.tmpGraphicsLayer[name].add(graphic);
 
-                window.setTimeout(function (point, size) {
-                    self.instance.removeLayer(self.tmpGraphicsLayer);
-                    self.tmpGraphicsLayer = null;
-
+                window.setTimeout(function (point, size, name, hideAfter) {
                     size -= 2;
                     if (size >= 4) {
-                        self.showTempMarker(point, size);
+                        self.instance.removeLayer(self.tmpGraphicsLayer[name]);
+                        delete self.tmpGraphicsLayer[name];
+
+                        self.showTempMarker(point, size, name, hideAfter);
+                    } else {
+                        if (hideAfter !== "false") {
+                            try {
+                                hideAfter = 1 * Math.abs(hideAfter);
+                            } catch {
+                                hideAfter = null;
+                            }
+
+                            window.setTimeout(function (name) {
+                                self.instance.removeLayer(self.tmpGraphicsLayer[name]);
+                                delete self.tmpGraphicsLayer[name];
+                            }, (hideAfter || 10), name);
+                        }
                     }
-                }, 1000, point, (size || 12));
+                }, 1000, point, (size || 12), name, hideAfter);
             };
 
             self.handleMapStatusRequest = function (request) {
