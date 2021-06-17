@@ -11,7 +11,7 @@ define(["dojo/_base/lang", "dijit/registry", "dojo/query",
             self.tabs = {};
 
             self.init = function () {
-                console.log("extDatagrid - init");
+                // console.log("extDatagrid - init");
 
                 self.instance = registry.byId("datagrid_container");
 
@@ -24,7 +24,7 @@ define(["dojo/_base/lang", "dijit/registry", "dojo/query",
             };
 
             self.handleClick = function () {
-                console.log("extDatagrid - handleClick");
+                // console.log("extDatagrid - handleClick");
                 self.showing = !self.showing;
 
                 if (self.showing) {
@@ -46,27 +46,27 @@ define(["dojo/_base/lang", "dijit/registry", "dojo/query",
             };
 
             self.show = function() {
-                console.log("extDatagrid - show");
+                // console.log("extDatagrid - show");
 
                 $("#datagrid").css("display", "block");
             };
 
             self.hide = function() {
-                console.log("extDatagrid - hide");
+                // console.log("extDatagrid - hide");
 
                 $("#datagrid").css("display", "none");
             };
 
             self.registerEvents = function () {
-                console.log("extDatagrid - registerEvents");
+                // console.log("extDatagrid - registerEvents");
                 $("#datagrid").on("click", function ($event) {
-                    console.log("extDatagrid - registerEvents/click");
+                    // console.log("extDatagrid - registerEvents/click");
                     self.handleClick();
                 });
             };
 
             self.addTab = function (serviceObject) {
-                console.log("extDatagrid - addTab");
+                // console.log("extDatagrid - addTab");
 
                 // if tab already exists, exit
                 if (self.tabs['tab_' + serviceObject.service.text]) {
@@ -75,7 +75,7 @@ define(["dojo/_base/lang", "dijit/registry", "dojo/query",
 
                 // auto add if feature or local kml layer type
                 // currently supported; feature layers and kml - push filters to layer
-                console.log(serviceObject);
+                // console.log(serviceObject);
                 let gridDiv = dojo.create('div', {
                     id: 'div_' + serviceObject.service.text,
                     class: "datagridDiv"
@@ -99,7 +99,7 @@ define(["dojo/_base/lang", "dijit/registry", "dojo/query",
 
                         serviceData.then(payload => {
                             if (payload.items.length > 0) {
-                                console.log(payload, Object.keys(payload.items[0]));
+                                // console.log(payload, Object.keys(payload.items[0]));
 
                                 // format the data for store/grid
                                 let dataStore = new ItemFileWriteStore({
@@ -140,17 +140,17 @@ define(["dojo/_base/lang", "dijit/registry", "dojo/query",
                                 });
                             }
                         }, function (error) {
-                            console.log(error);
+                            // console.log(error);
                         });
                     }
                 }, 500);
             };
 
             self.removeTab = function (serviceObject) {
-                console.log("extDatagrid - removeTab");
+                // console.log("extDatagrid - removeTab");
 
                 // only via layer remove
-                console.log(serviceObject.service);
+                // console.log(serviceObject.service);
 
                 let divContainer = self.tabs['div_' + serviceObject.service.text];
                 let gridContainer = self.tabs['grid_' + serviceObject.service.text];

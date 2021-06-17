@@ -9,8 +9,8 @@ define(["esri/layers/ArcGISDynamicMapServiceLayer", "plugins/ViewUtilities"],
             self.layer = null;
 
             self.init = function () {
-                console.log("esriDynamicMapService - init");
-                console.log("... creating layer: " + self.service.text);
+                // console.log("esriDynamicMapService - init");
+                // console.log("... creating layer: " + self.service.text);
                 let params = self.service.layer.params || {};
                 let properties = self.service.layer.properties || {};
                 self.layer = new ArcGISDynamicMapServiceLayer(properties.url, params);
@@ -86,16 +86,16 @@ define(["esri/layers/ArcGISDynamicMapServiceLayer", "plugins/ViewUtilities"],
 			};
 
 			self.registerEvents = function() {
-                console.log("esriDynamicMapService - registerEvents");
+                // console.log("esriDynamicMapService - registerEvents");
 				self.layer.on("load", function () {
-					console.log("esriDynamicMapService - registerEvents/load");
+					// console.log("esriDynamicMapService - registerEvents/load");
 					if (ViewUtilities.getBoolean(params.zoom)) {
 						ViewUtilities.zoomToLayer(self.map, self.layer);
 					}
 				});
 
 				self.layer.on("error", function ($event) {
-					console.log("esriDynamicMapService - registerEvents/error");
+					// console.log("esriDynamicMapService - registerEvents/error");
                     if ($event.error.hasOwnProperty("code")) {
                         if (($event.error.code >= 400) && ($event.error.code < 600)) {
                             let msg = 'Unable to apply layer - ' + $event.error;
@@ -105,19 +105,19 @@ define(["esri/layers/ArcGISDynamicMapServiceLayer", "plugins/ViewUtilities"],
                 });
 
                 self.layer.on('visible-layers-change', function($event) {
-					console.log("esriDynamicMapService - registerEvents/visible-layers-change");
+					// console.log("esriDynamicMapService - registerEvents/visible-layers-change");
                     self.remove();
                 });
 			};
 
             self.remove = function() {
-                console.log("esriDynamicMapService - remove");
-                console.log("... removed layer: " + self.service.text);
+                // console.log("esriDynamicMapService - remove");
+                // console.log("... removed layer: " + self.service.text);
                 self.map.removeLayer(self.layer);
              };
 
 			 self.getExtent = function (featureId) {
-                console.log("esriDynamicMapService - getExtent");
+                // console.log("esriDynamicMapService - getExtent");
 		
 				if (self.layer && self.layer.fullExtent) {
 					return self.layer.fullExtent;
@@ -127,7 +127,7 @@ define(["esri/layers/ArcGISDynamicMapServiceLayer", "plugins/ViewUtilities"],
             };
 
             self.centerOnExtent = function (zoom) {
-                console.log("esriDynamicMapService - centerOnExtent");
+                // console.log("esriDynamicMapService - centerOnExtent");
 
 				if (self.layer && self.layer.fullExtent) {
 					let extent = self.layer.fullExtent;
@@ -141,7 +141,7 @@ define(["esri/layers/ArcGISDynamicMapServiceLayer", "plugins/ViewUtilities"],
             };
 
             self.centerOnFeature = function (markerId, zoom) {
-                console.log("esriDynamicMapService - centerOnFeature");
+                // console.log("esriDynamicMapService - centerOnFeature");
 
             };
 

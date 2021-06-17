@@ -3,7 +3,7 @@ var gulp = require('gulp');
 var concat = require('gulp-concat');
 
 gulp.task('concatCSS', function() {
-    console.log("Concating and moving all the css files in styles folder");
+    // console.log("Concating and moving all the css files in styles folder");
     return concatCSS();
   });
   
@@ -14,7 +14,7 @@ function concatCSS() {
 }
 
 gulp.task('concatJS', function() {
-    console.log("Concating and moving all the js files in styles folder");
+    // console.log("Concating and moving all the js files in styles folder");
     return concatJS();
   });
 

@@ -5,12 +5,12 @@ define([],
             let self = this;
 
             self.init = function () {
-                console.log("extToolbar - init");
+                // console.log("extToolbar - init");
                 self.registerEvents();
             };
 
             self.handleClick = function () {
-                console.log("extToolbar - handleClick");
+                // console.log("extToolbar - handleClick");
                 $("#map-controls1, #map-controls2").toggle();
                 $("#control-slider").toggleClass("selected");
 
@@ -20,27 +20,27 @@ define([],
             };
 
             self.hide = function() {
-                console.log("extToolbar - hide");
+                // console.log("extToolbar - hide");
 
                 $("#control-slider").css("display", "none");
             };
             
             self.show = function() {
-                console.log("extToolbar - show");
+                // console.log("extToolbar - show");
 
                 $("#control-slider").css("display", "block");
             };
 
             self.registerEvents = function () {
-                console.log("extToolbar - registerEvents");
+                // console.log("extToolbar - registerEvents");
                 $("#control-slider").on("click", function($event) {
-                    console.log("extToolbar - registerEvents/click", $event);
+                    // console.log("extToolbar - registerEvents/click", $event);
                     self.handleClick();
                 });
             };
 
             self.toggleOptions = function (elementId) {
-                console.log("extToolbar - toggleOptions");
+                // console.log("extToolbar - toggleOptions");
                 let isSelected = false;
                 if (elementId !== undefined) {
                     isSelected = $(elementId).hasClass("selected");

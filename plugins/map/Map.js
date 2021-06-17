@@ -29,7 +29,7 @@ define(["dojo/_base/array",
             self.clickTracker = {};
 
             self.init = function () {
-                console.log("extMap - init");
+                // console.log("extMap - init");
                 self.instance = new esriMap("map", {
                     basemap: "streets",
                     extent: new Extent({
@@ -42,29 +42,31 @@ define(["dojo/_base/array",
                         }
                     }),
                     showLabels: true,
-                    infoWindow: globals.popup
+                    // infoWindow: globals.popup
                 });
-                self.instance.infoWindow.resize(350, 240);
+                // self.instance.infoWindow.resize(350, 240);
 
                 // add to allow double-click without zoom
-                self.instance.disableDoubleClickZoom();
+                if (globals.options.map["dbl-click"] === true)
+                    self.instance.disableDoubleClickZoom();
+
                 self.regiserEvents();
             };
 
             self.regiserEvents = function () {
-                console.log("extMap - regiserEvents");
+                // console.log("extMap - regiserEvents");
                 self.instance.on("extent-change", function (evt) {
-                    console.log("extMap - extent-change");
+                    // console.log("extMap - extent-change");
                     self.handleRedrawGraphics();
                 });
 
                 self.instance.on("resize", function (evt) {
-                    console.log("extMap - resize");
+                    // console.log("extMap - resize");
                     self.handleRedrawGraphics();
                 });
 
                 self.instance.on("load", function (evt) {
-                    console.log("extMap - load");
+                    // console.log("extMap - load");
                     globals.initialize();
                     self.handleRedrawGraphics();
 
@@ -75,12 +77,12 @@ define(["dojo/_base/array",
                         JSON.stringify(payload));
 
                     self.instance.on("update-end", function (error) {
-                        console.log("extMap - update-end");
+                        // console.log("extMap - update-end");
                         payload.status = "ready";
                         self.messageService.sendMessage("map.status.initialization",
                             JSON.stringify(payload));
 
-                        console.log(error);
+                        // console.log(error);
 
                         // ensure these events are bound only once after initialization
                         // is complete
@@ -88,16 +90,8 @@ define(["dojo/_base/array",
                             self.initialization = false;
 
                             /*
-                            // self.instance.on("basemap-change", sendInit);
-                            self.instance.on("update-end", sendReady);
-                            self.instance.on("before-unload", sendTeardown);
-                            self.instance.on("basemap-change", sendMapswap);
-                            self.instance.on("mouse-down", sendMousedown);
-                            self.instance.on("mouse-up", sendMouseup);
-                            self.instance.on('mouse-up', updateMouseLocation);
                             self.instance.on('mouse-over', setDropEnabled);
                             self.instance.on('mouse-out', setDropDisabled);
-                            //self.instance.on("unload", unloadHandlers);
                             */
                             self.instance.on("mouse-move", self.handleShowCoordinates);
                             self.instance.on("mouse-drag", self.handleShowCoordinates);
@@ -119,6 +113,18 @@ define(["dojo/_base/array",
                                 self.handleMapStatusRequestView();
                             });
                         }
+
+                        self.instance.on("basemap-change", function () {
+                            self.messageService.sendMessage("map.status.initialization",
+                                JSON.stringify("mapSwapinProgress"));
+                        });
+
+                        self.instance.on("before-unload", function () {
+                            globals.plugins.extLayerlist.handleClearAll();
+
+                            self.messageService.sendMessage("map.status.initialization",
+                                JSON.stringify("tearDown"));
+                        });
                     });
                 });
 
@@ -138,7 +144,7 @@ define(["dojo/_base/array",
             };
 
             self.handleShowCoordinates = function (event) {
-                // console.log("extMap - handleShowCoordinates");
+                // // console.log("extMap - handleShowCoordinates");
                 // Debounce some request to prevent unnecessary dom refreshing.... But also make it responsive
                 clearTimeout(self.timerTimeout);
                 clearTimeout(self.mgrsTimeout);
@@ -206,7 +212,7 @@ define(["dojo/_base/array",
             };
 
             self.handleRedrawGraphics = function () {
-                console.log("extMap - handleRedrawGraphics");
+                // console.log("extMap - handleRedrawGraphics");
                 let graphics = self.instance.graphicsLayerIds;
                 let graphicLayer = null;
                 for (let i = 0; i < graphics.length; i++) {
@@ -215,27 +221,33 @@ define(["dojo/_base/array",
                 }
             };
 
-            self.handleCenterLocationLatLon = function (latitude, longitude, zoom) {
-                console.log("extMap - handleCenterLocationLatLon");
+            self.handleCenterLocationLatLon = function (latitude, longitude, zoom, hideAfter) {
+                // console.log("extMap - handleCenterLocationLatLon");
 
                 let point = new Point([longitude, latitude],
                     new SpatialReference({ wkid: 4326 }));
-                self.handleCenterLocationPoint(point, zoom);
+                self.handleCenterLocationPoint(point, zoom, hideAfter);
             };
 
-            self.handleCenterLocationPoint = function (point, zoom) {
-                console.log("extMap - handleCenterLocationPoint");
+            self.handleCenterLocationPoint = function (point, zoom, hideAfter) {
+                // console.log("extMap - handleCenterLocationPoint");
 
                 if (zoom) {
                     self.handleSetZoom(zoom);
                 }
 
-                self.showTempMarker(point);
-                self.instance.centerAt(point);
+                self.showTempMarker(point, 18, "centerLocation", 
+                    hideAfter || globals.options.map.click.hideAfter);
+
+                // re-center the map only if marker is not in the current extent
+                let extent = self.instance.geographicExtent;
+                if (!extent.contains(point) || (self.instance.getZoom() !== zoom)) {
+                    self.instance.centerAt(point);
+                }
             };
 
-            self.handleCenterBounds = function (bounds, zoom) {
-                console.log("extMap - handleCenterBounds");
+            self.handleCenterBounds = function (bounds, zoom, hideAfter) {
+                // console.log("extMap - handleCenterBounds");
 
                 let extent = new Extent(bounds.southWest.lon,
                     bounds.southWest.lat,
@@ -243,39 +255,54 @@ define(["dojo/_base/array",
                     bounds.northEast.lat,
                     self.instance.geographicExtent.spatialReference);
 
-                self.handleSetExtent(extent, zoom);
+                self.handleSetExtent(extent, zoom, hideAfter);
             };
 
-            self.handleSetExtent = function (extent, center) {
-                console.log("extMap - handleSetExtent");
+            self.handleSetExtent = function (extent, center, hideAfter) {
+                // console.log("extMap - handleSetExtent");
+
+                let showMarker = false, point;
 
                 if ((center !== null) && (center !== undefined)) {
                     if ((center === "auto") || (center === "true")) {
                         self.instance.setExtent(extent, true);
                     } else {
                         self.handleSetZoom(center);
-                        self.instance.centerAt(extent.getCenter());
+
+                        if (!Number.isNaN(hideAfter)) {
+                            showMarker = true;
+                        }
+                        point = extent.getCenter();
+                        self.instance.centerAt(point);
                     }
                 } else {
-                    self.instance.centerAt(extent.getCenter());
+                    if (!Number.isNaN(hideAfter)) {
+                        showMarker = true;
+                    }
+                    point = extent.getCenter();
+                    self.instance.centerAt(point);
+                }
+
+                if (showMarker) {
+                    self.showTempMarker(point, 18, "centerLocation", hideAfter);
                 }
             };
 
             self.handleSetScale = function (scale) {
-                console.log("extMap - handleSetScale");
+                // console.log("extMap - handleSetScale");
 
                 let mapScale = ViewUtilities.zoomAltitudeToScale(self.instance, scale);
                 self.instance.setScale(mapScale);
             };
 
             self.handleSetZoom = function (zoom) {
-                console.log("extMap - handleSetZoom");
+                // console.log("extMap - handleSetZoom");
 
                 self.instance.setZoom(zoom);
             };
 
             self.handleClick = function (evt, type) {
-                console.log("extMap - handleClick");
+                // console.log("extMap - handleClick");
 
                 var payload = {
                     lat: 0,
@@ -345,15 +372,22 @@ define(["dojo/_base/array",
             };
 
             self.showTempMarker = function (point, size, name, hideAfter) {
-                console.log("extMap - showTempMarker");
+                // console.log("extMap - showTempMarker");
 
+                // do not display marker if undefined
+                if (!hideAfter) {
+                    return;
+                }
+
+                // clear old marker position from map
                 if (name && (self.tmpGraphicsLayer.hasOwnProperty(name))) {
                     self.instance.removeLayer(self.tmpGraphicsLayer[name]);
                     delete self.tmpGraphicsLayer[name];
-                } else {
+                } else if (!name) {
                     name = "tmp_marker_" + (new Date().getTime().toString(16));
                 }
 
+                // create graphics layer and marker
                 self.tmpGraphicsLayer[name] = new GraphicsLayer({
                     id: name
                 });
@@ -374,35 +408,23 @@ define(["dojo/_base/array",
                         "style": "esriSLSSolid"
                     }
                 });
+
                 let graphic = new Graphic(point, markerSymbol);
                 self.tmpGraphicsLayer[name].add(graphic);
 
-                window.setTimeout(function (point, size, name, hideAfter) {
-                    size -= 2;
-                    if (size >= 4) {
-                        self.instance.removeLayer(self.tmpGraphicsLayer[name]);
+                if (hideAfter && (hideAfter > 0)) {
+                    window.setTimeout(function (name) {
+                        try {
+                            self.instance.removeLayer(self.tmpGraphicsLayer[name]);
+                        } catch {}
+
                         delete self.tmpGraphicsLayer[name];
-
-                        self.showTempMarker(point, size, name, hideAfter);
-                    } else {
-                        if (hideAfter !== "false") {
-                            try {
-                                hideAfter = 1 * Math.abs(hideAfter);
-                            } catch {
-                                hideAfter = null;
-                            }
-
-                            window.setTimeout(function (name) {
-                                self.instance.removeLayer(self.tmpGraphicsLayer[name]);
-                                delete self.tmpGraphicsLayer[name];
-                            }, (hideAfter || 10), name);
-                        }
-                    }
-                }, 1000, point, (size || 12), name, hideAfter);
+                    }, hideAfter, name);
+                }
             };
 
             self.handleMapStatusRequest = function (request) {
-                console.log("extMap - handleMapStatusRequest");
+                // console.log("extMap - handleMapStatusRequest");
 
                 // check and send appropriate messages
                 if (request.types.includes("view")) {
@@ -417,7 +439,7 @@ define(["dojo/_base/array",
             };
 
             self.handleMapStatusRequestView = function () {
-                console.log("extMap - handleMapStatusRequestView");
+                // console.log("extMap - handleMapStatusRequestView");
 
                 let payload = {};
 
@@ -480,12 +502,12 @@ define(["dojo/_base/array",
                     self.messageService.sendMessage("map.status.request.view",
                         JSON.stringify(payload));
                 }, function (error) {
-                    console.log("err/extMap - handleMapStatusRequestView", error);
+                    // console.log("err/extMap - handleMapStatusRequestView", error);
                 });
             };
 
             self.handleMapStatusRequestFormat = function () {
-                console.log("extMap - handleMapStatusRequestFormat");
+                // console.log("extMap - handleMapStatusRequestFormat");
 
                 let payload =
                 {
@@ -497,7 +519,7 @@ define(["dojo/_base/array",
             };
 
             self.handleMapStatusRequestSelected = function () {
-                console.log("extMap - handleMapStatusRequestSelected");
+                // console.log("extMap - handleMapStatusRequestSelected");
 
                 let payload =
                 {
@@ -513,7 +535,7 @@ define(["dojo/_base/array",
             };
 
             self.handleMapStatusRequestAbout = function () {
-                console.log("extMap - handleMapStatusRequestAbout");
+                // console.log("extMap - handleMapStatusRequestAbout");
 
                 let payload =
                 {

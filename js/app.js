@@ -37,7 +37,7 @@ require([
   // add projection load for global use
   const projectionPromise = projection.load();
 
-  console.log("app - startup");
+  // console.log("app - startup");
   $("[rel=tooltip]").tooltip({
     placement: "bottom"
   });
@@ -54,7 +54,7 @@ require([
   globals.plugins.extMap = new extMap(globals);
 
   globals.initialize = function () {
-    console.log("app - initialize");
+    // console.log("app - initialize");
     if (globals.options.map.scalebar) {
       globals.plugins.extScalebar = new extScalebar(globals);
     }

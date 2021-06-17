@@ -178,24 +178,27 @@ map.view.center.feature
 map.view.center.location
 {
    "location":{
-      "lat":38.8708,
-      "lon":-77.0558
-   }
+      "lat": 38.8708,
+      "lon": -77.0558
+   },
+   "hideAfter": 5000,
+   "zoom": 6
 }
 
 map.view.center.bounds
 {
    "bounds":{
       "southWest":{
-         "lat":34.5,
-         "lon":-120
+         "lat": 34.5,
+         "lon": -120
       },
       "northEast":{
-         "lat":30.5,
-         "lon":-110
+         "lat": 30.5,
+         "lon": -110
       }
    },
-   "zoom":5
+   "zoom": 5,
+   "hideAfter": 5000
 }
 
 map.feature.plot

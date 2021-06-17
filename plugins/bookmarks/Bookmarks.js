@@ -8,7 +8,7 @@ define(["esri/dijit/Bookmarks", "dijit/registry", "dojo/dom-style"],
             self.sources = [];
 
             self.init = function () {
-                console.log("extBookmark - init");
+                // console.log("extBookmark - init");
                 self.instance = new esriBookmarks({
                     map: map,
                     bookmarks: self.sources,
@@ -19,7 +19,7 @@ define(["esri/dijit/Bookmarks", "dijit/registry", "dojo/dom-style"],
             };
 
             self.handleClick = function () {
-                console.log("extBookmark - handleClick");
+                // console.log("extBookmark - handleClick");
                 globals.plugins.extToolbar.toggleOptions("#bookmark");
 
                 if ($("#bookmark").hasClass("selected")) {
@@ -31,7 +31,7 @@ define(["esri/dijit/Bookmarks", "dijit/registry", "dojo/dom-style"],
             };
 
             self.hide = function() {
-                console.log("extBookmark - hide");
+                // console.log("extBookmark - hide");
 
                 $("#bookmark").css("display", "none");
 
@@ -42,15 +42,15 @@ define(["esri/dijit/Bookmarks", "dijit/registry", "dojo/dom-style"],
             };
             
             self.show = function() {
-                console.log("extBookmark - show");
+                // console.log("extBookmark - show");
 
                 $("#bookmark").css("display", "block");
             };
 
             self.registerEvents = function() {
-                console.log("extBookmark - registerEvents");
+                // console.log("extBookmark - registerEvents");
                 $("#bookmark").on("click", function($event) {
-                    console.log("extBookmark - registerEvents/click");
+                    // console.log("extBookmark - registerEvents/click");
                     self.handleClick();
                 });
             };

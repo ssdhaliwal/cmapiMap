@@ -30,7 +30,7 @@ define(["esri/dijit/Search", "esri/layers/FeatureLayer", "esri/InfoTemplate", "e
 
             let mySearch = declare(esriSearch, {
                 search: function () {
-                    console.log("extToolbar(mySearch) - search");
+                    // console.log("extToolbar(mySearch) - search");
 
                     let self = this;
                     self.set('value', self.get('value').trim());
@@ -255,7 +255,7 @@ define(["esri/dijit/Search", "esri/layers/FeatureLayer", "esri/InfoTemplate", "e
             });
 
             self.init = function () {
-                console.log("extSearch - init");
+                // console.log("extSearch - init");
                 self.instance = new mySearch({
                     enableButtonMode: false,
                     enableLabel: true,
@@ -337,30 +337,30 @@ define(["esri/dijit/Search", "esri/layers/FeatureLayer", "esri/InfoTemplate", "e
             };
 
             self.handleClick = function () {
-                console.log("extSearch - handleClick");
+                // console.log("extSearch - handleClick");
             };
 
             self.hide = function() {
-                console.log("extSearch - hide");
+                // console.log("extSearch - hide");
 
                 $("#search").css("display", "none");
             };
             
             self.show = function() {
-                console.log("extSearch - show");
+                // console.log("extSearch - show");
 
                 $("#search").css("display", "block");
             };
 
             self.registerEvents = function () {
-                console.log("extSearch - registerEvents");
+                // console.log("extSearch - registerEvents");
                 self.instance.on("select-result", function (e) {
-                    // console.log('selected result', e);
+                    // // console.log('selected result', e);
                 });
             };
 
             self.addSource = function (source) {
-                console.log("extSearch - addSource");
+                // console.log("extSearch - addSource");
                 let sources = self.instance.get("sources");
                 let searchIndex = sources.indexOf(source);
 
@@ -372,7 +372,7 @@ define(["esri/dijit/Search", "esri/layers/FeatureLayer", "esri/InfoTemplate", "e
             };
 
             self.removeSource = function (source) {
-                console.log("extSearch - removeSource");
+                // console.log("extSearch - removeSource");
                 let sources = self.instance.get("sources");
                 let searchIndex = sources.indexOf(source);
 

@@ -58,7 +58,7 @@ define(["esri/geometry/Extent", "esri/Color", "esri/symbols/SimpleLineSymbol", "
              * @see http://resources.esri.com/help/9.3/arcgisserver/apis/silverlight/apiref/topic380.html
              */
             zoomAltitudeToScale: function (map, alt) {
-                // console.log("ViewUtilities - zoomAltitudeToScale" );
+                // // console.log("ViewUtilities - zoomAltitudeToScale" );
                 // (altitude in meters) * sin(60 deg) / sin(30 deg) to get half the view width in meters.
                 var widthInMeters = (alt * this.SINE_60_DEG) / this.SINE_30_DEG;
                 // scale = width in meters * 39.37 inches/meter * screen resolution / (0.5 * map.width)
@@ -77,7 +77,7 @@ define(["esri/geometry/Extent", "esri/Color", "esri/symbols/SimpleLineSymbol", "
              * @see http://resources.esri.com/help/9.3/arcgisserver/apis/silverlight/apiref/topic380.html
              */
             scaleToZoomAltitude: function (map) {
-                // console.log("ViewUtilities - scaleToZoomAltitude" );
+                // // console.log("ViewUtilities - scaleToZoomAltitude" );
                 // Calculate the range from the current scale using law of sines and a triangle from user's
                 // viewpoint to center of extent, to the edge of the map. This assumes a user as a 120 degree field of view.
                 // Triangle widthInMeters = scale * (1m / InchesPerMeter) * (1 / screen DPI) * (map width * 0.5).  We half
@@ -95,7 +95,7 @@ define(["esri/geometry/Extent", "esri/Color", "esri/symbols/SimpleLineSymbol", "
             * @see {@link https://developers.arcgis.com/en/javascript/jsapi/layer-amd.html|Layer}
             */
             unionExtents: function (newExtent, currentMax) {
-                // console.log("ViewUtilities - unionExtents");
+                // // console.log("ViewUtilities - unionExtents");
 
                 if (!currentMax) {
                     return newExtent;
@@ -106,7 +106,7 @@ define(["esri/geometry/Extent", "esri/Color", "esri/symbols/SimpleLineSymbol", "
 
             // https://developers.arcgis.com/javascript/3/sandbox/sandbox.html?sample=fl_popup
             pointToExtent: function (map, point, toleranceInPixel) {
-                // console.log("ViewUtilities - pointToExtent" );
+                // // console.log("ViewUtilities - pointToExtent" );
                 var pixelWidth = map.extent.getWidth() / map.width;
                 var toleranceInMapCoords = toleranceInPixel * pixelWidth;
 
@@ -118,7 +118,7 @@ define(["esri/geometry/Extent", "esri/Color", "esri/symbols/SimpleLineSymbol", "
             },
 
             getColor: function (color, opacity, colorMode) {
-                // console.log("ViewUtilities - getColor" );
+                // // console.log("ViewUtilities - getColor" );
                 if ((opacity === null) || (opacity === undefined)) {
                     opacity = this.DEFAULT_OPACITY * 255;
                 } else {
@@ -170,7 +170,7 @@ define(["esri/geometry/Extent", "esri/Color", "esri/symbols/SimpleLineSymbol", "
             },
 
             zoomToLayer: function (map, layer) {
-                // console.log("ViewUtilities - zoomToLayer" );
+                // // console.log("ViewUtilities - zoomToLayer" );
                 if (layer.hasOwnProperty("fullExtent")) {
                     map.setExtent(layer.fullExtent);
                 } else {

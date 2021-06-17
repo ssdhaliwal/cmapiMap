@@ -8,12 +8,12 @@ define(["esri/tasks/GeometryService", "esri/geometry/webMercatorUtils", "dojo/De
             self.instance = new GeometryService(window.esriGeometryService);
 
             self.init = function () {
-                console.log("geometryService - init");
+                // console.log("geometryService - init");
                 self.registerEvents();
             };
 
             self.registerEvents = function () {
-                console.log("geometryService - registerEvents");
+                // console.log("geometryService - registerEvents");
             };
 
             self.init();

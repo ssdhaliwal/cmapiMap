@@ -118,7 +118,7 @@
 			let channel = eOptions.options[eOptions.selectedIndex].value;
 			let text = document.getElementById("cmapiText").value;
 
-			console.log(channel, text);
+			// console.log(channel, text);
 			if (text.trim() !== "") {
 				map.contentWindow.postMessage(JSON.stringify({ "channel": channel, "payload": text }), '*');
 			}

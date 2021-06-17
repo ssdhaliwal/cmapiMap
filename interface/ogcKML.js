@@ -12,7 +12,7 @@ define(["dojo/_base/lang", "resource/KML2GraphicsLayer",
             self.selectedFeatures = [];
 
             self.init = function () {
-                console.log("ogcKML - init" );
+                // console.log("ogcKML - init" );
                 // parse dom
                 // collect root documents
                 // for each document
@@ -36,12 +36,12 @@ define(["dojo/_base/lang", "resource/KML2GraphicsLayer",
             };
 
             self.registerEvents = function (layer) {
-                console.log("ogcKML - registerEvents" );
+                // console.log("ogcKML - registerEvents" );
             };
 
             self.remove = function () {
-                console.log("ogcKML - remove" );
-                console.log("... removed layer: " + self.service.text);
+                // console.log("ogcKML - remove" );
+                // console.log("... removed layer: " + self.service.text);
 
                 self.extDatagrid.removeTab(self);
 
@@ -70,7 +70,7 @@ define(["dojo/_base/lang", "resource/KML2GraphicsLayer",
             };
 
             getKML = function () {
-                console.log("ogcKML - handleClick" );
+                // console.log("ogcKML - handleClick" );
                 let layer = self.service.layer;
 
                 // reads kml from properties or url (if kmz, unzips it also)
@@ -108,7 +108,7 @@ define(["dojo/_base/lang", "resource/KML2GraphicsLayer",
                                                 processKml(data);
                                             })
                                             .fail(function (xhr, textStatus, error) {
-                                                console.log(textStatus, error);
+                                                // console.log(textStatus, error);
                                             });
                                     }
                                 } else {
@@ -129,7 +129,7 @@ define(["dojo/_base/lang", "resource/KML2GraphicsLayer",
             };
 
             parseKml = function (kml) {
-                console.log("ogcKML - parseKml" );
+                // console.log("ogcKML - parseKml" );
                 new Promise(function (resolve, reject) {
                     // if kml string is empty; retreive it
                     // parse kml
@@ -158,12 +158,12 @@ define(["dojo/_base/lang", "resource/KML2GraphicsLayer",
                 }).then(function (document) {
                     processKml(document);
                 }, function (error) {
-                    console.log(error);
+                    // console.log(error);
                 });
             };
 
             processKml = function (document) {
-                console.log("ogcKML - processKml" );
+                // console.log("ogcKML - processKml" );
                 new Promise(function (resolve, reject) {
                     let layer = new KML2GraphicsLayer(self.service.text, document, 
                         self.service.layer.properties, self.service.layer.params);
@@ -189,12 +189,12 @@ define(["dojo/_base/lang", "resource/KML2GraphicsLayer",
                         });
                     }
                 }, function (error) {
-                    console.log(error);
+                    // console.log(error);
                 });
             };
 
             self.getData = function() {
-                console.log("ogcKML - getData" );
+                // console.log("ogcKML - getData" );
 
                 return new Promise(function (resolve, reject) {
                     let layerData = {}, idIndex = 0;
@@ -207,7 +207,7 @@ define(["dojo/_base/lang", "resource/KML2GraphicsLayer",
                         $.each(self.layer.kml, function (index, subLayer) {
                             if (subLayer.graphicsLayer) {
                                 // docId, folderId, type, name, graphicsLayer.graphics(attributes/geometry(x/y,paths,rings))
-                                console.log(subLayer, subLayer.graphicsLayer);
+                                // console.log(subLayer, subLayer.graphicsLayer);
                                 subLayer.graphicsLayer.graphics.forEach(graphic => {
                                     item = {};
                                     if (graphic.geometry.hasOwnProperty("x")) {
@@ -245,17 +245,17 @@ define(["dojo/_base/lang", "resource/KML2GraphicsLayer",
             };
 
             self.getExtent = function (featureId) {
-                console.log("ogcKML - getExtent");
+                // console.log("ogcKML - getExtent");
 
             };
 
             self.centerOnExtent = function (zoom) {
-                console.log("ogcKML - centerOnExtent");
+                // console.log("ogcKML - centerOnExtent");
 
             };
 
             self.centerOnFeature = function (featureId, zoom) {
-                console.log("ogcKML - centerOnFeature");
+                // console.log("ogcKML - centerOnFeature");
 
             };
 

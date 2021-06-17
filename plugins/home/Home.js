@@ -6,7 +6,7 @@ define(["esri/geometry/Extent", "plugins/ViewUtilities"],
             let map = globals.plugins.extMap.instance;
 
             self.init = function () {
-                console.log("extHome - init");
+                // console.log("extHome - init");
                 let bounds = {
                     southWest: {
                         lat: map.geographicExtent.ymin,
@@ -31,7 +31,7 @@ define(["esri/geometry/Extent", "plugins/ViewUtilities"],
             };
 
             self.handleClick = function () {
-                console.log("extHome - handleClick");
+                // console.log("extHome - handleClick");
                 let data = globals.data.home;
                 let extent = new esriExtent(data.bounds.southWest.lon,
                     data.bounds.southWest.lat,
@@ -58,21 +58,21 @@ define(["esri/geometry/Extent", "plugins/ViewUtilities"],
             };
 
             self.hide = function() {
-                console.log("extHome - hide");
+                // console.log("extHome - hide");
 
                 $("#home").css("display", "none");
             };
             
             self.show = function() {
-                console.log("extHome - show");
+                // console.log("extHome - show");
 
                 $("#home").css("display", "block");
             };
 
             self.registerEvents = function () {
-                console.log("extHome - registerEvents");
+                // console.log("extHome - registerEvents");
                 $("#home").on("click", function($event) {
-                    console.log("extHome - registerEvents/click");
+                    // console.log("extHome - registerEvents/click");
                     self.handleClick();
                 });
             };

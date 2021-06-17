@@ -6,20 +6,20 @@ define(["interface/cmapiAdapter", "plugins/ViewUtilities", "plugins/JSUtilities"
             self.cmapiAdapter = new cmapiAdapter(globals);
 
             self.init = function () {
-                console.log("messageService - init");
+                // console.log("messageService - init");
                 self.registerEvents();
             };
 
             self.registerEvents = function () {
-                console.log("messageService - registerEvents");
+                // console.log("messageService - registerEvents");
                 window.addEventListener("message", function ($event) {
-                    console.log("messageService - registerEvents/message", $event);
+                    // console.log("messageService - registerEvents/message", $event);
                     let data = JSUtilities.tryJSONParse($event.data);
-                    console.log(data);
+                    // console.log(data);
 
                     if (data.hasOwnProperty("channel") && data.hasOwnProperty("payload")) {
                         let payload = JSUtilities.tryJSONParse(data.payload);
-                        console.log(payload);
+                        // console.log(payload);
 
                         switch (data.channel) {
                             // 1. map.overlay.*
@@ -103,7 +103,7 @@ define(["interface/cmapiAdapter", "plugins/ViewUtilities", "plugins/JSUtilities"
                 });
 
                 window.GlobalNotify = function (channel, payload) {
-                    console.log("messageService - registerEvents/GlobalNotify");
+                    // console.log("messageService - registerEvents/GlobalNotify");
                     // payload.mapId = window.cmwapiMapId;
                     // OWF.Eventing.publish(channel, JSON.stringify(payload));
                     window.parent.postMessage(JSON.stringify({ channel: channel, payload: JSUtilities.hex2Str(payload) }), "*");
@@ -111,7 +111,7 @@ define(["interface/cmapiAdapter", "plugins/ViewUtilities", "plugins/JSUtilities"
             };
 
             self.sendMessage = function (channel, message) {
-                console.log("messageService - sendMessage");
+                // console.log("messageService - sendMessage");
                 // send message back using event.source.postMessage(...)
                 // or window.top.postMessage('hello', '*')
                 // or window.parent.postMessage("Hello From IFrame", "*");

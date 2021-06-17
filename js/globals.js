@@ -27,10 +27,11 @@ let globals = {
             "infobar": true,
             "zoombar": true,
             "click": {
-                "showMarker": true,
-                "hideAfter": 30000, // false = do not hide
-                "reverseGeocode": true,
-                "enableDatagrid": true
+                "showMarker": false,
+                "hideAfter": 5000
+            },
+            "dbl-click": {
+                "zoom": false
             }
         },
         "search": {

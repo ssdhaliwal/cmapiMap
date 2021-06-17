@@ -7,7 +7,7 @@ define(["esri/dijit/Popup", "esri/symbols/SimpleFillSymbol", "esri/Color", "dojo
       self.instance = null;
 
       self.init = function () {
-        console.log("extPopup - init");
+        // console.log("extPopup - init");
         self.instance = new esriPopup({
           fillSymbol: self.fillSymbol,
           titleInBody: false
@@ -19,11 +19,11 @@ define(["esri/dijit/Popup", "esri/symbols/SimpleFillSymbol", "esri/Color", "dojo
       };
 
       self.handleClick = function () {
-        console.log("extPopup - handleClick");
+        // console.log("extPopup - handleClick");
       };
 
       self.registerEvents = function () {
-        console.log("extPopup - registerEvents");
+        // console.log("extPopup - registerEvents");
       };
 
       self.init();

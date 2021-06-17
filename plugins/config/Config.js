@@ -7,7 +7,7 @@ define(["dojo/html", "dojo/dom", "dojo/on", "dijit/registry", "dojo/dom-style"],
             self.fontColorName = globals.data.fontColorName || "YellowGreen;#9ACD32";
 
             self.init = function () {
-                console.log("extConfig - init");
+                // console.log("extConfig - init");
                 html.set(dom.byId("configDiv"),
                     "<span id='configFontStyle'>Select font style: \
                     <select id='configFontSelect'> \
@@ -168,7 +168,7 @@ define(["dojo/html", "dojo/dom", "dojo/on", "dijit/registry", "dojo/dom-style"],
             };
 
             self.handleClick = function () {
-                console.log("extConfig - handleClick");
+                // console.log("extConfig - handleClick");
                 globals.plugins.extToolbar.toggleOptions("#config");
 
                 if ($("#config").hasClass("selected")) {
@@ -180,7 +180,7 @@ define(["dojo/html", "dojo/dom", "dojo/on", "dijit/registry", "dojo/dom-style"],
             };
 
             self.hide = function() {
-                console.log("extConfig - hide");
+                // console.log("extConfig - hide");
 
                 $("#config").css("display", "none");
 
@@ -191,15 +191,15 @@ define(["dojo/html", "dojo/dom", "dojo/on", "dijit/registry", "dojo/dom-style"],
             };
             
             self.show = function() {
-                console.log("extConfig - show");
+                // console.log("extConfig - show");
 
                 $("#config").css("display", "block");
             };
 
             self.registerEvents = function () {
-                console.log("extConfig - registerEvents");
+                // console.log("extConfig - registerEvents");
                 $("#config").on("click", function($event) {
-                    console.log("extConfig - registerEvents/click");
+                    // console.log("extConfig - registerEvents/click");
                     self.handleClick();
                 });
 

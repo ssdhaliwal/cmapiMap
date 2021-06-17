@@ -8,7 +8,7 @@ define(["esri/dijit/Legend", "dijit/registry", "dojo/dom-style"],
             self.instance = null;
 
             self.init = function () {
-                console.log("extLegend - init");
+                // console.log("extLegend - init");
                 self.instance = new esriLegend({
                     autoUpdate: true,
                     map: map,
@@ -21,7 +21,7 @@ define(["esri/dijit/Legend", "dijit/registry", "dojo/dom-style"],
             };
 
             self.handleClick = function () {
-                console.log("extLegend - handleClick");
+                // console.log("extLegend - handleClick");
                 globals.plugins.extToolbar.toggleOptions("#legend");
 
                 if ($("#legend").hasClass("selected")) {
@@ -33,7 +33,7 @@ define(["esri/dijit/Legend", "dijit/registry", "dojo/dom-style"],
             };
 
             self.hide = function() {
-                console.log("extLegend - hide");
+                // console.log("extLegend - hide");
 
                 $("#legend").css("display", "none");
 
@@ -44,16 +44,16 @@ define(["esri/dijit/Legend", "dijit/registry", "dojo/dom-style"],
             };
             
             self.show = function() {
-                console.log("extLegend - show");
+                // console.log("extLegend - show");
 
                 $("#legend").css("display", "block");
             };
 
             self.registerEvents = function () {
-                console.log("extLegend - registerEvents");
+                // console.log("extLegend - registerEvents");
                 // wireup map events
                 map.on("layer-add-result", function ($event) {
-                    console.log("extLegend - registerEvents/layer-add-result", $event);
+                    // console.log("extLegend - registerEvents/layer-add-result", $event);
                     if ($event.layer.declaredClass === "esri.layers.ArcGISTiledMapServiceLayer") {
                         // basemap - noop
                     } else if ($event.layer.declaredClass !== "esri.layers.KMLLayer") {
@@ -72,7 +72,7 @@ define(["esri/dijit/Legend", "dijit/registry", "dojo/dom-style"],
 
                 //clean up the legend when layers are removed from the map.
                 map.on('layer-remove', function ($event) {
-                    console.log("extLegend - registerEvents/layer-remove", $event);
+                    // console.log("extLegend - registerEvents/layer-remove", $event);
                     for (var i = 0; i < self.layers.length; i++) {
                         if (self.layers[i].name === $event.layer.id) {
                             self.layers.splice(i, 1);
@@ -84,7 +84,7 @@ define(["esri/dijit/Legend", "dijit/registry", "dojo/dom-style"],
 
                 //update the name of layers in the legend when the layer is updated or moved in the overlay manager
                 map.on('layerUpdated', function ($event) {
-                    console.log("extLegend - registerEvents/layerupdated", $event);
+                    // console.log("extLegend - registerEvents/layerupdated", $event);
                     for (var i = 0; i < self.layers.length; i++) {
                         if (self.layers[i].name === $event.old_id) {
                             self.layers[i] = { name: $event.layer.id, layer: $event.layer }
@@ -95,7 +95,7 @@ define(["esri/dijit/Legend", "dijit/registry", "dojo/dom-style"],
                 });
 
                 $("#legend").on("click", function($event) {
-                    console.log("extLegend - registerEvents/click", $event);
+                    // console.log("extLegend - registerEvents/click", $event);
                     self.handleClick();
                 });
             };

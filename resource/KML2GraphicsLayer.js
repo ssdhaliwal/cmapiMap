@@ -28,7 +28,7 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
             self.uniqueId = 0;
 
             self.init = function () {
-                console.log("KML2GraphicsLayer - init");
+                // console.log("KML2GraphicsLayer - init");
                 self.document = document;
 
                 initializeDefaultStyles();
@@ -40,7 +40,7 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
             };
 
             initializeDefaultStyles = function () {
-                console.log("KML2GraphicsLayer - initializeDefaultStyles");
+                // console.log("KML2GraphicsLayer - initializeDefaultStyles");
                 self.defaults = {};
                 self.defaults.Opacity = ViewUtilities.DEFAULT_OPACITY;
                 self.defaults.MarkerColor = ViewUtilities.DEFAULT_COLOR;
@@ -59,7 +59,7 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
             };
 
             getNodeValues = function (node, elements, payload, recurse) {
-                console.log("KML2GraphicsLayer - getNodeValues");
+                // console.log("KML2GraphicsLayer - getNodeValues");
                 if (node.attributes) {
                     for (let attribute of node.attributes) {
                         if (!elements || (elements.indexOf(attribute.name) >= 0)) {
@@ -93,7 +93,7 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
             };
 
             parse = function (node, level, document, folder, docId, folderId, currentId) {
-                console.log("KML2GraphicsLayer - parse");
+                // console.log("KML2GraphicsLayer - parse");
                 let newId = undefined;
 
                 if ((node.nodeName == "Document") || (node.nodeName === "Folder")) {
@@ -143,7 +143,7 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
                         }
                     }
 
-                    //console.log(level, node.nodeName.padStart((node.nodeName.length + level), '-'),
+                    // // console.log(level, node.nodeName.padStart((node.nodeName.length + level), '-'),
                     //    "doc:" + docId, "folder:" + folderId);
                 } else {
                     if ((node.nodeName !== "#document") && (node.nodeName !== "kml")) {
@@ -153,7 +153,7 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
                             level++;
                         }
 
-                        //console.log(level, node.nodeName.padStart((node.nodeName.length + level), '-'));
+                        // // console.log(level, node.nodeName.padStart((node.nodeName.length + level), '-'));
                         let nodeValues = null, id = null;
                         switch (node.nodeName) {
                             case "Style":
@@ -212,7 +212,7 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
             };
 
             resolveDocumentId = function (node) {
-                console.log("KML2GraphicsLayer - resolveDocumentId");
+                // console.log("KML2GraphicsLayer - resolveDocumentId");
                 let newId = undefined, name = undefined, uniqieId = undefined;
 
                 self.uniqueId++;
@@ -242,7 +242,7 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
             };
 
             resolveFolderId = function (node, id) {
-                console.log("KML2GraphicsLayer - resolveFolderId");
+                // console.log("KML2GraphicsLayer - resolveFolderId");
                 let newId = undefined, name = undefined, uniqieId = undefined;
 
                 self.uniqueId++;
@@ -276,7 +276,7 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
             };
 
             getStyleMap = function (docId, styleObject) {
-                console.log("KML2GraphicsLayer - getStyleMap");
+                // console.log("KML2GraphicsLayer - getStyleMap");
                 let styleMaps = self.kml[docId].StyleMap_Cache;
                 let cacheObject;
 
@@ -315,7 +315,7 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
             };
 
             getStyle = function (docId, styleObject, type, highlight) {
-                console.log("KML2GraphicsLayer - getStyle");
+                // console.log("KML2GraphicsLayer - getStyle");
                 let styles = self.kml[docId].Style_Cache;
                 let url, resultStyle;
 
@@ -353,7 +353,7 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
             };
 
             createIconSymbol = function (styleNode, baseStyle) {
-                console.log("KML2GraphicsLayer - createIconSymbol");
+                // console.log("KML2GraphicsLayer - createIconSymbol");
                 let style;
 
                 let iconStyle = styleNode.getElementsByTagName("IconStyle");
@@ -428,7 +428,7 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
 
             // retrieve document style/map and merge with local style
             createLineStringSymbol = function (styleNode, baseStyle) {
-                console.log("KML2GraphicsLayer - createLineStringSymbol");
+                // console.log("KML2GraphicsLayer - createLineStringSymbol");
                 let style;
 
                 let lineStyle = styleNode.getElementsByTagName("LineStyle");
@@ -461,7 +461,7 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
 
             // retrieve document style/map and merge with local style
             createPolygonSymbol = function (styleNode, baseStyle) {
-                console.log("KML2GraphicsLayer - createPolygonSymbol");
+                // console.log("KML2GraphicsLayer - createPolygonSymbol");
                 let style;
 
                 let polyStyle = styleNode.getElementsByTagName("PolyStyle");
@@ -504,7 +504,7 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
 
             // retrieve document style/map and merge with local style
             resolveStyle = function (layer, placemark, type) {
-                console.log("KML2GraphicsLayer - resolveStyle");
+                // console.log("KML2GraphicsLayer - resolveStyle");
                 let returnStyle = {};
 
                 // get the docId for the layer
@@ -588,7 +588,7 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
 
             // process all features objects (Placemarks)
             loadPlacemarks = function () {
-                console.log("KML2GraphicsLayer - loadPlacemarks");
+                // console.log("KML2GraphicsLayer - loadPlacemarks");
                 $.each(self.kml, function (index, subLayer) {
                     if ((index === "name") || (index === "count")) {
 
@@ -606,7 +606,7 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
             };
 
             processPlacemark = function (layer, placemark) {
-                console.log("KML2GraphicsLayer - processPlacemark");
+                // console.log("KML2GraphicsLayer - processPlacemark");
                 let len = placemark.childNodes.length;
                 let child = placemark.firstChild;
 
@@ -656,7 +656,7 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
             };
 
             processPlacemarkPoint = function (layer, placemark, attributes, style) {
-                console.log("KML2GraphicsLayer - processPlacemarkPoint");
+                // console.log("KML2GraphicsLayer - processPlacemarkPoint");
                 let len = placemark.childNodes.length;
                 let child = placemark.firstChild;
 
@@ -694,7 +694,7 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
             };
 
             getRingsGeometry = function (placemark) {
-                console.log("KML2GraphicsLayer - getRingsGeometry");
+                // console.log("KML2GraphicsLayer - getRingsGeometry");
                 let coordinates = placemark.getElementsByTagName("coordinates");
                 let rings = [];
 
@@ -728,7 +728,7 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
             };
 
             processPlacemarkLine = function (layer, placemark, attributes, style) {
-                console.log("KML2GraphicsLayer - processPlacemarkLine");
+                // console.log("KML2GraphicsLayer - processPlacemarkLine");
                 let len = placemark.childNodes.length;
                 let child = placemark.firstChild;
 
@@ -769,7 +769,7 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
             };
 
             processPlacemarkPolygon = function (layer, placemark, attributes, style) {
-                console.log("KML2GraphicsLayer - processPlacemarkPolygon");
+                // console.log("KML2GraphicsLayer - processPlacemarkPolygon");
                 let len = placemark.childNodes.length;
                 let child = placemark.firstChild;
 
@@ -810,7 +810,7 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
             };
 
             updatePopupTemplate = function (popupTemplate, attributes) {
-                console.log("KML2GraphicsLayer - updatePopupTemplate");
+                // console.log("KML2GraphicsLayer - updatePopupTemplate");
                 let newPopupTemplate = null;
                 if (!popupTemplate || !popupTemplate.content) {
                     newPopupTemplate = new InfoTemplate();
@@ -836,18 +836,18 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
             }
 
             loadOverlays = function () {
-                console.log("KML2GraphicsLayer - loadOverlays");
+                // console.log("KML2GraphicsLayer - loadOverlays");
 
             };
 
             loadNetworkLinks = function () {
-                console.log("KML2GraphicsLayer - loadNetworkLinks");
+                // console.log("KML2GraphicsLayer - loadNetworkLinks");
 
             };
 
             // layer events
             registerEvents = function (layer) {
-                console.log("KML2GraphicsLayer - registerEvents");
+                // console.log("KML2GraphicsLayer - registerEvents");
                 layer.on("mouse-over", function ($event) {
                     onMouseOver($event);
                 });
@@ -857,11 +857,11 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
             };
 
             onMouseOver = function ($event) {
-                console.log("KML2GraphicsLayer - onMouseOver");
+                // console.log("KML2GraphicsLayer - onMouseOver");
                 $event.graphic.setSymbol($event.graphic.highlightSymbol);
             };
             onMouseOut = function ($event) {
-                console.log("KML2GraphicsLayer - onMouseOut");
+                // console.log("KML2GraphicsLayer - onMouseOut");
                 $event.graphic.setSymbol($event.graphic.normalSymbol);
             };
 

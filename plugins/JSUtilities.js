@@ -3,7 +3,7 @@ define([],
 
         var JSUtilities = {
             getBoolean: function (value) {
-                // console.log("JSUtilities - getBoolean");
+                // // console.log("JSUtilities - getBoolean");
                 // empty/null match
                 if ((value === null) || (value === undefined) || (value === NaN)) {
                     return false;
@@ -56,13 +56,13 @@ define([],
             },
 
             numberToHex: function (value) {
-                // console.log("JSUtilities - numberToHex");
+                // // console.log("JSUtilities - numberToHex");
                 var hex = Number(value).toString(16);
                 return (hex.length < 2) ? "0" + hex : hex;
             },
 
             getRandomColor: function (color) {
-                // console.log("JSUtilities - getRandomColor");
+                // // console.log("JSUtilities - getRandomColor");
                 let aa = "ff";
                 let bb = "ff";
                 let gg = "ff";
@@ -112,7 +112,7 @@ define([],
             // https://github.com/PimpTrizkit/PJs/wiki/12.-Shade,-Blend-and-Convert-a-Web-Color-(pSBC.js)
             // Version 4.0
             colorShadeBlendConvert: function (percent, fromColor, toColor, linear) {
-                // console.log("JSUtilities - colorShadeBlendConvert");
+                // // console.log("JSUtilities - colorShadeBlendConvert");
                 let r, g, b, P, f, t, h, i = parseInt, m = Math.round, a = typeof (toColor) == "string";
                 if (typeof (percent) != "number" || percent < -1 || percent > 1 || typeof (fromColor) != "string" || (fromColor[0] != 'r' && fromColor[0] != '#') || (toColor && !a)) return null;
                 if (!this.pSBCr) this.pSBCr = (d) => {
@@ -139,7 +139,7 @@ define([],
             },
 
             isSiteOnline: function (url, callback) {
-                // console.log("JSUtilities - isSiteOnline");
+                // // console.log("JSUtilities - isSiteOnline");
                 var timer = setTimeout(function () {
                     callback(false);
                 }, 15000);
@@ -426,7 +426,7 @@ define([],
 
             // Changes XML to JSON
             xmlToJson: function (xml) {
-                // console.log("JSUtilities - xmlToJson");
+                // // console.log("JSUtilities - xmlToJson");
                 // Create the return object
                 // Create the return object
                 let obj = {};
@@ -482,7 +482,7 @@ define([],
             // https://github.com/PimpTrizkit/PJs/wiki/12.-Shade,-Blend-and-Convert-a-Web-Color-(pSBC.js)
             // Version 4.0
             colorShadeBlendConvert: function (percent, fromColor, toColor, linear) {
-                // console.log("JSUtilities - colorShadeBlendConvert");
+                // // console.log("JSUtilities - colorShadeBlendConvert");
                 let r, g, b, P, f, t, h, i = parseInt, m = Math.round, a = typeof (toColor) == "string";
                 if (typeof (percent) != "number" || percent < -1 || percent > 1 || typeof (fromColor) != "string" || (fromColor[0] != 'r' && fromColor[0] != '#') || (toColor && !a)) return null;
                 if (!this.pSBCr) this.pSBCr = (d) => {
@@ -536,7 +536,7 @@ define([],
             *                           error in the provided data.
             */
             csv2Array: function (data, delimeter, isNumeric) {
-                // console.log("JSUtilities - csv2Array");
+                // // console.log("JSUtilities - csv2Array");
                 // Retrieve the delimeter
                 if (delimeter == undefined)
                     delimeter = ',';
@@ -635,7 +635,7 @@ define([],
             },
 
             tryJSONParse(value) {
-                // console.log("JSUtilities - tryJSONParse");
+                // // console.log("JSUtilities - tryJSONParse");
                 let json = null;
 
                 try {
@@ -649,17 +649,17 @@ define([],
             },
 
             hex2Int(hex) {
-                // console.log("JSUtilities - hex2Int");
+                // // console.log("JSUtilities - hex2Int");
                 return parseInt(hex, 16);
             },
 
             int2Hex(number) {
-                // console.log("JSUtilities - int2Hex");
+                // // console.log("JSUtilities - int2Hex");
                 return number.toString(16);
             },
 
             hex2Str(hex) {
-                // console.log("JSUtilities - hex2Str");
+                // // console.log("JSUtilities - hex2Str");
                 let str = "";
 
                 try {
@@ -672,7 +672,7 @@ define([],
             },
 
             str2Hex: function (str) {
-                // console.log("JSUtilities - str2Hex");
+                // // console.log("JSUtilities - str2Hex");
                 let hex = "";
 
                 try {
@@ -688,7 +688,7 @@ define([],
             },
 
             isEmpty: function (value) {
-                // console.log("JSUtilities - isEmpty");
+                // // console.log("JSUtilities - isEmpty");
                 let result = true;
 
                 if (typeof str === "string") {
