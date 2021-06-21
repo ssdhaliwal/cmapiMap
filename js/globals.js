@@ -23,6 +23,14 @@ let globals = {
             "available": false
         },
         "map": {
+            "basemap": "gray-vector",
+            // The following are valid options: "streets" , "satellite" , "hybrid", "topo", "gray", "dark-gray", "oceans", 
+            // "national-geographic", "terrain", "osm", "dark-gray-vector", gray-vector", "streets-vector", "streets-night-vector", 
+            // "streets-relief-vector", "streets-navigation-vector" and "topo-vector". 
+            // Property added at v3.3. 
+            // The "terrain" and "dark-gray" options added at v3.12. 
+            // The "dark-gray-vector", "gray-vector", "streets-vector", "streets-night-vector", "streets-relief-vector", 
+            // "streets-navigation-vector" and "topo-vector" options were added at v3.16.
             "scalebar": true,
             "infobar": true,
             "zoombar": true,

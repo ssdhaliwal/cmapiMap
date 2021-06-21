@@ -42,7 +42,7 @@ define(["plugins/JSUtilities"],
             self.onMapOverlayHide = function (request) {
                 // console.log("cmapiAdapter - onMapOverlayHide");
                 // check minimum requirement - id
-                
+
                 if (request.hasOwnProperty("overlayId")) {
                     globals.plugins.extLayerlist.handleHideOverlay(request);
                 }
@@ -62,8 +62,41 @@ define(["plugins/JSUtilities"],
             };
 
             // 2. map.feature.*
-            self.onMapFeaturePlot = function(request) {
+            self.onMapFeaturePlot = function (request) {
                 // console.log("cmapiAdapter - onMapFeaturePlot");
+                if (request.hasOwnProperty("featureId") && request.hasOwnProperty("url")) {
+                    if (!JSUtilities.isEmpty(request.featureId) && !JSUtilities.isEmpty(request.url)) {
+                        if (!request.hasOwnProperty("name") || JSUtilities.isEmpty(request.name)) {
+                            request.name = request.featureId;
+                        }
+
+                        if (!request.hasOwnProperty("format")) {
+                            request.format = "kml";
+                        }
+                        if ((request.format === "kml") || (request.format === "geojson")) {
+                            if (request.hasOwnProperty("params")) {
+                                request.params = {};
+                            }
+                            if (request.hasOwnProperty("properties")) {
+                                Object.keys(request.properties).forEach(key => {
+                                    request.params[key] = request.properties[key];
+                                });
+                                delete request.properties;
+                            }
+
+                            if (!request.hasOwnProperty("zoom")) {
+                                request.zoom = false;
+                            }
+                            if (!request.hasOwnProperty("readOnly")) {
+                                request.readOnly = true;
+                            }
+
+                            if (request.hasOwnProperty("feature")) {
+                                globals.plugins.extLayerlist.handlePlotFeature(request);
+                            }
+                        }
+                    }
+                }
             };
 
             self.onMapFeaturePlotUrl = function (request) {
@@ -79,7 +112,7 @@ define(["plugins/JSUtilities"],
                 }
             };
 
-            self.onMapFeatureRemove = function(request) {
+            self.onMapFeatureRemove = function (request) {
                 // console.log("cmapiAdapter - onMapFeatureRemove");
 
                 if (request.hasOwnProperty("featureId")) {
@@ -89,7 +122,7 @@ define(["plugins/JSUtilities"],
                 }
             };
 
-            self.onMapFeatureHide = function(request) {
+            self.onMapFeatureHide = function (request) {
                 // console.log("cmapiAdapter - onMapFeatureHide");
 
                 if (request.hasOwnProperty("featureId")) {
@@ -98,7 +131,7 @@ define(["plugins/JSUtilities"],
                 }
             };
 
-            self.onMapFeatureShow = function(request) {
+            self.onMapFeatureShow = function (request) {
                 // console.log("cmapiAdapter - onMapFeatureShow");
                 if (request.hasOwnProperty("featureId")) {
                     request.overlayId = request.featureId;
@@ -157,7 +190,7 @@ define(["plugins/JSUtilities"],
                             if (request.hasOwnProperty("hideAfter") && !JSUtilities.isEmpty(request.hideAfter)) {
                                 hideAfter = request.hideAfter || globals.options.map.click.hideAfter;
                             }
-                            
+
                             globals.plugins.extMap.handleCenterLocationLatLon(request.location.lat, request.location.lon, zoom, hideAfter);
                         }
                     }
@@ -171,7 +204,7 @@ define(["plugins/JSUtilities"],
                     globals.plugins.extMap.handleCenterBounds(request.bounds, request.zoom, request.hideAfter);
                 }
             };
-                                                                                                                                                          
+
             self.onMapViewClicked = function (request) {
                 // console.log("cmapiAdapter - onMapViewClicked");
 

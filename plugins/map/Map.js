@@ -31,7 +31,7 @@ define(["dojo/_base/array",
             self.init = function () {
                 // console.log("extMap - init");
                 self.instance = new esriMap("map", {
-                    basemap: "streets",
+                    basemap: globals.options.map.basemap,
                     extent: new Extent({
                         "xmin": -16045622,
                         "ymin": -811556,

@@ -480,6 +480,11 @@ define(["vendor/js/jstree/jstree",
                 }
             };
 
+            self.handlePlotFeature = function (request) {
+                // console.log("extLayerlist - handlePlotFeature" );
+
+            };
+
             self.handlePlotFeatureUrl = function (request) {
                 // console.log("extLayerlist - handlePlotFeatureUrl" );
                 // create the overlay if not existing

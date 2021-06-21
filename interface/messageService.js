@@ -45,12 +45,22 @@ define(["interface/cmapiAdapter", "plugins/ViewUtilities", "plugins/JSUtilities"
                                 break;
 
                             // 2. map.feature.*
+                            case "map.feature.plot":
+                                self.cmapiAdapter.onMapFeaturePlot(payload);
+                                break;
+
+                            case "map.feature.plot.batch":
+                                break;
+
                             case "map.feature.plot.url":
                                 self.cmapiAdapter.onMapFeaturePlotUrl(payload);
                                 break;
 
-                            case "map.feature.remove":
+                            case "map.feature.unplot":
                                 self.cmapiAdapter.onMapOverlayRemove(payload);
+                                break;
+
+                            case "map.feature.unplot.batch":
                                 break;
 
                             case "map.feature.hide":
@@ -60,7 +70,23 @@ define(["interface/cmapiAdapter", "plugins/ViewUtilities", "plugins/JSUtilities"
                             case "map.feature.show":
                                 self.cmapiAdapter.onMapOverlayShow(payload);
                                 break;
-            
+
+                            case "map.feature.selected":
+                            case "map.feature.selected.batch":
+                            case "map.feature.deselected":
+                            case "map.feature.deselected.batch":
+                                break;
+
+                            case "map.feature.update":
+                            case "map.feature.edit":
+                            case "map.feature.draw":
+                                break;
+
+                            case "map.feature.clicked":
+                            case "map.feature.mousedown":
+                            case "map.feature.mouseup":
+                                break;
+
                             // 3. map.view.*
                             case "map.view.zoom":
                                 self.cmapiAdapter.onMapViewZoom(payload);
@@ -87,11 +113,23 @@ define(["interface/cmapiAdapter", "plugins/ViewUtilities", "plugins/JSUtilities"
                             case "map.status.request":
                                 self.cmapiAdapter.onMapStatusRequest(payload);
                                 break;
-                                
+
                             case "map.status.view":
+                                self.cmapiAdapter.onMapStatusRequest({ "types": ["view"] });
+                                break;
+
                             case "map.status.format":
+                                self.cmapiAdapter.onMapStatusRequest({ "types": ["format"] });
+                                break;
+
                             case "map.status.about":
+                                self.cmapiAdapter.onMapStatusRequest({ "types": ["about"] });
+                                break;
+
                             case "map.status.selected":
+                                self.cmapiAdapter.onMapStatusRequest({ "types": ["selected"] });
+                                break;
+
                             case "map.status.initialization":
                                 break;
 

@@ -1,6 +1,6 @@
-define(["esri/dijit/BasemapGallery", "esri/dijit/BasemapLayer", "esri/dijit/Basemap", 
+define(["esri/layers/ArcGISTiledMapServiceLayer", "esri/dijit/BasemapGallery", "esri/dijit/BasemapLayer", "esri/dijit/Basemap", 
     "plugins/ViewUtilities", "plugins/JSUtilities"],
-    function (esriBasemapGallery, esriBasemapLayer, esriBasemap, ViewUtilties, JSUtilities) {
+    function (ArcGISTiledMapServiceLayer, esriBasemapGallery, esriBasemapLayer, esriBasemap, ViewUtilties, JSUtilities) {
 
         let extBasemap = function (globals) {
             let self = this;
@@ -105,7 +105,6 @@ define(["esri/dijit/BasemapGallery", "esri/dijit/BasemapLayer", "esri/dijit/Base
                 // added site verification
                 JSUtilities.isSiteOnline("https://www.arcgis.com", function (found) {
                     if (found) {
-                        map.setBasemap("streets");
                     } else {
                         window.alert("Temporary ArcGIS service outage; alternate basemap set to USGS Topo.\n\n** This impacts REFERENCE/WEATHER services from ArcGIS.com; NOAA and other sites are not impacted. **\n\nIf no basemaps are available due to network outage; please use one of the three alternate options: (a) USCG Failsafe basemap, (b) USGS basemaps, or (c) Catalog Widget World Countries KML (REFERENCE -> BOUNDARIES).\n\nSee Alert Feed Widget for more details.");
                         let tBasemaps = self.instance.basemaps;
@@ -150,8 +149,33 @@ define(["esri/dijit/BasemapGallery", "esri/dijit/BasemapLayer", "esri/dijit/Base
                 $("#basemaps").css("display", "block");
             };
 
+            self.findIdByTitle = function(title) {
+                // console.log("extBasemap - findIdByTitle");
+
+                let basemapId = null;
+                self.instance.basemaps.forEach(basemap => {
+                    if (basemap.title === title) {
+                        basemapId = basemap.id;
+                        return false;
+                    }
+                });
+
+                return basemapId;
+            };
+
             self.registerEvents = function() {
                 // console.log("extBasemap - registerEvents");
+
+                if (self.instance) {
+                    self.instance.on("error", function($event) {
+                        console.log("!ERROR! - basemap gallery/", $event)
+                    });
+                    /*
+                    self.instance.on("load", function($event) {
+                    });
+                    */
+                }
+
                 $("#basemaps").on("click", function($event) {
                     // console.log("extBasemap - registerEvents/click", $event);
                     self.handleClick();
