@@ -36,7 +36,7 @@ let globals = {
             "zoombar": true,
             "click": {
                 "showMarker": false,
-                "hideAfter": 5000
+                "hideAfter": "infinite"
             },
             "dbl-click": {
                 "zoom": false

@@ -187,8 +187,10 @@ define(["plugins/JSUtilities"],
                             if (request.hasOwnProperty("zoom") && !JSUtilities.isEmpty(request.zoom)) {
                                 zoom = request.zoom;
                             }
-                            if (request.hasOwnProperty("hideAfter") && !JSUtilities.isEmpty(request.hideAfter)) {
-                                hideAfter = request.hideAfter || globals.options.map.click.hideAfter;
+                            if (request.hasOwnProperty("hideAfter") && !isNaN(request.hideAfter)) {
+                                hideAfter = request.hideAfter;
+                            } else {
+                                hideAfter = globals.options.map.click.hideAfter;
                             }
 
                             globals.plugins.extMap.handleCenterLocationLatLon(request.location.lat, request.location.lon, zoom, hideAfter);

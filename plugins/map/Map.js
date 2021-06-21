@@ -269,14 +269,14 @@ define(["dojo/_base/array",
                     } else {
                         self.handleSetZoom(center);
 
-                        if (!Number.isNaN(hideAfter)) {
+                        if (!isNaN(hideAfter)) {
                             showMarker = true;
                         }
                         point = extent.getCenter();
                         self.instance.centerAt(point);
                     }
                 } else {
-                    if (!Number.isNaN(hideAfter)) {
+                    if (!isNaN(hideAfter)) {
                         showMarker = true;
                     }
                     point = extent.getCenter();
@@ -412,7 +412,7 @@ define(["dojo/_base/array",
                 let graphic = new Graphic(point, markerSymbol);
                 self.tmpGraphicsLayer[name].add(graphic);
 
-                if (hideAfter && (hideAfter > 0)) {
+                if (hideAfter && (!isNaN(hideAfter))) {
                     window.setTimeout(function (name) {
                         try {
                             self.instance.removeLayer(self.tmpGraphicsLayer[name]);
