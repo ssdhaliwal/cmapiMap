@@ -189,6 +189,46 @@
         ]
     },
     {
+        "id": "TRACKS1001",
+        "text": "TRACKS",
+        "icon": "",
+        "state": {
+            "opened": false,
+            "disabled": false,
+            "selected": false
+        },
+        "a_attr": {
+            "class": "no_checkbox"
+        },
+        "children": [
+            {
+                "id": "TRACKS1001-01",
+                "text": "Fire Zone",
+                "icon": "/esri-cmapi/plugins/layerlist/icons/FS.png",
+                "state": {
+                    "opened": true,
+                    "disabled": false,
+                    "selected": false
+                },
+                "layer": {
+                    "properties": {
+                        "dateCreated": "20180521",
+                        "dateVerified": "20201208",
+                        "url": "https://nowcoast.noaa.gov/arcgis/rest/services/nowcoast/forecast_meteoceanhydro_pts_zones_geolinks/MapServer/9/",
+                        "credentials": {
+                            "required": false,
+                            "token": ""
+                        }
+                    },
+                    "params": {
+                        "serviceType": "feature",
+                        "zoom": "true"
+                    }
+                }
+            }
+        ]
+    },
+    {
         "id": "TEST1001",
         "text": "Test - Internal",
         "icon": "",
@@ -224,7 +264,8 @@
                     "serviceType": "kml"
                 }
             }
-        },{
+        },
+        {
             "id": "TEST1001-02",
             "text": "KML - Interanet 2",
             "icon": "/esri-cmapi/plugins/layerlist/icons/KML.png",
