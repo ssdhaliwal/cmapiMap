@@ -7,7 +7,7 @@ let globals = {
             "available": true
         },
         "config": {
-            "available": false
+            "available": true
         },
         "datagrid": {
             "available": false,
@@ -48,6 +48,9 @@ let globals = {
         "toolbar": {
             "available": true
         }
+    },
+    "data": {
+        "fontColor": "YellowGreen;#9ACD32"
     },
     "popup": {
         "fillSymbol": {

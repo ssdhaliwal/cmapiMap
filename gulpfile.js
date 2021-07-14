@@ -47,7 +47,7 @@ function images() {
 
     const out = build;
 
-    return gulp.src([src + '**/*.{gif,jpg,png,svg}', "!*.*", "!" + src + "node_modules/**/*", "!" + src + "TestingSamples/**/*", "!" + src + "ProxyUpdates/**/*", "!" + src + "build/**/*"])
+    return gulp.src([src + '**/*.{gif,jpg,png,svg}', "!*.*", "!" + src + "node_modules/**/*", "!" + src + "testing/**/*", "!" + src + "build/**/*"])
         .pipe(newer(out))
         .pipe(debug())
         .pipe(imagemin({ optimizationLevel: 5 }))
@@ -63,7 +63,7 @@ function html() {
 
     const out = build;
 
-    return gulp.src([src + '**/*.{html,htm}', "!" + src + "node_modules/**/*", "!" + src + "TestingSamples/**/*", "!" + src + "ProxyUpdates/**/*", "!" + src + "build/**/*"])
+    return gulp.src([src + '**/*.{html,htm}', "!" + src + "node_modules/**/*", "!" + src + "testing/**/*", "!" + src + "build/**/*"])
         .pipe(newer(out))
         .pipe(debug())
         .pipe(devBuild ? noop() : htmlclean())
@@ -78,7 +78,7 @@ function jsDebug() {
 
     const out = build;
 
-    return gulp.src([src + '**/*.js', "!*.*", "!" + src + "**/*min.js", "!" + src + "node_modules/**/*", "!" + src + "TestingSamples/**/*", "!" + src + "ProxyUpdates/**/*", "!" + src + "build/**/*"])
+    return gulp.src([src + '**/*.js', "!*.*", "!" + src + "**/*min.js", "!" + src + "node_modules/**/*", "!" + src + "testing/**/*", "!" + src + "build/**/*"])
         .pipe(newer(out))
         .pipe(debug())
         .pipe(sourcemaps.init())
@@ -97,7 +97,7 @@ function js() {
 
     const out = build;
 
-    return gulp.src([src + '**/*.js', "!*.*", "!" + src + "**/*min.js", "!" + src + "node_modules/**/*", "!" + src + "TestingSamples/**/*", "!" + src + "ProxyUpdates/**/*", "!" + src + "build/**/*"])
+    return gulp.src([src + '**/*.js', "!*.*", "!" + src + "**/*min.js", "!" + src + "node_modules/**/*", "!" + src + "testing/**/*", "!" + src + "build/**/*"])
         .pipe(newer(out))
         .pipe(debug())
         .pipe(sourcemaps.init())
@@ -118,7 +118,7 @@ function jsMin() {
 
     const out = build;
 
-    return gulp.src([src + '**/*min.js', "!*.*", "!" + src + "node_modules/**/*", "!" + src + "TestingSamples/**/*", "!" + src + "ProxyUpdates/**/*", "!" + src + "build/**/*"])
+    return gulp.src([src + '**/*min.js', "!*.*", "!" + src + "node_modules/**/*", "!" + src + "testing/**/*", "!" + src + "build/**/*"])
         .pipe(newer(out))
         .pipe(debug())
         .pipe(gulp.dest(out));
@@ -133,7 +133,7 @@ function css() {
 
     const out = build;
 
-    return gulp.src([src + '**/*.css', "!*.*", "!" + src + "node_modules/**/*", "!" + src + "TestingSamples/**/*", "!" + src + "ProxyUpdates/**/*", "!" + src + "build/**/*"])
+    return gulp.src([src + '**/*.css', "!*.*", "!" + src + "node_modules/**/*", "!" + src + "testing/**/*", "!" + src + "build/**/*"])
         .pipe(newer(out))
         .pipe(debug())
         .pipe(cleanCss())
@@ -149,7 +149,7 @@ function assets() {
 
     const out = build;
 
-    return gulp.src([src + '**/*', "!*", "!" + src + "**/*.{gif,jpg,png,svg,html,htm,js,css}", "!" + src + "node_modules/**/*", "!" + src + "TestingSamples/**/*", "!" + src + "ProxyUpdates/**/*", "!" + src + "build/**/*"])
+    return gulp.src([src + '**/*', "!*", "!" + src + "**/*.{gif,jpg,png,svg,html,htm,js,css}", "!" + src + "node_modules/**/*", "!" + src + "testing/**/*", "!" + src + "build/**/*"])
         .pipe(newer(out))
         .pipe(debug())
         .pipe(gulp.dest(out));
@@ -163,20 +163,20 @@ exports.assets = assets;
 function watch(done) {
 
     // image changes
-    gulp.watch([src + '**/*.{gif,jpg,png,svg}', "!*.*", "!" + src + "node_modules/**/*", "!" + src + "TestingSamples/**/*", "!" + src + "ProxyUpdates/**/*", "!" + src + "build/**/*"], images);
+    gulp.watch([src + '**/*.{gif,jpg,png,svg}', "!*.*", "!" + src + "node_modules/**/*", "!" + src + "testing/**/*", "!" + src + "build/**/*"], images);
 
     // html changes
-    gulp.watch([src + '**/*.{html,htm}', "!" + src + "node_modules/**/*", "!" + src + "TestingSamples/**/*", "!" + src + "ProxyUpdates/**/*", "!" + src + "build/**/*"], html);
+    gulp.watch([src + '**/*.{html,htm}', "!" + src + "node_modules/**/*", "!" + src + "testing/**/*", "!" + src + "build/**/*"], html);
 
     // css changes
-    gulp.watch([src + '**/*.css', "!*.*", "!" + src + "node_modules/**/*", "!" + src + "TestingSamples/**/*", "!" + src + "ProxyUpdates/**/*", "!" + src + "build/**/*"], css);
+    gulp.watch([src + '**/*.css', "!*.*", "!" + src + "node_modules/**/*", "!" + src + "testing/**/*", "!" + src + "build/**/*"], css);
 
     // js changes
-    gulp.watch([src + '**/*.js', "!*.*", "!" + src + "**/*min.js", "!" + src + "node_modules/**/*", "!" + src + "TestingSamples/**/*", "!" + src + "ProxyUpdates/**/*", "!" + src + "build/**/*"], js);
-    gulp.watch([src + '**/*min.js', "!*.*", "!" + src + "node_modules/**/*", "!" + src + "TestingSamples/**/*", "!" + src + "ProxyUpdates/**/*", "!" + src + "build/**/*"], jsMin);
+    gulp.watch([src + '**/*.js', "!*.*", "!" + src + "**/*min.js", "!" + src + "node_modules/**/*", "!" + src + "testing/**/*", "!" + src + "build/**/*"], js);
+    gulp.watch([src + '**/*min.js', "!*.*", "!" + src + "node_modules/**/*", "!" + src + "testing/**/*", "!" + src + "build/**/*"], jsMin);
 
     // assets changes
-    gulp.watch([src + '**/*', "!*", "!" + src + "**/*.{gif,jpg,png,svg,html,htm,js,css}", "!" + src + "node_modules/**/*", "!" + src + "TestingSamples/**/*", "!" + src + "ProxyUpdates/**/*", "!" + src + "build/**/*"], js);
+    gulp.watch([src + '**/*', "!*", "!" + src + "**/*.{gif,jpg,png,svg,html,htm,js,css}", "!" + src + "node_modules/**/*", "!" + src + "testing/**/*", "!" + src + "build/**/*"], js);
 
     done();
 

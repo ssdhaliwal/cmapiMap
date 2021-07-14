@@ -15,13 +15,14 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
         Query, array, domConstruct,
         webMercatorUtils, graphicsUtils, ViewUtilities, JSUtilities) {
 
-        let esriFeatureService = function (globals,service) {
+        let esriFeatureService = function (globals, service) {
             let self = this;
             self.extMap = globals.plugins.extMap;
             self.map = globals.plugins.extMap.instance;
             self.extSearch = globals.plugins.extSearch;
             self.messageService = globals.interfaces.messageService;
             self.extDatagrid = globals.plugins.extDatagrid;
+            self.extConfig = globals.plugins.extConfig;
             self.service = service;
             self.layer = null;
             self.selectedFeatures = [];
@@ -31,16 +32,29 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                 // console.log("esriFeatureService - init");
                 // console.log("... creating layer: " + self.service.text);
                 let params = self.service.layer.params || {};
+
+                // refreshControl options
+                if (self.service.layer.refreshControl) {
+                    let refreshOptions = self.getLayerRefreshControl(self.map.getZoom(), self.service.layer.refreshControl);
+
+                    // adjust service params
+                    params.refreshInterval = refreshOptions.refreshInterval;
+                    params.mode = refreshOptions.refreshMode;
+                }
+
+                // process service params
                 if (!params.hasOwnProperty("mode")) {
                     params.mode = FeatureLayer.MODE_ONDEMAND;
                 } else {
-                    if (params.mode === "snapshot") {
+                    let mode = params.mode.toLowerCase();
+
+                    if (mode === "snapshot") {
                         params.mode = FeatureLayer.MODE_SNAPSHOT;
-                    } else if (params.mode === "ondemand") {
+                    } else if (mode === "ondemand") {
                         params.mode = FeatureLayer.MODE_ONDEMAND;
-                    } else if (params.mode === "selection") {
+                    } else if (mode === "selection") {
                         params.mode = FeatureLayer.MODE_SELECTION;
-                    } else if (params.mode === "auto") {
+                    } else if (mode === "auto") {
                         params.mode = FeatureLayer.MODE_AUTO;
                     }
                 }
@@ -68,6 +82,9 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                 //	self.layer.setInfoTemplates(params.infoTemplate);
                 //}
                 if (params.labelingInfo) {
+                    params.labelingInfo.forEach(label => {
+                        self.updateLabelColor(label);
+                    });
                     self.layer.setLabelingInfo(params.labelingInfo);
                 }
                 if (params.maxAllowableOffset) {
@@ -134,10 +151,12 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
 
                         if (params.labelSymbol) {
                             lblSymbol = new TextSymbol(params.labelSymbol);
+                            lblClass.symbol = lblSymbol;
                         }
 
-                        lblClass.symbol = lblSymbol;
+                        self.updateLabelColor(lblClass);
                         layer.setLabelingInfo([lblClass]);
+
                         self.layer.setShowLabels(params.showLabels);
                     }
                 }
@@ -381,16 +400,12 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                 self.layer.on("load", function ($event) {
                     // console.log("esriFeatureService - registerEvents/load", $event);
                     // set font color if needed
-                    if ($event.layer.hasOwnProperty("labelingInfo")) {
-                        if ($event.layer.labelingInfo.length > 0) {
-                            $event.layer.labelingInfo.forEach(label => {
-                                if (label.hasOwnProperty("symbol")) {
-                                    if (label.symbol.hasOwnProperty("color")) {
-                                        label.symbol.color = new Color(map.basemapFontColor);
-                                        delete label.symbol.haloColor;
-                                        delete label.symbol.haloSize;
-                                    }
-                                }
+                    if ($event.target.hasOwnProperty("labelingInfo")) {
+                        let labelingInfo = $event.layer.labelingInfo;
+
+                        if (labelingInfo.length > 0) {
+                            labelingInfo.forEach(label => {
+                                self.updateLabelColor(label);
                             });
                         }
                     }
@@ -487,6 +502,22 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                     }
                 });
 
+                self.layer.on("update-start", function ($event) {
+                    // console.log("esriFeatureService - registerEvents/update-start", $event);
+                    // add to grid via promise
+                    if (self.service.layer.refreshControl) {
+                        new Promise(function (resolve, reject) {
+                            resolve(self);
+                        }).then(function (layer) {
+                            // refreshControl options
+                            let refreshOptions = self.getLayerRefreshControl(self.map.getZoom(), self.service.layer.refreshControl);
+
+                            // adjust service params
+                            self.layer.setRefreshInterval(refreshOptions.refreshInterval);
+                        });
+                    }
+                });
+
                 self.layer.on("update-end", function ($event) {
                     // console.log("esriFeatureService - registerEvents/update-end", $event);
                     // add to grid via promise
@@ -494,7 +525,7 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                         resolve(self);
                     }).then(function (layer) {
                         self.extDatagrid.addTab(self);
-                    });                    
+                    });
                 });
 
                 let selectQuery = new Query();
@@ -670,7 +701,59 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                 if (self.searchOptions !== null) {
                     self.extSearch.removeSource(self.searchOptions);
                 }
-            }
+            };
+
+            self.updateLabelColor = function(label) {
+                if (label.hasOwnProperty("symbol")) {
+                    if (label.symbol.hasOwnProperty("color")) {
+                        label.symbol.color = new Color(self.extConfig.fontColor);
+                        delete label.symbol.haloColor;
+                        delete label.symbol.haloSize;
+                    }
+                }
+            };
+
+            self.getLayerRefreshControl = function (zoomLevel, refreshControl) {
+                let refreshOptions = {};
+
+                refreshOptions.refreshInterval = 1;
+                refreshOptions.refreshMode = "ondemand";
+
+                // set default (if available)
+                if (refreshControl.hasOwnProperty("refreshInterval")) {
+                    refreshOptions.refreshInterval = refreshControl.refreshInterval;
+                }
+
+                // match to zoomlevel
+                if (refreshControl.hasOwnProperty("level3")) {
+                    if ((refreshControl.level3.zoomMax >= zoomLevel) &&
+                        (refreshControl.level3.zoomMin <= zoomLevel)) {
+                        refreshOptions.refreshInterval = refreshControl.level3.refreshInterval;
+                        refreshOptions.refreshMode = (refreshControl.level3.refreshMode || "ondemand");
+
+                        return refreshOptions;
+                    }
+                }
+                if (refreshControl.hasOwnProperty("level2")) {
+                    if ((refreshControl.level2.zoomMax >= zoomLevel) &&
+                        (refreshControl.level2.zoomMin <= zoomLevel)) {
+                        refreshOptions.refreshInterval = refreshControl.level2.refreshInterval;
+                        refreshOptions.refreshMode = (refreshControl.level2.refreshMode || "ondemand");
+
+                        return refreshOptions;
+                    }
+                }
+                if (refreshControl.hasOwnProperty("level1")) {
+                    if ((refreshControl.level1.zoomMax >= zoomLevel) &&
+                        (refreshControl.level1.zoomMin <= zoomLevel)) {
+                        refreshOptions.refreshInterval = refreshControl.level1.refreshInterval;
+                        refreshOptions.refreshMode = (refreshControl.level1.refreshMode || "ondemand");
+
+                        return refreshOptions;
+                    }
+                }
+            };
+
 
             self.getLayerControlInfoTemplate = function (graphic) {
                 // console.log("esriFeatureService - getLayerControlInfoTemplate");
@@ -696,14 +779,14 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                     let layerData = {};
                     layerData.identifier = self.layer.objectIdField;
                     layerData.items = [];
-    
+
                     let point = null, mapPoint = null, item = {};
                     self.layer.graphics.forEach(graphic => {
                         item = {};
                         Object.assign(item, graphic.attributes);
 
                         if (graphic.geometry.hasOwnProperty("x")) {
-                            mapPoint = new Point(graphic.geometry.x, graphic.geometry.x);
+                            mapPoint = new Point(graphic.geometry.x, graphic.geometry.y);
                         } else if (graphic.geometry.hasOwnProperty("paths")) {
                             mapPoint = graphic.geometry.getExtent().getCenter();
                         } else if (graphic.geometry.hasOwnProperty("rings")) {
@@ -716,33 +799,33 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                         item.type = graphic.geometry.type;
                         layerData.items.push(item);
                     });
-    
+
                     resolve(layerData);
                 });
             };
 
             self.getExtent = function (featureId) {
                 // console.log("esriFeatureService - getExtent");
-		
-				if (self.layer && self.layer.fullExtent) {
-					return self.layer.fullExtent;
-				} else {
-					return null;
-				}
+
+                if (self.layer && self.layer.fullExtent) {
+                    return self.layer.fullExtent;
+                } else {
+                    return null;
+                }
             };
 
             self.centerOnExtent = function (zoom) {
                 // console.log("esriFeatureService - centerOnExtent");
 
                 if (self.layer && self.layer.fullExtent) {
-					let extent = self.layer.fullExtent;
+                    let extent = self.layer.fullExtent;
 
                     if (!JSUtilities.getBoolean(zoom) || (zoom === "auto")) {
                         self.extMap.handleSetExtent(extent, true);
                     } else {
                         self.extMap.handleCenterLocationPoint(extent.getCenter());
                     }
-				}
+                }
             };
 
             self.centerOnFeature = function (markerId, zoom) {

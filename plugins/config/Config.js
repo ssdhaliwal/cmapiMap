@@ -3,8 +3,8 @@ define(["dojo/html", "dojo/dom", "dojo/on", "dijit/registry", "dojo/dom-style"],
 
         let extConfig = function (globals) {
             let self = this;
-            self.fontColor = globals.data.fontColor || null;
-            self.fontColorName = globals.data.fontColorName || "YellowGreen;#9ACD32";
+            self.fontColorName = globals.data.fontColor || "YellowGreen;#9ACD32";
+            self.fontColor = self.fontColorName.split(";")[1];
 
             self.init = function () {
                 // console.log("extConfig - init");

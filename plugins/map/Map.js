@@ -55,11 +55,6 @@ define(["dojo/_base/array",
 
             self.regiserEvents = function () {
                 // console.log("extMap - regiserEvents");
-                self.instance.on("extent-change", function (evt) {
-                    // console.log("extMap - extent-change");
-                    self.handleRedrawGraphics();
-                });
-
                 self.instance.on("resize", function (evt) {
                     // console.log("extMap - resize");
                     self.handleRedrawGraphics();
@@ -111,6 +106,9 @@ define(["dojo/_base/array",
 
                             self.instance.on("extent-change", function ($event) {
                                 self.handleMapStatusRequestView();
+                                self.handleShowCoordinates();
+
+                                self.handleRedrawGraphics();
                             });
                         }
 

@@ -202,8 +202,8 @@
         },
         "children": [
             {
-                "id": "TRACKS1001-01",
-                "text": "Fire Zone",
+                "id": "TRACKS1001-EGISNAIS",
+                "text": "EGIS NAIS",
                 "icon": "/esri-cmapi/plugins/layerlist/icons/FS.png",
                 "state": {
                     "opened": true,
@@ -214,7 +214,7 @@
                     "properties": {
                         "dateCreated": "20180521",
                         "dateVerified": "20201208",
-                        "url": "https://nowcoast.noaa.gov/arcgis/rest/services/nowcoast/forecast_meteoceanhydro_pts_zones_geolinks/MapServer/9/",
+                        "url": "https://cg1v.osc.uscg.mil/server/rest/services/Vessels/Vessels/MapServer/1/",
                         "credentials": {
                             "required": false,
                             "token": ""
@@ -222,7 +222,55 @@
                     },
                     "params": {
                         "serviceType": "feature",
-                        "zoom": "true"
+                        "zoom": "true",
+                        "refreshInterval": "0.30"
+                    }
+                }
+            },
+            {
+                "id": "TRACKS1001-EGISSAIS",
+                "text": "EGIS SAIS",
+                "icon": "/esri-cmapi/plugins/layerlist/icons/FS.png",
+                "state": {
+                    "opened": true,
+                    "disabled": false,
+                    "selected": false
+                },
+                "layer": {
+                    "properties": {
+                        "dateCreated": "20180521",
+                        "dateVerified": "20201208",
+                        "url": "https://cg1v.osc.uscg.mil/server/rest/services/Vessels/Vessels/MapServer/2/",
+                        "credentials": {
+                            "required": false,
+                            "token": ""
+                        }
+                    },
+                    "params": {
+                        "serviceType": "feature",
+                        "zoom": "true",
+                        "refreshInterval": "5"
+                    },
+                    "refreshControl": {
+                        "refreshInterval": "5",
+                        "level3": {
+                            "zoomMax": 23,
+                            "zoomMin": 12,
+                            "refreshInterval": "0.10",
+                            "refreshMode": "ondemand"
+                        },
+                        "level2": {
+                            "zoomMax": 11,
+                            "zoomMin": 6,
+                            "refreshInterval": "1",
+                            "refreshMode": "ondemand"
+                        },
+                        "level1": {
+                            "zoomMax": 5,
+                            "zoomMin": 1,
+                            "refreshInterval": "5",
+                            "refreshMode": "ondemand"
+                        }
                     }
                 }
             }
