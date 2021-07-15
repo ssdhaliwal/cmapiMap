@@ -7,7 +7,7 @@ let globals = {
             "available": true
         },
         "config": {
-            "available": true
+            "available": false
         },
         "datagrid": {
             "available": false,
@@ -35,7 +35,7 @@ let globals = {
             "infobar": true,
             "zoombar": true,
             "click": {
-                "showMarker": false,
+                "showMarker": true,
                 "hideAfter": "infinite"
             },
             "dbl-click": {

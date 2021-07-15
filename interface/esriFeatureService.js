@@ -46,7 +46,7 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                 if (!params.hasOwnProperty("mode")) {
                     params.mode = FeatureLayer.MODE_ONDEMAND;
                 } else {
-                    let mode = params.mode.toLowerCase();
+                    let mode = (params.mode + "").toLowerCase();
 
                     if (mode === "snapshot") {
                         params.mode = FeatureLayer.MODE_SNAPSHOT;
@@ -322,8 +322,6 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
             self.registerEvents = function () {
                 // console.log("esriFeatureService - registerEvents");
                 let params = self.service.layer.params || {};
-
-                // syncSearchOptions();
 
                 /*
                 layer.on("visibility-change", (visibility) => {

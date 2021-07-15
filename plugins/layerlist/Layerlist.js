@@ -1,8 +1,8 @@
 define(["vendor/js/jstree/jstree",
-    "interface/esriDynamicMapService", "interface/esriFeatureService", "interface/ogcKML",
+    "interface/esriDynamicMapService", "interface/esriFeatureService", "interface/ogcKMLAdapter",
     "plugins/ViewUtilities", "plugins/JSUtilities"],
     function (JSTree,
-        esriDynamicMapService, esriFeatureService, ogcKML,
+        esriDynamicMapService, esriFeatureService, ogcKMLAdapter,
         ViewUtilities, JSUtilities) {
 
         let extLayerlist = function (globals) {
@@ -276,7 +276,7 @@ define(["vendor/js/jstree/jstree",
                                     if (service.layer.properties.hasOwnProperty("data") ||
                                         (service.layer.properties.hasOwnProperty("url") &&
                                             service.layer.properties.hasOwnProperty("intranet"))) {
-                                        service.perspective = new ogcKML(globals,service);
+                                        service.perspective = new ogcKMLAdapter(globals,service);
                                     } else {
                                         // service.perspective = new esriKMLervice(globals,service);
                                     }

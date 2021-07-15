@@ -643,6 +643,7 @@ define([],
                         json = JSON.parse(value);
                     } else json = value;
                 } catch (exception) {
+                    console.log("JSON parse error/" + exception + "/" + value);
                     json = null;
                 }
                 return json;

@@ -64,7 +64,7 @@ define(["plugins/JSUtilities"],
             // 2. map.feature.*
             self.onMapFeaturePlot = function (request) {
                 // console.log("cmapiAdapter - onMapFeaturePlot");
-                if (request.hasOwnProperty("featureId") && request.hasOwnProperty("url")) {
+                if (request.hasOwnProperty("featureId") && request.hasOwnProperty("feature")) {
                     if (!JSUtilities.isEmpty(request.featureId) && !JSUtilities.isEmpty(request.url)) {
                         if (!request.hasOwnProperty("name") || JSUtilities.isEmpty(request.name)) {
                             request.name = request.featureId;
@@ -77,12 +77,16 @@ define(["plugins/JSUtilities"],
                             if (request.hasOwnProperty("params")) {
                                 request.params = {};
                             }
+
                             if (request.hasOwnProperty("properties")) {
                                 Object.keys(request.properties).forEach(key => {
                                     request.params[key] = request.properties[key];
                                 });
                                 delete request.properties;
+                            } else {
+                                request.properties = {};
                             }
+                            request.properties.data = request.feature;
 
                             if (!request.hasOwnProperty("zoom")) {
                                 request.zoom = false;
@@ -91,9 +95,7 @@ define(["plugins/JSUtilities"],
                                 request.readOnly = true;
                             }
 
-                            if (request.hasOwnProperty("feature")) {
-                                globals.plugins.extLayerlist.handlePlotFeature(request);
-                            }
+                            globals.plugins.extLayerlist.handlePlotFeature(request);
                         }
                     }
                 }

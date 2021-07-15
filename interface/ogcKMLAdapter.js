@@ -1,8 +1,8 @@
-define(["dojo/_base/lang", "resource/KML2GraphicsLayer", 
+define(["dojo/_base/lang", "interface/object/KML2GraphicsLayer", 
     "plugins/ViewUtilities", "plugins/JSUtilities"],
     function (lang, KML2GraphicsLayer, ViewUtilities, JSUtilities) {
 
-        let ogcKML = function (globals,service) {
+        let ogcKMLAdapter = function (globals,service) {
             let self = this;
             self.map = globals.plugins.extMap.instance;
             self.messageService = globals.interfaces.messageService;
@@ -12,7 +12,7 @@ define(["dojo/_base/lang", "resource/KML2GraphicsLayer",
             self.selectedFeatures = [];
 
             self.init = function () {
-                // console.log("ogcKML - init" );
+                // console.log("ogcKMLAdapter - init" );
                 // parse dom
                 // collect root documents
                 // for each document
@@ -36,11 +36,11 @@ define(["dojo/_base/lang", "resource/KML2GraphicsLayer",
             };
 
             self.registerEvents = function (layer) {
-                // console.log("ogcKML - registerEvents" );
+                // console.log("ogcKMLAdapter - registerEvents" );
             };
 
             self.remove = function () {
-                // console.log("ogcKML - remove" );
+                // console.log("ogcKMLAdapter - remove" );
                 // console.log("... removed layer: " + self.service.text);
 
                 self.extDatagrid.removeTab(self);
@@ -70,7 +70,7 @@ define(["dojo/_base/lang", "resource/KML2GraphicsLayer",
             };
 
             getKML = function () {
-                // console.log("ogcKML - handleClick" );
+                // console.log("ogcKMLAdapter - handleClick" );
                 let layer = self.service.layer;
 
                 // reads kml from properties or url (if kmz, unzips it also)
@@ -129,7 +129,7 @@ define(["dojo/_base/lang", "resource/KML2GraphicsLayer",
             };
 
             parseKml = function (kml) {
-                // console.log("ogcKML - parseKml" );
+                // console.log("ogcKMLAdapter - parseKml" );
                 new Promise(function (resolve, reject) {
                     // if kml string is empty; retreive it
                     // parse kml
@@ -163,7 +163,7 @@ define(["dojo/_base/lang", "resource/KML2GraphicsLayer",
             };
 
             processKml = function (document) {
-                // console.log("ogcKML - processKml" );
+                // console.log("ogcKMLAdapter - processKml" );
                 new Promise(function (resolve, reject) {
                     let layer = new KML2GraphicsLayer(self.service.text, document, 
                         self.service.layer.properties, self.service.layer.params);
@@ -194,7 +194,7 @@ define(["dojo/_base/lang", "resource/KML2GraphicsLayer",
             };
 
             self.getData = function() {
-                // console.log("ogcKML - getData" );
+                // console.log("ogcKMLAdapter - getData" );
 
                 return new Promise(function (resolve, reject) {
                     let layerData = {}, idIndex = 0;
@@ -245,22 +245,22 @@ define(["dojo/_base/lang", "resource/KML2GraphicsLayer",
             };
 
             self.getExtent = function (featureId) {
-                // console.log("ogcKML - getExtent");
+                // console.log("ogcKMLAdapter - getExtent");
 
             };
 
             self.centerOnExtent = function (zoom) {
-                // console.log("ogcKML - centerOnExtent");
+                // console.log("ogcKMLAdapter - centerOnExtent");
 
             };
 
             self.centerOnFeature = function (featureId, zoom) {
-                // console.log("ogcKML - centerOnFeature");
+                // console.log("ogcKMLAdapter - centerOnFeature");
 
             };
 
             self.init();
         };
 
-        return ogcKML;
+        return ogcKMLAdapter;
     });
