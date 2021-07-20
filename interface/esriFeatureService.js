@@ -157,7 +157,7 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                         self.updateLabelColor(lblClass);
                         layer.setLabelingInfo([lblClass]);
 
-                        self.layer.setShowLabels(params.showLabels);
+                        self.layer.setShowLabels(true);
                     }
                 }
 
@@ -724,8 +724,8 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
 
                 // match to zoomlevel
                 if (refreshControl.hasOwnProperty("level3")) {
-                    if ((refreshControl.level3.zoomMax >= zoomLevel) &&
-                        (refreshControl.level3.zoomMin <= zoomLevel)) {
+                    if (((refreshControl.level3.zoomMax || 99) >= zoomLevel) &&
+                        ((refreshControl.level3.zoomMin || 0) <= zoomLevel)) {
                         refreshOptions.refreshInterval = refreshControl.level3.refreshInterval;
                         refreshOptions.refreshMode = (refreshControl.level3.refreshMode || "ondemand");
 
@@ -733,8 +733,8 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                     }
                 }
                 if (refreshControl.hasOwnProperty("level2")) {
-                    if ((refreshControl.level2.zoomMax >= zoomLevel) &&
-                        (refreshControl.level2.zoomMin <= zoomLevel)) {
+                    if (((refreshControl.level2.zoomMax || 99) >= zoomLevel) &&
+                        ((refreshControl.level2.zoomMin || 0) <= zoomLevel)) {
                         refreshOptions.refreshInterval = refreshControl.level2.refreshInterval;
                         refreshOptions.refreshMode = (refreshControl.level2.refreshMode || "ondemand");
 
@@ -742,14 +742,16 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                     }
                 }
                 if (refreshControl.hasOwnProperty("level1")) {
-                    if ((refreshControl.level1.zoomMax >= zoomLevel) &&
-                        (refreshControl.level1.zoomMin <= zoomLevel)) {
+                    if (((refreshControl.level1.zoomMax || 99) >= zoomLevel) &&
+                        ((refreshControl.level1.zoomMin || 0) <= zoomLevel)) {
                         refreshOptions.refreshInterval = refreshControl.level1.refreshInterval;
                         refreshOptions.refreshMode = (refreshControl.level1.refreshMode || "ondemand");
 
                         return refreshOptions;
                     }
                 }
+
+                return refreshOptions;
             };
 
 

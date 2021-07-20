@@ -254,7 +254,6 @@
                     "refreshControl": {
                         "refreshInterval": "5",
                         "level3": {
-                            "zoomMax": 23,
                             "zoomMin": 12,
                             "refreshInterval": "0.10",
                             "refreshMode": "ondemand"
@@ -267,7 +266,6 @@
                         },
                         "level1": {
                             "zoomMax": 5,
-                            "zoomMin": 1,
                             "refreshInterval": "5",
                             "refreshMode": "ondemand"
                         }
