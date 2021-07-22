@@ -59,8 +59,8 @@ if (!window.esriJsPath) {
      * @global
      */
     window.esriJsPath = (function () {
-        // var path = "http://js.arcgis.com/3.23/";
         // var path = window.contextPath + "../vendor/js/esri_jsapi/";
+        // var path = "https://js.arcgis.com/3.37/";
         var path = "/esri_jsapi-3.35/";
 
         if (window.isOffline()) {

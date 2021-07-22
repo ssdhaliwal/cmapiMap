@@ -6,6 +6,7 @@
 const
     // modules
     gulp = require('gulp'),
+    babel = require('gulp-babel'),
     debug = require('gulp-debug'),
     remove = require('gulp-rimraf'),
     newer = require('gulp-newer'),
@@ -47,7 +48,7 @@ function images() {
 
     const out = build;
 
-    return gulp.src([src + '**/*.{gif,jpg,png,svg}', "!*.*", "!" + src + "node_modules/**/*", "!" + src + "testing/**/*", "!" + src + "build/**/*"])
+    return gulp.src([src + '**/*.{gif,jpg,png,svg}', "!*.*", "!" + src + "node_modules/**/*", "!" + src + "testing/**/*", "!" + src + "build/**/*", "!" + src + "vendor/**/*"])
         .pipe(newer(out))
         .pipe(debug())
         .pipe(imagemin({ optimizationLevel: 5 }))
@@ -63,7 +64,7 @@ function html() {
 
     const out = build;
 
-    return gulp.src([src + '**/*.{html,htm}', "!" + src + "node_modules/**/*", "!" + src + "testing/**/*", "!" + src + "build/**/*"])
+    return gulp.src([src + '**/*.{html,htm}', "!" + src + "node_modules/**/*", "!" + src + "testing/**/*", "!" + src + "build/**/*", "!" + src + "vendor/**/*"])
         .pipe(newer(out))
         .pipe(debug())
         .pipe(devBuild ? noop() : htmlclean())
@@ -78,7 +79,7 @@ function jsDebug() {
 
     const out = build;
 
-    return gulp.src([src + '**/*.js', "!*.*", "!" + src + "**/*min.js", "!" + src + "node_modules/**/*", "!" + src + "testing/**/*", "!" + src + "build/**/*"])
+    return gulp.src([src + '**/*.js', "!*.*", "!" + src + "node_modules/**/*", "!" + src + "testing/**/*", "!" + src + "build/**/*", "!" + src + "vendor/**/*"])
         .pipe(newer(out))
         .pipe(debug())
         .pipe(sourcemaps.init())
@@ -97,9 +98,10 @@ function js() {
 
     const out = build;
 
-    return gulp.src([src + '**/*.js', "!*.*", "!" + src + "**/*min.js", "!" + src + "node_modules/**/*", "!" + src + "testing/**/*", "!" + src + "build/**/*"])
+    return gulp.src([src + '**/*.js', "!*.*", "!" + src + "node_modules/**/*", "!" + src + "build/**/*", "!" + src + "vendor/**/*"])
         .pipe(newer(out))
         .pipe(debug())
+        .pipe(babel({presets: ['@babel/preset-env'] }))
         .pipe(sourcemaps.init())
         /*.pipe(deporder())*/
         /*.pipe(concat('main.js'))*/
@@ -114,26 +116,40 @@ function js() {
 //exports.js = gulp.series(cleanBuild, images, html, js);
 exports.js = js;
 
-function jsMin() {
+function json() {
 
     const out = build;
 
-    return gulp.src([src + '**/*min.js', "!*.*", "!" + src + "node_modules/**/*", "!" + src + "testing/**/*", "!" + src + "build/**/*"])
+    return gulp.src([src + '**/*.json', "*.json", "!**/package*.json", "!" + src + "node_modules/**/*", "!" + src + "build/**/*", "!" + src + "vendor/**/*"])
         .pipe(newer(out))
         .pipe(debug())
         .pipe(gulp.dest(out));
 
 }
 
-//exports.js = gulp.series(cleanBuild, images, html, js);
-exports.jsMin = jsMin;
+//exports.js = gulp.series(cleanBuild, images, html, js, vendor);
+exports.json = json;
+
+function vendor() {
+
+    const out = build;
+
+    return gulp.src([src + "vendor/**/*.*"], {base:"."})
+        .pipe(newer(out))
+        .pipe(debug())
+        .pipe(gulp.dest(out));
+
+}
+
+//exports.js = gulp.series(cleanBuild, images, html, js, vendor);
+exports.vendor = vendor;
 
 // CSS processing
 function css() {
 
     const out = build;
 
-    return gulp.src([src + '**/*.css', "!*.*", "!" + src + "node_modules/**/*", "!" + src + "testing/**/*", "!" + src + "build/**/*"])
+    return gulp.src([src + '**/*.css', "!*.*", "!" + src + "node_modules/**/*", "!" + src + "testing/**/*", "!" + src + "build/**/*", "!" + src + "vendor/**/*"])
         .pipe(newer(out))
         .pipe(debug())
         .pipe(cleanCss())
@@ -149,7 +165,7 @@ function assets() {
 
     const out = build;
 
-    return gulp.src([src + '**/*', "!*", "!" + src + "**/*.{gif,jpg,png,svg,html,htm,js,css}", "!" + src + "node_modules/**/*", "!" + src + "testing/**/*", "!" + src + "build/**/*"])
+    return gulp.src([src + '**/*', "!*", "!" + src + "**/*.{gif,jpg,png,svg,html,htm,js,css}", "!" + src + "node_modules/**/*", "!" + src + "testing/**/*", "!" + src + "build/**/*", "!" + src + "vendor/**/*"])
         .pipe(newer(out))
         .pipe(debug())
         .pipe(gulp.dest(out));
@@ -184,10 +200,10 @@ function watch(done) {
 
 exports.watch = watch;
 
-exports.cleanDebug = gulp.series(cleanBuild, gulp.parallel(images, html, jsDebug, jsMin, css, assets));
-exports.clean = gulp.series(cleanBuild, gulp.parallel(images, html, js, jsMin, css, assets));
+exports.cleanDebug = gulp.series(cleanBuild, gulp.parallel(images, html, jsDebug, json, vendor, css, assets));
+exports.clean = gulp.series(cleanBuild, gulp.parallel(images, html, js, json, vendor, css, assets));
 
-exports.build = gulp.parallel(images, html, js, jsMin, css, assets);
+exports.build = gulp.parallel(images, html, js, json, vendor, css, assets);
 
 exports.watcher = gulp.series(exports.build, exports.watch);
 exports.default = build;

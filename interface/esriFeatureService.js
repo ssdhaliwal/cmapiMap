@@ -82,7 +82,7 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                 //	self.layer.setInfoTemplates(params.infoTemplate);
                 //}
                 if (params.labelingInfo) {
-                    params.labelingInfo.forEach(label => {
+                    params.labelingInfo.forEach(function(label) {
                         self.updateLabelColor(label);
                     });
                     self.layer.setLabelingInfo(params.labelingInfo);
@@ -182,10 +182,10 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                     });
 
                     params._querySelect.graphic = [];
-                    params._querySelect.filters.forEach(filter => {
+                    params._querySelect.filters.forEach(function(filter) {
                         let graphic = null;
                         if (filter.type === "buffer") {
-                            filter.geometry.forEach(marker => {
+                            filter.geometry.forEach(function(marker) {
                                 let point = new Point(marker.x, marker.y,
                                     new SpatialReference({
                                         wkid: filter.wkid || 4326
@@ -278,7 +278,7 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                             //bufferLayer.setOpacity(1.0);
                         }
                         if (filter.type === "area") {
-                            filter.geometry.forEach(ring => {
+                            filter.geometry.forEach(function(ring) {
                                 let buffer = new Polygon({
                                     "rings": ring.rings,
                                     "spatialReference": { "wkid": filter.wkid || 4326 }
@@ -324,11 +324,11 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                 let params = self.service.layer.params || {};
 
                 /*
-                layer.on("visibility-change", (visibility) => {
+                layer.on("visibility-change", function(visibility) {
                     // console.log("esriFeatureService - registerEvents/visibility-change", visibility);
                 });
                 */
-                self.layer.on("graphic-add", (feature) => {
+                self.layer.on("graphic-add", function(feature) {
                     // // console.log("esriFeatureService - registerEvents/graphic-add", feature);
                     if (params.hasOwnProperty("_querySelect")) {
                         let qsLen = params._querySelect.graphic.length;
@@ -369,7 +369,7 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                             id: "tmp_" + self.layer.id
                         });
                         let tGraphic;
-                        self.layer.graphics.forEach((graphic) => {
+                        self.layer.graphics.forEach(function(graphic) {
                             if (graphic.visible === true) {
                                 tGraphic = new Graphic(graphic.toJson());
                                 tGraphic.symbol = layer.renderer.symbol.toJson();
@@ -402,7 +402,7 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                         let labelingInfo = $event.layer.labelingInfo;
 
                         if (labelingInfo.length > 0) {
-                            labelingInfo.forEach(label => {
+                            labelingInfo.forEach(function(label) {
                                 self.updateLabelColor(label);
                             });
                         }
@@ -781,7 +781,7 @@ define(["esri/layers/FeatureLayer", "esri/layers/GraphicsLayer",
                     layerData.items = [];
 
                     let point = null, mapPoint = null, item = {};
-                    self.layer.graphics.forEach(graphic => {
+                    self.layer.graphics.forEach(function(graphic) {
                         item = {};
                         Object.assign(item, graphic.attributes);
 

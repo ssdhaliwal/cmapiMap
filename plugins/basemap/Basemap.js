@@ -153,7 +153,7 @@ define(["esri/layers/ArcGISTiledMapServiceLayer", "esri/dijit/BasemapGallery", "
                 // console.log("extBasemap - findIdByTitle");
 
                 let basemapId = null;
-                self.instance.basemaps.forEach(basemap => {
+                self.instance.basemaps.forEach(function(basemap) {
                     if (basemap.title === title) {
                         basemapId = basemap.id;
                         return false;

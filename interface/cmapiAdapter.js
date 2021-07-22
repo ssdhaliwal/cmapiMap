@@ -79,7 +79,7 @@ define(["plugins/JSUtilities"],
                             }
 
                             if (request.hasOwnProperty("properties")) {
-                                Object.keys(request.properties).forEach(key => {
+                                Object.keys(request.properties).forEach(function(key) {
                                     request.params[key] = request.properties[key];
                                 });
                                 delete request.properties;

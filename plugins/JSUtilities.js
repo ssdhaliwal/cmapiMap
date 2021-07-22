@@ -115,7 +115,7 @@ define([],
                 // // console.log("JSUtilities - colorShadeBlendConvert");
                 let r, g, b, P, f, t, h, i = parseInt, m = Math.round, a = typeof (toColor) == "string";
                 if (typeof (percent) != "number" || percent < -1 || percent > 1 || typeof (fromColor) != "string" || (fromColor[0] != 'r' && fromColor[0] != '#') || (toColor && !a)) return null;
-                if (!this.pSBCr) this.pSBCr = (d) => {
+                if (!this.pSBCr) this.pSBCr = function(d) {
                     let n = d.length, x = {};
                     if (n > 9) {
                         [r, g, b, a] = d = d.split(","), n = d.length;
@@ -132,7 +132,9 @@ define([],
                 h = fromColor.length > 9, h = a ? toColor.length > 9 ? true : toColor == "c" ? !h : false : h, f = pSBCr(fromColor), P = percent < 0, t = toColor && toColor != "c" ? pSBCr(toColor) : P ? { r: 0, g: 0, b: 0, a: -1 } : { r: 255, g: 255, b: 255, a: -1 }, percent = P ? percent * -1 : percent, P = 1 - percent;
                 if (!f || !t) return null;
                 if (linear) r = m(P * f.r + percent * t.r), g = m(P * f.g + percent * t.g), b = m(P * f.b + percent * t.b);
-                else r = m((P * f.r ** 2 + percent * t.r ** 2) ** 0.5), g = m((P * f.g ** 2 + percent * t.g ** 2) ** 0.5), b = m((P * f.b ** 2 + percent * t.b ** 2) ** 0.5);
+                else r = m(Math.pow(P * Math.pow(f.r, 2) + percent * Math.pow(t.r, 2)), 0.5), 
+                    g = m(Math.pow(P * Math.pow(f.g, 2) + percent * Math.pow(t.g, 2)), 0.5), 
+                    b = m(Math.pow(P * Math.pow(f.b, 2) + percent * Math.pow(t.b, 2)), 0.5);
                 a = f.a, t = t.a, f = a >= 0 || t >= 0, a = f ? a < 0 ? t : t < 0 ? a : a * P + t * percent : 0;
                 if (h) return "rgb" + (f ? "a(" : "(") + r + "," + g + "," + b + (f ? "," + m(a * 1000) / 1000 : "") + ")";
                 else return "#" + (4294967296 + r * 16777216 + g * 65536 + b * 256 + (f ? m(a * 255) : 0)).toString(16).slice(1, f ? undefined : -2)
@@ -218,12 +220,12 @@ define([],
                 if (longitude.includes("-") || longitude.includes("W") || longitude.includes("w")) {
                     try {
                         lon = -1 * Number(longitude.replace(/[-W]/gi, ""));
-                    } catch { lon = 0; }
+                    } catch(err) { lon = 0; }
                     dir = "W";
                 } else {
                     try {
                         lon = Number(longitude.replace(/[+E]/gi, ""));
-                    } catch { lon = 0; }
+                    } catch(err) { lon = 0; }
                     dir = "E";
                 }
 
@@ -240,12 +242,12 @@ define([],
                 if (latitude.includes("-") || latitude.includes("S") || latitude.includes("s")) {
                     try {
                         lat = -1 * Number(latitude.replace(/[-S]/gi, ""));
-                    } catch { lat = 0; }
+                    } catch(err) { lat = 0; }
                     dir = "S";
                 } else {
                     try {
                         lat = Number(latitude.replace(/[+N]/gi, ""));
-                    } catch { lat = 0; }
+                    } catch(err) { lat = 0; }
                     dir = "N";
                 }
 
@@ -267,12 +269,12 @@ define([],
                 if (longitude.includes("-") || longitude.includes("W") || longitude.includes("w")) {
                     try {
                         lon = -1 * Number(longitude.replace(/[-W]/gi, ""));
-                    } catch { lon = 0; }
+                    } catch(err) { lon = 0; }
                     dir = "W";
                 } else {
                     try {
                         lon = Number(longitude.replace(/[+E]/gi, ""));
-                    } catch { lon = 0; }
+                    } catch(err) { lon = 0; }
                     dir = "E";
                 }
 
@@ -290,12 +292,12 @@ define([],
                 if (latitude.includes("-") || latitude.includes("S") || latitude.includes("s")) {
                     try {
                         lat = -1 * Number(latitude.replace(/[-S]/gi, ""));
-                    } catch { lat = 0; }
+                    } catch(err) { lat = 0; }
                     dir = "S";
                 } else {
                     try {
                         lat = Number(latitude.replace(/[+N]/gi, ""));
-                    } catch { lat = 0; }
+                    } catch(err) { lat = 0; }
                     dir = "N";
                 }
 
@@ -321,17 +323,17 @@ define([],
                 var d = 0;
                 try {
                     d = Number(dms[0]);
-                } catch { d = 0; }
+                } catch(err) { d = 0; }
                 if (d < 0) d = d * -1;
 
                 var m = 0;
                 try {
                     m = Number(dms[1]);
-                } catch { m = 0; }
+                } catch(err) { m = 0; }
                 var s = 0;
                 try {
                     s = Number(dms[2].replace(/[EW]/gi, ""));
-                } catch { s = 0; }
+                } catch(err) { s = 0; }
 
                 var dir = "+";
                 if (longitude.includes("-") || longitude.includes("W") || longitude.includes("w")) {
@@ -348,17 +350,17 @@ define([],
                 var d = 0;
                 try {
                     d = Number(dms[0]);
-                } catch { d = 0; }
+                } catch(err) { d = 0; }
                 if (d < 0) d = d * -1;
 
                 var m = 0;
                 try {
                     m = Number(dms[1]);
-                } catch { m = 0; }
+                } catch(err) { m = 0; }
                 var s = 0;
                 try {
                     s = Number(dms[2].replace(/[NS]/gi, ""));
-                } catch { s = 0; }
+                } catch(err) { s = 0; }
 
                 var dir = "+";
                 if (latitude.includes("-") || latitude.includes("S") || latitude.includes("s")) {
@@ -385,13 +387,13 @@ define([],
                 var d = 0;
                 try {
                     d = Number(ddm[0]);
-                } catch { d = 0; }
+                } catch(err) { d = 0; }
                 if (d < 0) d = d * -1;
 
                 var m = 0;
                 try {
                     m = Number(ddm[1].replace(/[EW]/gi, ""));
-                } catch { m = 0; }
+                } catch(err) { m = 0; }
 
                 var dir = "+";
                 if (longitude.includes("-") || longitude.includes("W") || longitude.includes("w")) {
@@ -407,13 +409,13 @@ define([],
                 var d = 0;
                 try {
                     d = Number(ddm[0]);
-                } catch { d = 0; }
+                } catch(err) { d = 0; }
                 if (d < 0) d = d * -1;
 
                 var m = 0;
                 try {
                     m = Number(ddm[1].replace(/[NS]/gi, ""));
-                } catch { m = 0; }
+                } catch(err) { m = 0; }
 
                 var dir = "+";
                 if (latitude.includes("-") || latitude.includes("S") || latitude.includes("s")) {
@@ -477,35 +479,6 @@ define([],
                 }
 
                 return obj;
-            },
-
-            // https://github.com/PimpTrizkit/PJs/wiki/12.-Shade,-Blend-and-Convert-a-Web-Color-(pSBC.js)
-            // Version 4.0
-            colorShadeBlendConvert: function (percent, fromColor, toColor, linear) {
-                // // console.log("JSUtilities - colorShadeBlendConvert");
-                let r, g, b, P, f, t, h, i = parseInt, m = Math.round, a = typeof (toColor) == "string";
-                if (typeof (percent) != "number" || percent < -1 || percent > 1 || typeof (fromColor) != "string" || (fromColor[0] != 'r' && fromColor[0] != '#') || (toColor && !a)) return null;
-                if (!this.pSBCr) this.pSBCr = (d) => {
-                    let n = d.length, x = {};
-                    if (n > 9) {
-                        [r, g, b, a] = d = d.split(","), n = d.length;
-                        if (n < 3 || n > 4) return null;
-                        x.r = i(r[3] == "a" ? r.slice(5) : r.slice(4)), x.g = i(g), x.b = i(b), x.a = a ? parseFloat(a) : -1
-                    } else {
-                        if (n == 8 || n == 6 || n < 4) return null;
-                        if (n < 6) d = "#" + d[1] + d[1] + d[2] + d[2] + d[3] + d[3] + (n > 4 ? d[4] + d[4] : "");
-                        d = i(d.slice(1), 16);
-                        if (n == 9 || n == 5) x.r = d >> 24 & 255, x.g = d >> 16 & 255, x.b = d >> 8 & 255, x.a = m((d & 255) / 0.255) / 1000;
-                        else x.r = d >> 16, x.g = d >> 8 & 255, x.b = d & 255, x.a = -1
-                    } return x
-                };
-                h = fromColor.length > 9, h = a ? toColor.length > 9 ? true : toColor == "c" ? !h : false : h, f = pSBCr(fromColor), P = percent < 0, t = toColor && toColor != "c" ? pSBCr(toColor) : P ? { r: 0, g: 0, b: 0, a: -1 } : { r: 255, g: 255, b: 255, a: -1 }, percent = P ? percent * -1 : percent, P = 1 - percent;
-                if (!f || !t) return null;
-                if (linear) r = m(P * f.r + percent * t.r), g = m(P * f.g + percent * t.g), b = m(P * f.b + percent * t.b);
-                else r = m((P * f.r ** 2 + percent * t.r ** 2) ** 0.5), g = m((P * f.g ** 2 + percent * t.g ** 2) ** 0.5), b = m((P * f.b ** 2 + percent * t.b ** 2) ** 0.5);
-                a = f.a, t = t.a, f = a >= 0 || t >= 0, a = f ? a < 0 ? t : t < 0 ? a : a * P + t * percent : 0;
-                if (h) return "rgb" + (f ? "a(" : "(") + r + "," + g + "," + b + (f ? "," + m(a * 1000) / 1000 : "") + ")";
-                else return "#" + (4294967296 + r * 16777216 + g * 65536 + b * 256 + (f ? m(a * 255) : 0)).toString(16).slice(1, f ? undefined : -2)
             },
 
             /**
@@ -634,7 +607,7 @@ define([],
                 return array;
             },
 
-            tryJSONParse(value) {
+            tryJSONParse: function(value) {
                 // // console.log("JSUtilities - tryJSONParse");
                 let json = null;
 
@@ -642,31 +615,31 @@ define([],
                     if (typeof value === 'string') {
                         json = JSON.parse(value);
                     } else json = value;
-                } catch (exception) {
-                    console.log("JSON parse error/" + exception + "/" + value);
+                } catch(err) {
+                    console.log("JSON parse error/" + err + "/" + value);
                     json = null;
                 }
                 return json;
             },
 
-            hex2Int(hex) {
+            hex2Int: function(hex) {
                 // // console.log("JSUtilities - hex2Int");
                 return parseInt(hex, 16);
             },
 
-            int2Hex(number) {
+            int2Hex: function(number) {
                 // // console.log("JSUtilities - int2Hex");
                 return number.toString(16);
             },
 
-            hex2Str(hex) {
+            hex2Str: function(hex) {
                 // // console.log("JSUtilities - hex2Str");
                 let str = "";
 
                 try {
                     str = decodeURIComponent(hex.replace(/(..)/g, '%$1'))
                 }
-                catch (exception) {
+                catch(err) {
                     str = hex
                 }
                 return str
@@ -682,7 +655,7 @@ define([],
                             return v.charCodeAt(0).toString(16).padStart(2, '0')
                         }).join('')
                 }
-                catch (exception) {
+                catch(err) {
                     hex = str
                 }
                 return hex

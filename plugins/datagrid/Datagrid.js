@@ -32,7 +32,7 @@ define(["dojo/_base/lang", "dijit/registry", "dojo/query",
                     $("#datagrid_wrapper").css("z-index", "99");
 
                     // loop through the grids and resize them
-                    Object.keys(self.tabs).forEach(tab => {
+                    Object.keys(self.tabs).forEach(function(tab) {
                         if (tab.startsWith("grid_")) {
                             self.tabs[tab].resize();
                         }
@@ -92,12 +92,12 @@ define(["dojo/_base/lang", "dijit/registry", "dojo/query",
                 self.tabs['div_' + serviceObject.service.text] = gridDiv;
 
                 // to form the grid, we need to get the service object to provide id, structure, and data
-                let checkIW = setInterval(() => {
+                let checkIW = setInterval(function() {
                     if (serviceObject.service.perspective) {
                         clearInterval(checkIW);
                         let serviceData = serviceObject.service.perspective.getData();
 
-                        serviceData.then(payload => {
+                        serviceData.then(function(payload) {
                             if (payload.items.length > 0) {
                                 // console.log(payload, Object.keys(payload.items[0]));
 
@@ -108,7 +108,7 @@ define(["dojo/_base/lang", "dijit/registry", "dojo/query",
         
                                 // define the grid layout based on keys
                                 let layout = [[]];
-                                Object.keys(payload.items[0]).forEach(key => {
+                                Object.keys(payload.items[0]).forEach(function(key) {
                                     layout[0].push({ 'name': key, 'field': key, 'width': '100px' });
                                 });
         

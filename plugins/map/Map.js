@@ -414,7 +414,7 @@ define(["dojo/_base/array",
                     window.setTimeout(function (name) {
                         try {
                             self.instance.removeLayer(self.tmpGraphicsLayer[name]);
-                        } catch {}
+                        } catch(err) {}
 
                         delete self.tmpGraphicsLayer[name];
                     }, hideAfter, name);

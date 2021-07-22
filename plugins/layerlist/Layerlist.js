@@ -235,8 +235,8 @@ define(["vendor/js/jstree/jstree",
                                     });
                                 }
                             }
-                        } catch (exception) {
-                            let payload = { "type": "map.overlay.*", "msg": "user click on query overlay", "error": exception };
+                        } catch (err) {
+                            let payload = { "type": "map.overlay.*", "msg": "user click on query overlay", "error": err };
                             self.messageService.sendMessage("map.error", JSON.stringify(payload));
                         }
                     });
@@ -596,7 +596,7 @@ define(["vendor/js/jstree/jstree",
 
                     // loop through and collect the extent for all published features
                     let extent;
-                    features.forEach((feature) => {
+                    features.forEach(function(feature) {
                         if (feature.original && feature.original.layer && feature.original.perspective) {
                             extent = ViewUtilities.unionExtents(feature.original.perspective.getExtent(), extent);
                         }

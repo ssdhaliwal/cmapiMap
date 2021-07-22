@@ -61,14 +61,18 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
             getNodeValues = function (node, elements, payload, recurse) {
                 // console.log("KML2GraphicsLayer - getNodeValues");
                 if (node.attributes) {
-                    for (let attribute of node.attributes) {
+                    //for (let attribute of node.attributes) {
+                    for (let index in node.attributes) {
+                        let attribute = node.attributes[index];
                         if (!elements || (elements.indexOf(attribute.name) >= 0)) {
                             payload[attribute.name] = attribute.value;
                         }
                     }
                 }
 
-                for (let child of node.childNodes) {
+                //for (let child of node.childNodes) {
+                for (let index1 in node.childNodes) {
+                    let child = node.childNodes[index1];
                     if (!elements || (elements.indexOf(child.nodeName) >= 0)) {
                         let value = (child.innerText || child.text || child.textContent || "").trim();
 
@@ -76,7 +80,9 @@ define(["esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
                             payload[child.nodeName] = value;
                         }
                         if (child.attributes) {
-                            for (let attribute of child.attributes) {
+                            //for (let attribute of child.attributes) {
+                            for (let index2 in child.attributes) {
+                                let attribute = child.attributes[index2];
                                 if (!elements || (elements.indexOf(attribute.name) >= 0)) {
                                     payload[attribute.name] = attribute.value;
                                 }

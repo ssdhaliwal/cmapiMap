@@ -80,6 +80,7 @@
 				config = JSON.parse(response);
 
 				// Add ESRI JS API, which starts dojo AMD loader
+				addScript(config.polyfillAll);
 				addScript(config.jqueryPath);
 
 				addScript(config.globals);

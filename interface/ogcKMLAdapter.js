@@ -208,7 +208,7 @@ define(["dojo/_base/lang", "interface/object/KML2GraphicsLayer",
                             if (subLayer.graphicsLayer) {
                                 // docId, folderId, type, name, graphicsLayer.graphics(attributes/geometry(x/y,paths,rings))
                                 // console.log(subLayer, subLayer.graphicsLayer);
-                                subLayer.graphicsLayer.graphics.forEach(graphic => {
+                                subLayer.graphicsLayer.graphics.forEach(function(graphic) {
                                     item = {};
                                     if (graphic.geometry.hasOwnProperty("x")) {
                                         item.latitude = graphic.geometry.y;

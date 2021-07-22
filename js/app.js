@@ -70,7 +70,7 @@ require([
     globals.plugins.extBookmarks = new extBookmarks(globals);
     globals.plugins.extDatagrid = new extDatagrid(globals);
 
-    window.setTimeout(() => {
+    window.setTimeout(function() {
       globals.plugins.extLayerlist = new extLayerlist(globals);
 
       // update the ui based on config opions
