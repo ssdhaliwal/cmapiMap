@@ -4,7 +4,7 @@
 // (AMD) are included in the webapp's HTML file to prevent issues.
 
 require([
-  "dojo/parser", 
+  "esri/config", "dojo/parser", 
   "esri/geometry/projection",
   "plugins/notify/Notify", "plugins/toolbar/Toolbar", "plugins/config/Config", "plugins/popup/Popup", "plugins/map/Map", "plugins/scalebar/Scalebar",
   "plugins/home/Home", "plugins/search/Search", "plugins/basemap/Basemap", "plugins/legend/Legend", "plugins/bookmarks/Bookmarks",
@@ -12,7 +12,7 @@ require([
   "interface/geocodingService", "interface/geometryService", "interface/geoprocessingService", "interface/messageService",
   "dojo/domReady!"
 ], function (
-  parser,
+  esriConfig, parser,
   projection,
   extNotify, extToolbar, extConfig, extPopup, extMap, extScalebar,
   extHome, extSearch, extBasemap, extLegend, extBookmarks,
@@ -30,9 +30,11 @@ require([
   // Base installation - applying with a JSP available in this app.
   //  However, other options (ASP.NET, PHP) exist
   // TODO: Need means of configuring for the overall application...  Also, dealing with authentication
-  esri.config.defaults.io.proxyUrl = "/Java/proxy.jsp";
+  esriConfig.defaults.io.proxyUrl = "/proxy/";
+  esriConfig.defaults.io.alwaysUseProxy = false;
   // esriConfig.defaults.io.alwaysUseProxy = false;
   // esri.config.defaults.io.proxyUrl = "https://localhost:8443/Java/proxy.jsp";
+  globals.data.esriConfig = esriConfig;
 
   // add projection load for global use
   const projectionPromise = projection.load();

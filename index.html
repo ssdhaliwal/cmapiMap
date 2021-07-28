@@ -13,6 +13,13 @@
 	<!-- Load non-AMD libs before dojo to avoid timing problems -->
 	<link href="vendor/css/dragAndDrop.css?deployVer=1.1.29" rel="stylesheet" />
 	<link href="vendor/css/bootstrap.min.css?deployVer=1.1.29" rel="stylesheet" />
+
+	<link href="/esri_jsapi-3.35/esri/themes/calcite/dijit/calcite.css" rel="stylesheet" />
+	<link href="/esri_jsapi-3.35/dijit/themes/claro/claro.css" rel="stylesheet" />
+	<link href="/esri_jsapi-3.35/esri/css/esri.css" rel="stylesheet" />
+
+	<script src="vendor/js/polyfill.min.js"></script>
+	<script src="/esri_jsapi-3.35/init.js"></script>
 </head>
 
 <body class="claro">
@@ -80,11 +87,11 @@
 				config = JSON.parse(response);
 
 				// Add ESRI JS API, which starts dojo AMD loader
-				addScript(config.polyfillAll);
+				//addScript(config.polyfillAll);
 				addScript(config.jqueryPath);
 
 				addScript(config.globals);
-				addScript(config.esriJsPath);
+				//addScript(config.esriJsPath);
 				addScript(config.bootstrapPath);
 				addScript(config.milSymbolPath);
 
@@ -139,9 +146,9 @@
 		}
 
 		addCss("vendor/js/jstree/themes/default/style.min.css");
-		addCss(window.esriJsPath + "esri/themes/calcite/dijit/calcite.css");
-		addCss(window.esriJsPath + "dijit/themes/claro/claro.css");
-		addCss(window.esriJsPath + "esri/css/esri.css");
+		//addCss(window.esriJsPath + "esri/themes/calcite/dijit/calcite.css");
+		//addCss(window.esriJsPath + "dijit/themes/claro/claro.css");
+		//addCss(window.esriJsPath + "esri/css/esri.css");
 		addCss("css/map.css");
 
 		initConfig();
