@@ -47,8 +47,11 @@ define(["dojo/_base/array",
                 // self.instance.infoWindow.resize(350, 240);
 
                 // add to allow double-click without zoom
-                if (globals.options.map["dbl-click"] === true)
+                if (globals.options.map["dbl-click"].zoom === true) {
+                    self.instance.enableDoubleClickZoom();
+                } else {
                     self.instance.disableDoubleClickZoom();
+                }
 
                 self.regiserEvents();
             };
@@ -110,19 +113,19 @@ define(["dojo/_base/array",
 
                                 self.handleRedrawGraphics();
                             });
+
+                            self.instance.on("basemap-change", function () {
+                                self.messageService.sendMessage("map.status.initialization",
+                                    JSON.stringify("mapSwapinProgress"));
+                            });
+
+                            self.instance.on("before-unload", function () {
+                                globals.plugins.extLayerlist.handleClearAll();
+
+                                self.messageService.sendMessage("map.status.initialization",
+                                    JSON.stringify("tearDown"));
+                            });
                         }
-
-                        self.instance.on("basemap-change", function () {
-                            self.messageService.sendMessage("map.status.initialization",
-                                JSON.stringify("mapSwapinProgress"));
-                        });
-
-                        self.instance.on("before-unload", function () {
-                            globals.plugins.extLayerlist.handleClearAll();
-
-                            self.messageService.sendMessage("map.status.initialization",
-                                JSON.stringify("tearDown"));
-                        });
                     });
                 });
 
